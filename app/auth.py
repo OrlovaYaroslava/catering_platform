@@ -16,7 +16,14 @@ def login():
 
         if user and check_password_hash(user.password_hash, form.password.data):
             login_user(user)
-            return redirect(url_for("main.index"))
+
+            if user.role.name == "admin":
+                return redirect(url_for("main.admin_dashboard"))
+            elif user.role.name == "kitchen":
+                return redirect(url_for("main.kitchen_dashboard"))
+            else:
+                return redirect(url_for("main.client_dashboard"))
+            
         else:
             flash("Invalid email or password")
 
