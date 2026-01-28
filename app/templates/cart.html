@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Cart</title>
+</head>
+<body>
+    <h2>Your cart</h2>
+
+    {% if items %}
+        {% for item in items %}
+            <div>
+                <strong>{{ item.dish.name }}</strong><br>
+                Quantity: {{ item.quantity }}<br>
+                Subtotal: {{ item.subtotal }} ₽
+            </div>
+            <hr>
+        {% endfor %}
+
+        <h3>Total: {{ total }} ₽</h3>
+    {% else %}
+        <p>Cart is empty</p>
+    {% endif %}
+
+    <a href="{{ url_for('main.menu') }}">Back to menu</a>
+</body>
+</html>
