@@ -1,4 +1,7 @@
 from app import db
+from flask_login import UserMixin
+from app import login_manager
+
 
 class Role(db.Model):
     __tablename__ = "roles"
@@ -6,8 +9,9 @@ class Role(db.Model):
     name = db.Column(db.String(50), unique=True, nullable=False)
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = "users"
+
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
@@ -16,6 +20,7 @@ class User(db.Model):
     role = db.relationship("Role")
 
     created_at = db.Column(db.DateTime, default=db.func.now())
+
 
 
 class Order(db.Model):
@@ -71,3 +76,7 @@ class DishIngredient(db.Model):
     dish_id = db.Column(db.Integer, db.ForeignKey("dishes.id"), primary_key=True)
     ingredient_id = db.Column(db.Integer, db.ForeignKey("ingredients.id"), primary_key=True)
     amount_per_unit = db.Column(db.Numeric(10, 2))
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
