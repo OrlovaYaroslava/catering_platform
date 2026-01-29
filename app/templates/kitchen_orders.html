@@ -1,25 +1,22 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Kitchen orders</title>
-</head>
-<body>
-    <h2>Kitchen orders</h2>
+{% extends "base.html" %}
 
-    {% for order in orders %}
-        <div>
-            <p><strong>Order #{{ order.id }}</strong></p>
-            <p>Status: {{ order.status }}</p>
-            <p>Guests: {{ order.guests_count }}</p>
+{% block title %}Заказы кухни{% endblock %}
 
-            <a href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
-                View details
-            </a>
-        </div>
-        <hr>
-    {% else %}
-        <p>No active orders</p>
-    {% endfor %}
-</body>
-</html>
+{% block content %}
+<h2>Заказы кухни</h2>
+
+{% for order in orders %}
+    <div class="card">
+        <p><strong>Заказ №{{ order.id }}</strong></p>
+        <p>Статус: {{ order.status }}</p>
+        <p>Количество гостей: {{ order.guests_count }}</p>
+
+        <a class="btn" href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
+            Подробнее
+        </a>
+    </div>
+{% else %}
+    <p>Активных заказов нет</p>
+{% endfor %}
+
+{% endblock %}

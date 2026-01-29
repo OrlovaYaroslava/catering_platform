@@ -1,17 +1,21 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Аналитика за период</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<h2>Аналитика с {{ start_date }}</h2>
+{% block title %}Аналитика за период{% endblock %}
 
-<p><strong>Количество заказов:</strong> {{ total_orders }}</p>
-<p><strong>Выручка:</strong> {{ total_revenue }} ₽</p>
+{% block content %}
+<h2>Аналитика за период</h2>
 
-<a href="{{ url_for('main.admin_dashboard') }}">← Назад к дашборду</a>
+<p><strong>Начало периода:</strong> {{ start_date }}</p>
 
-</body>
-</html>
+<div class="card">
+    <strong>Количество заказов:</strong> {{ total_orders }}
+</div>
+
+<div class="card">
+    <strong>Общая выручка:</strong> {{ total_revenue }} ₽
+</div>
+
+<a class="btn btn-secondary" href="{{ url_for('main.admin_dashboard') }}">
+    ← Назад к дашборду
+</a>
+{% endblock %}

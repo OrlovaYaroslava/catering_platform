@@ -13,24 +13,19 @@ main = Blueprint("main", __name__)
 
 @main.route("/")
 def index():
-    return "Public page"
-
-@main.route("/protected")
-@login_required
-def protected():
-    return "You are logged in"
+    return render_template("index.html")
 
 @main.route("/client")
 @login_required
 @role_required("client")
 def client_dashboard():
-    return "Client dashboard"
+    return render_template("client_dashboard.html")
 
 @main.route("/kitchen")
 @login_required
 @role_required("kitchen")
 def kitchen_dashboard():
-    return "Kitchen dashboard"
+    return render_template("kitchen_dashboard.html")
 
 @main.route("/menu")
 @login_required

@@ -1,52 +1,41 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Order {{ order.id }}</title>
-</head>
-<body>
-    <h2>Order #{{ order.id }}</h2>
+{% extends "base.html" %}
 
-    
-    <p><strong>Status:</strong> {{ order.status }}</p>
-    <p><strong>Event date:</strong> {{ order.event_date }}</p>
-    <p><strong>Event time:</strong> {{ order.event_time }}</p>
-    <p><strong>Guests:</strong> {{ order.guests_count }}</p>
-    <p><strong>Address:</strong> {{ order.address }}</p>
+{% block title %}Заказ №{{ order.id }}{% endblock %}
 
-    
-    {% if order.status != "ready" %}
-        <p>
-            <a href="{{ url_for('main.update_order_status', order_id=order.id, status='cooking') }}">
-                Set cooking
-            </a>
-            |
-            <a href="{{ url_for('main.update_order_status', order_id=order.id, status='ready') }}">
-                Set ready
-            </a>
-        </p>
-    {% endif %}
+{% block content %}
+<h2>Заказ №{{ order.id }}</h2>
 
-    <a href="{{ url_for('main.kitchen_order_ingredients', order_id=order.id) }}">
-    Calculate ingredients
+<p><strong>Статус:</strong> {{ order.status }}</p>
+<p><strong>Дата мероприятия:</strong> {{ order.event_date }}</p>
+<p><strong>Время:</strong> {{ order.event_time }}</p>
+<p><strong>Гостей:</strong> {{ order.guests_count }}</p>
+<p><strong>Адрес:</strong> {{ order.address }}</p>
+
+{% if order.status != "ready" %}
+    <a class="btn" href="{{ url_for('main.update_order_status', order_id=order.id, status='cooking') }}">
+        В работе
     </a>
+    <a class="btn btn-secondary" href="{{ url_for('main.update_order_status', order_id=order.id, status='ready') }}">
+        Готово
+    </a>
+{% endif %}
 
-    <hr>
+<hr>
 
-    <!-- Список блюд -->
-    <h3>Dishes</h3>
+<h3>Блюда</h3>
 
-    {% for item in items %}
-        <div>
-            <strong>{{ item.dish.name }}</strong><br>
-            Quantity: {{ item.quantity }}<br>
-            Category: {{ item.dish.category }}
-        </div>
-        <hr>
-    {% else %}
-        <p>No dishes</p>
-    {% endfor %}
+{% for item in items %}
+    <div class="card">
+        <strong>{{ item.dish.name }}</strong><br>
+        Количество: {{ item.quantity }}<br>
+        Категория: {{ item.dish.category }}
+    </div>
+{% else %}
+    <p>Блюд нет</p>
+{% endfor %}
 
-    <a href="{{ url_for('main.kitchen_orders') }}">Back to orders</a>
-</body>
-</html>
+<a class="btn" href="{{ url_for('main.kitchen_order_ingredients', order_id=order.id) }}">
+    Расчёт ингредиентов
+</a>
+
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Кабинет клиента{% endblock %}
+
+{% block content %}
+<h2>Кабинет клиента</h2>
+
+<ul>
+    <li><a href="{{ url_for('main.menu') }}">Перейти в меню</a></li>
+    <li><a href="{{ url_for('main.cart') }}">Корзина</a></li>
+    <li><a href="{{ url_for('main.my_orders') }}">Мои заказы</a></li>
+</ul>
+
+{% endblock %}

@@ -1,20 +1,20 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>All orders</title>
-</head>
-<body>
-    <h2>All orders</h2>
+{% extends "base.html" %}
 
-    {% for order in orders %}
-        <div>
-            <p><strong>Order #{{ order.id }}</strong></p>
-            <p>User ID: {{ order.user_id }}</p>
-            <p>Status: {{ order.status }}</p>
-            <p>Total: {{ order.total_price }} ₽</p>
-        </div>
-        <hr>
-    {% endfor %}
-</body>
-</html>
+{% block title %}Все заказы{% endblock %}
+
+{% block content %}
+<h2>Все заказы</h2>
+
+{% for order in orders %}
+    <div class="card">
+        <p><strong>Заказ №{{ order.id }}</strong></p>
+        <p><strong>ID клиента:</strong> {{ order.user_id }}</p>
+        <p><strong>Статус:</strong> {{ order.status }}</p>
+        <p><strong>Сумма:</strong> {{ order.total_price }} ₽</p>
+        <p><strong>Дата мероприятия:</strong> {{ order.event_date }}</p>
+    </div>
+{% else %}
+    <p>Заказы отсутствуют</p>
+{% endfor %}
+
+{% endblock %}

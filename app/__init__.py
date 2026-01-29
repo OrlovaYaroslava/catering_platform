@@ -4,6 +4,7 @@ from flask_login import LoginManager
 from dotenv import load_dotenv
 import os
 
+
 db = SQLAlchemy()
 login_manager = LoginManager()
 

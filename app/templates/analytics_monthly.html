@@ -1,18 +1,15 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Аналитика по месяцам</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<h2>Выручка и заказы по месяцам</h2>
+{% block title %}Аналитика по месяцам{% endblock %}
 
-<table border="1" cellpadding="8">
+{% block content %}
+<h2>Аналитика по месяцам</h2>
+
+<table>
     <tr>
         <th>Год</th>
         <th>Месяц</th>
-        <th>Заказов</th>
+        <th>Количество заказов</th>
         <th>Выручка (₽)</th>
     </tr>
 
@@ -31,7 +28,9 @@
 </table>
 
 <br>
-<a href="{{ url_for('main.admin_dashboard') }}">← Назад к дашборду</a>
 
-</body>
-</html>
+<a class="btn btn-secondary" href="{{ url_for('main.admin_dashboard') }}">
+    ← Назад к дашборду
+</a>
+
+{% endblock %}

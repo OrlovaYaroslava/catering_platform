@@ -1,28 +1,8 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Ингредиенты для заказа №{{ order.id }}</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        table {
-            border-collapse: collapse;
-            width: 60%;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 8px 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #f3f3f3;
-        }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
 
+{% block title %}Ингредиенты{% endblock %}
+
+{% block content %}
 <h2>Ингредиенты для заказа №{{ order.id }}</h2>
 
 <table>
@@ -51,9 +31,8 @@
 
 <br>
 
-<a href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
-    ← Вернуться к заказу
+<a class="btn btn-secondary" href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
+    ← Назад к заказу
 </a>
 
-</body>
-</html>
+{% endblock %}

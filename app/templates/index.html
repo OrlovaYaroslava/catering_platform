@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<h2>Платформа автоматизации кейтеринга</h2>
+
+<p>
+    Веб-платформа для автоматизации управления заказами, производством и аналитикой
+    кейтеринговой компании.
+</p>
+
+{% if not current_user.is_authenticated %}
+        <a class="btn" href="{{ url_for('auth.login') }}">Войти</a>
+        <a class="btn btn-secondary" href="{{ url_for('auth.register') }}">Регистрация</a>
+{% endif %}
+
+{% endblock %}

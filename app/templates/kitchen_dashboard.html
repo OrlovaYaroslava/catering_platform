@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Кухня{% endblock %}
+
+{% block content %}
+<h2>Панель кухни</h2>
+
+<ul>
+    <li><a href="{{ url_for('main.kitchen_orders') }}">Активные заказы</a></li>
+</ul>
+
+{% endblock %}

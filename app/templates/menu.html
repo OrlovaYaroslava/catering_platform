@@ -1,25 +1,22 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Menu</title>
-</head>
-<body>
-    <h2>Menu</h2>
-    <a href="{{ url_for('main.cart') }}">Go to cart</a>
+{% extends "base.html" %}
 
+{% block title %}Меню{% endblock %}
 
-    {% for dish in dishes %}
-        <div>
-            <h3>{{ dish.name }}</h3>
-            <p>{{ dish.description }}</p>
-            <p>Category: {{ dish.category }}</p>
-            <p>Price: {{ dish.price_per_unit }} ₽</p>
-            <a href="{{ url_for('main.add_to_cart', dish_id=dish.id) }}">Add to cart</a>
-        </div>
-        <hr>
-    {% else %}
-        <p>No dishes available</p>
-    {% endfor %}
-</body>
-</html>
+{% block content %}
+<h2>Меню</h2>
+
+{% for dish in dishes %}
+    <div class="card">
+        <h3>{{ dish.name }}</h3>
+        <p>{{ dish.description }}</p>
+        <p><strong>Категория:</strong> {{ dish.category }}</p>
+        <p><strong>Цена:</strong> {{ dish.price_per_unit }} ₽</p>
+
+        <a class="btn" href="{{ url_for('main.add_to_cart', dish_id=dish.id) }}">
+            Добавить в корзину
+        </a>
+    </div>
+{% else %}
+    <p>Блюда отсутствуют</p>
+{% endfor %}
+{% endblock %}

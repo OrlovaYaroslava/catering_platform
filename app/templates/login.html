@@ -1,41 +1,26 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-</head>
-<body>
-    <h2>Login</h2>
+{% extends "base.html" %}
 
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-          {% for message in messages %}
-            <li>{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
+{% block title %}Вход{% endblock %}
 
-    <form method="POST">
-        {{ form.hidden_tag() }}
+{% block content %}
+<h2>Вход</h2>
 
-        <p>
-            {{ form.email.label }}<br>
-            {{ form.email() }}
-        </p>
-
-        <p>
-            {{ form.password.label }}<br>
-            {{ form.password() }}
-        </p>
-
-        <p>{{ form.submit() }}</p>
-    </form>
+<form method="POST">
+    {{ form.hidden_tag() }}
 
     <p>
-        Нет аккаунта?
-        <a href="{{ url_for('auth.register') }}">Регистрация</a>
+        {{ form.email.label }}<br>
+        {{ form.email(size=32) }}
     </p>
-</body>
-</html>
+
+    <p>
+        {{ form.password.label }}<br>
+        {{ form.password(size=32) }}
+    </p>
+
+    <button class="btn" type="submit">
+        Войти
+    </button>
+</form>
+
+{% endblock %}
