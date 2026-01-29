@@ -6,6 +6,7 @@
 </head>
 <body>
     <h2>Your cart</h2>
+    <a href="{{ url_for('main.menu') }}">Back to menu</a>
 
     {% if items %}
         {% for item in items %}
@@ -21,7 +22,7 @@
     {% else %}
         <p>Cart is empty</p>
     {% endif %}
+    <a href="{{ url_for('main.checkout') }}">Proceed to checkout</a>
 
-    <a href="{{ url_for('main.menu') }}">Back to menu</a>
 </body>
 </html>

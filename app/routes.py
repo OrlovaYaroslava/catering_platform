@@ -1,8 +1,10 @@
 from flask import Blueprint,render_template,session, redirect, url_for
-from app.models import Dish
+from app.models import Dish,Order, OrderItem
 from flask_login import login_required
-from flask_login import login_required
+from flask_login import login_required,current_user
 from app.decorators import role_required
+from app.forms import OrderForm
+from app import db
 
 main = Blueprint("main", __name__)
 
@@ -71,3 +73,52 @@ def cart():
         })
 
     return render_template("cart.html", items=items, total=total)
+
+@main.route("/checkout", methods=["GET", "POST"])
+@login_required
+def checkout():
+    cart = session.get("cart", {})
+
+    if not cart:
+        return redirect(url_for("main.menu"))
+
+    form = OrderForm()
+
+    if form.validate_on_submit():
+        order = Order(
+            user=current_user,
+            event_date=form.event_date.data,
+            event_time=form.event_time.data,
+            address=form.address.data,
+            guests_count=form.guests_count.data,
+            total_price=0,
+            status="new"
+        )
+
+        db.session.add(order)
+        db.session.flush()  # получаем order.id
+
+        dishes = Dish.query.filter(Dish.id.in_(cart.keys())).all()
+        total = 0
+
+        for dish in dishes:
+            quantity = cart[str(dish.id)]
+            subtotal = dish.price_per_unit * quantity
+            total += subtotal
+
+            item = OrderItem(
+                order_id=order.id,
+                dish_id=dish.id,
+                quantity=quantity,
+                price=dish.price_per_unit
+            )
+            db.session.add(item)
+
+        order.total_price = total
+        db.session.commit()
+
+        session.pop("cart", None)
+
+        return redirect(url_for("main.client_dashboard"))
+
+    return render_template("checkout.html", form=form)
