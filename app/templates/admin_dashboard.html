@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Аналитика</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .card {
+            border: 1px solid #ccc;
+            padding: 16px;
+            margin-bottom: 16px;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Аналитический дашборд</h2>
+
+<div class="card">
+    <strong>Всего заказов:</strong> {{ total_orders }}
+</div>
+
+<div class="card">
+    <strong>Общая выручка:</strong> {{ total_revenue }} ₽
+</div>
+
+<div class="card">
+    <strong>Клиентов:</strong> {{ total_clients }}
+</div>
+
+<div class="card">
+    <strong>Топ-5 популярных блюд:</strong>
+    <ul>
+        {% for dish, quantity in top_dishes %}
+            <li>{{ dish }} — {{ quantity }} порц.</li>
+        {% else %}
+            <li>Нет данных</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<hr>
+
+<a href="{{ url_for('main.analytics_period') }}">
+    Аналитика за текущий период
+</a>
+<br>
+<a href="{{ url_for('main.analytics_monthly') }}">
+    Аналитика по месяцам
+</a>
+<br>
+<a href="{{ url_for('main.admin_orders') }}">
+    Перейти к заказам
+</a>
+
+</body>
+</html>

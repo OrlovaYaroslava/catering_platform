@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Ингредиенты для заказа №{{ order.id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            border-collapse: collapse;
+            width: 60%;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f3f3f3;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Ингредиенты для заказа №{{ order.id }}</h2>
+
+<table>
+    <tr>
+        <th>Ингредиент</th>
+        <th>Требуется</th>
+        <th>В наличии</th>
+        <th>Дефицит</th>
+    </tr>
+
+    {% for data in ingredients %}
+    <tr {% if data.deficit > 0 %}style="background-color:#ffe6e6"{% endif %}>
+        <td>{{ data.ingredient.name }}</td>
+        <td>{{ data.required }} {{ data.ingredient.unit }}</td>
+        <td>{{ data.in_stock }} {{ data.ingredient.unit }}</td>
+        <td>
+            {% if data.deficit > 0 %}
+                ❌ {{ data.deficit }} {{ data.ingredient.unit }}
+            {% else %}
+                ✅
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<br>
+
+<a href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
+    ← Вернуться к заказу
+</a>
+
+</body>
+</html>

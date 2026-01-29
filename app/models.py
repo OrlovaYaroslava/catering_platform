@@ -75,9 +75,13 @@ class Ingredient(db.Model):
 
 class DishIngredient(db.Model):
     __tablename__ = "dish_ingredients"
+
     dish_id = db.Column(db.Integer, db.ForeignKey("dishes.id"), primary_key=True)
     ingredient_id = db.Column(db.Integer, db.ForeignKey("ingredients.id"), primary_key=True)
     amount_per_unit = db.Column(db.Numeric(10, 2))
+
+    dish = db.relationship("Dish")
+    ingredient = db.relationship("Ingredient")
 
 @login_manager.user_loader
 def load_user(user_id):

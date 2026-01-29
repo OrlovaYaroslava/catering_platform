@@ -27,6 +27,10 @@
         </p>
     {% endif %}
 
+    <a href="{{ url_for('main.kitchen_order_ingredients', order_id=order.id) }}">
+    Calculate ingredients
+    </a>
+
     <hr>
 
     <!-- Список блюд -->
