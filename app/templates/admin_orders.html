@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>All orders</title>
+</head>
+<body>
+    <h2>All orders</h2>
+
+    {% for order in orders %}
+        <div>
+            <p><strong>Order #{{ order.id }}</strong></p>
+            <p>User ID: {{ order.user_id }}</p>
+            <p>Status: {{ order.status }}</p>
+            <p>Total: {{ order.total_price }} ₽</p>
+        </div>
+        <hr>
+    {% endfor %}
+</body>
+</html>

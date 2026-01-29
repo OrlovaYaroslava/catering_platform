@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Kitchen orders</title>
+</head>
+<body>
+    <h2>Kitchen orders</h2>
+
+    {% for order in orders %}
+        <div>
+            <p><strong>Order #{{ order.id }}</strong></p>
+            <p>Status: {{ order.status }}</p>
+            <p>Guests: {{ order.guests_count }}</p>
+
+            <a href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
+                View details
+            </a>
+        </div>
+        <hr>
+    {% else %}
+        <p>No active orders</p>
+    {% endfor %}
+</body>
+</html>

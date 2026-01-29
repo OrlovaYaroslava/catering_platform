@@ -61,6 +61,8 @@ class OrderItem(db.Model):
     quantity = db.Column(db.Integer)
     price = db.Column(db.Numeric(10, 2))
 
+    dish = db.relationship("Dish")
+
 
 class Ingredient(db.Model):
     __tablename__ = "ingredients"

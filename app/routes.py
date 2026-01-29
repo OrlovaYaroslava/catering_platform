@@ -1,4 +1,4 @@
-from flask import Blueprint,render_template,session, redirect, url_for
+from flask import Blueprint, abort,render_template,session, redirect, url_for
 from app.models import Dish,Order, OrderItem
 from flask_login import login_required
 from flask_login import login_required,current_user
@@ -92,7 +92,7 @@ def checkout():
             address=form.address.data,
             guests_count=form.guests_count.data,
             total_price=0,
-            status="new"
+            status="confirmed"
         )
 
         db.session.add(order)
@@ -122,3 +122,54 @@ def checkout():
         return redirect(url_for("main.client_dashboard"))
 
     return render_template("checkout.html", form=form)
+
+@main.route("/my-orders")
+@login_required
+@role_required("client")
+def my_orders():
+    orders = Order.query.filter_by(user_id=current_user.id).all()
+    return render_template("my_orders.html", orders=orders)
+
+@main.route("/kitchen/orders")
+@login_required
+@role_required("kitchen")
+def kitchen_orders():
+    orders = Order.query.filter(
+        Order.status.in_(["confirmed", "cooking"])
+    ).all()
+    return render_template("kitchen_orders.html", orders=orders)
+
+@main.route("/order/<int:order_id>/status/<status>")
+@login_required
+@role_required("kitchen")
+def update_order_status(order_id, status):
+    allowed_statuses = ["cooking", "ready"]
+
+    if status not in allowed_statuses:
+        abort(400)
+
+    order = Order.query.get_or_404(order_id)
+    order.status = status
+
+    db.session.commit()
+    return redirect(url_for("main.kitchen_orders"))
+
+@main.route("/admin/orders")
+@login_required
+@role_required("admin")
+def admin_orders():
+    orders = Order.query.all()
+    return render_template("admin_orders.html", orders=orders)
+
+@main.route("/kitchen/order/<int:order_id>")
+@login_required
+@role_required("kitchen")
+def kitchen_order_detail(order_id):
+    order = Order.query.get_or_404(order_id)
+    items = OrderItem.query.filter_by(order_id=order.id).all()
+
+    return render_template(
+        "kitchen_order_detail.html",
+        order=order,
+        items=items
+    )
