@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Счёт на оплату{% endblock %}
+
+{% block content %}
+<style>
+    .invoice {
+        max-width: 900px;
+        margin: auto;
+        background: #fff;
+        padding: 30px;
+        border: 1px solid #ccc;
+    }
+    .invoice h1,
+    .invoice h2 {
+        text-align: center;
+    }
+    .invoice .block {
+        margin-bottom: 25px;
+    }
+    .invoice table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .invoice th,
+    .invoice td {
+        border: 1px solid #000;
+        padding: 8px;
+    }
+    .invoice .right {
+        text-align: right;
+    }
+</style>
+
+<div class="invoice">
+
+    <h1>СЧЁТ НА ОПЛАТУ</h1>
+    <h2>№ {{ order.id }} от {{ order.created_at.date() }}</h2>
+
+    <div class="block">
+        <strong>Поставщик:</strong><br>
+        ООО «Кейтеринг Платформа»<br>
+        ИНН 7700000000<br>
+        КПП 770001001<br>
+        р/с 40702810000000000000<br>
+        Банк: Тест Банк<br>
+    </div>
+
+    <div class="block">
+        <strong>Покупатель:</strong><br>
+        {{ payment.comment | replace('\n', '<br>') | safe }}
+    </div>
+
+    <table>
+        <tr>
+            <th>№</th>
+            <th>Описание</th>
+            <th>Сумма</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Кейтеринговые услуги по заказу №{{ order.id }}</td>
+            <td class="right">{{ order.total_price }} ₽</td>
+        </tr>
+    </table>
+
+    <br>
+
+    <h3 class="right">
+        Итого к оплате: {{ order.total_price }} ₽
+    </h3>
+
+    <p>
+        Оплата по данному счёту означает согласие с условиями оказания услуг.
+    </p>
+
+    <button class="btn" onclick="window.print()">
+        Распечатать / сохранить PDF
+    </button>
+
+</div>
+
+<br>
+
+<a class="btn btn-secondary"
+   href="{{ url_for('main.client_order_detail', order_id=order.id) }}">
+    ← Назад к заказу
+</a>
+
+{% endblock %}

@@ -1,5 +1,5 @@
-from flask import Blueprint, abort,render_template,session, redirect, url_for
-from app.models import Dish,Order, OrderItem,DishIngredient, Ingredient, Role, User
+from flask import Blueprint, abort,render_template, request,session, redirect, url_for
+from app.models import Dish,Order, OrderItem,DishIngredient, Ingredient, Role, User, Payment
 from flask_login import login_required
 from flask_login import login_required,current_user
 from app.decorators import role_required
@@ -8,6 +8,7 @@ from app import db
 from collections import defaultdict
 from sqlalchemy import func,extract
 from datetime import date
+from random import choice
 
 main = Blueprint("main", __name__)
 
@@ -77,6 +78,7 @@ def checkout():
     form = OrderForm()
 
     if form.validate_on_submit():
+        # 1. Создаём заказ со статусом "ожидает оплаты"
         order = Order(
             user=current_user,
             event_date=form.event_date.data,
@@ -84,15 +86,16 @@ def checkout():
             address=form.address.data,
             guests_count=form.guests_count.data,
             total_price=0,
-            status="confirmed"
+            status="awaiting_payment"
         )
 
         db.session.add(order)
-        db.session.flush()  # получаем order.id
+        db.session.flush()  # получаем order.id без коммита
 
         dishes = Dish.query.filter(Dish.id.in_(cart.keys())).all()
         total = 0
 
+        # 2. Создаём позиции заказа
         for dish in dishes:
             quantity = cart[str(dish.id)]
             subtotal = dish.price_per_unit * quantity
@@ -106,12 +109,27 @@ def checkout():
             )
             db.session.add(item)
 
+        # 3. Фиксируем итоговую сумму заказа
         order.total_price = total
+
+        # 4. Создаём платёж (ещё НЕ оплачен)
+        payment = Payment(
+            order_id=order.id,
+            amount=order.total_price,
+            status="pending"
+        )
+        db.session.add(payment)
+
+        # 5. Сохраняем всё разом
         db.session.commit()
 
+        # 6. Очищаем корзину
         session.pop("cart", None)
 
-        return redirect(url_for("main.client_dashboard"))
+        # 7. Переход к странице заказа (а не просто в кабинет)
+        return redirect(
+            url_for("main.client_order_detail", order_id=order.id)
+        )
 
     return render_template("checkout.html", form=form)
 
@@ -279,4 +297,124 @@ def kitchen_order_ingredients(order_id):
         "kitchen_order_ingredients.html",
         order=order,
         ingredients=ingredient_data.values()
+    )
+
+@main.route("/client/orders/<int:order_id>")
+@login_required
+@role_required("client")
+def client_order_detail(order_id):
+    order = Order.query.filter_by(
+        id=order_id,
+        user_id=current_user.id
+    ).first_or_404()
+
+    items = OrderItem.query.filter_by(order_id=order.id).all()
+
+    payment = order.payment  # связь uselist=False
+
+    return render_template(
+        "client_order_detail.html",
+        order=order,
+        items=items,
+        payment=payment
+    )
+
+from random import choice
+from flask import request, redirect, url_for, render_template
+from flask_login import login_required, current_user
+
+@main.route("/payment/<int:order_id>", methods=["GET", "POST"])
+@login_required
+@role_required("client")
+def payment_page(order_id):
+    order = Order.query.filter_by(
+        id=order_id,
+        user_id=current_user.id
+    ).first_or_404()
+
+    payment = order.payment
+
+    # Если заказ уже оплачен — повторно платить нельзя
+    if payment.status == "success":
+        return redirect(
+            url_for("main.client_order_detail", order_id=order.id)
+        )
+
+    if request.method == "POST":
+        method = request.form.get("method")
+        payment.method = method
+
+        # 💳 Оплата картой (имитация)
+        if method == "card":
+            result = choice(["success", "success", "failed"])
+            payment.status = result
+
+            if result == "success":
+                order.status = "paid"
+            else:
+                order.status = "awaiting_payment"
+
+            db.session.commit()
+
+            return redirect(
+                url_for("main.client_order_detail", order_id=order.id)
+            )
+
+        # 💵 Наличные курьеру (считаем подтверждёнными)
+        if method == "cash":
+            payment.status = "success"
+            order.status = "paid"
+
+            db.session.commit()
+
+            return redirect(
+                url_for("main.client_order_detail", order_id=order.id)
+            )
+
+        # 🧾 Безналичный расчёт по счёту (юрлица)
+        if method == "invoice":
+            payment.status = "pending"
+            order.status = "awaiting_payment"
+
+            payment.comment = f"""
+            Организация: {request.form.get('company_name')}
+            ИНН: {request.form.get('inn')}
+            КПП: {request.form.get('kpp')}
+            Юридический адрес: {request.form.get('legal_address')}
+            Email бухгалтера: {request.form.get('accountant_email')}
+            """
+
+            db.session.commit()
+
+            # 👉 Переход на страницу счёта
+            return redirect(
+                url_for("main.invoice_page", order_id=order.id)
+            )
+
+    return render_template(
+        "payment_page.html",
+        order=order,
+        payment=payment
+    )
+
+@main.route("/payment/invoice/<int:order_id>")
+@login_required
+@role_required("client")
+def invoice_page(order_id):
+    order = Order.query.filter_by(
+        id=order_id,
+        user_id=current_user.id
+    ).first_or_404()
+
+    payment = order.payment
+
+    if payment.method != "invoice":
+        return redirect(
+            url_for("main.client_order_detail", order_id=order.id)
+        )
+
+    return render_template(
+        "invoice.html",
+        order=order,
+        payment=payment
     )

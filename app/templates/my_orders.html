@@ -8,9 +8,29 @@
 {% for order in orders %}
     <div class="card">
         <p><strong>Заказ №{{ order.id }}</strong></p>
-        <p><strong>Статус:</strong> {{ order.status }}</p>
+
+        <p>
+            <strong>Статус заказа:</strong>
+            {% if order.status == "awaiting_payment" %}
+                🕒 Ожидает оплаты
+            {% elif order.status == "paid" %}
+                ✅ Оплачен
+            {% elif order.status == "cooking" %}
+                👩‍🍳 В работе
+            {% elif order.status == "ready" %}
+                🎉 Готов
+            {% else %}
+                {{ order.status }}
+            {% endif %}
+        </p>
+
         <p><strong>Дата мероприятия:</strong> {{ order.event_date }}</p>
         <p><strong>Сумма:</strong> {{ order.total_price }} ₽</p>
+
+        <a class="btn"
+           href="{{ url_for('main.client_order_detail', order_id=order.id) }}">
+            Подробнее
+        </a>
     </div>
 {% else %}
     <p>У вас пока нет заказов</p>

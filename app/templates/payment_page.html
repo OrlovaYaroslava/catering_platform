@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Оплата заказа{% endblock %}
+
+{% block content %}
+<h2>Оплата заказа №{{ order.id }}</h2>
+
+<div class="card">
+    <p><strong>Сумма к оплате:</strong> {{ order.total_price }} ₽</p>
+    <p><strong>Статус платежа:</strong>
+        {% if payment.status == "pending" %}
+            🕒 Ожидает оплаты
+        {% elif payment.status == "success" %}
+            ✅ Оплачено
+        {% elif payment.status == "failed" %}
+            ❌ Отклонено
+        {% else %}
+            {{ payment.status }}
+        {% endif %}
+    </p>
+</div>
+
+<form method="POST">
+
+    <h3>Способ оплаты</h3>
+
+    <p>
+        <label>
+            <input type="radio" name="method" value="card" required>
+            💳 Банковская карта (тест)
+        </label>
+    </p>
+
+    <p>
+        <label>
+            <input type="radio" name="method" value="invoice">
+            🧾 Безналичный расчёт по счёту
+        </label>
+    </p>
+
+    <p>
+        <label>
+            <input type="radio" name="method" value="cash">
+            💵 Наличные курьеру
+        </label>
+    </p>
+
+    <hr>
+
+    <!-- ДАННЫЕ КАРТЫ -->
+    <div id="card-fields" style="display: none;">
+        <h3>Данные карты (тестовые)</h3>
+
+        <p>
+            Номер карты<br>
+            <input type="text" placeholder="1111 2222 3333 4444">
+        </p>
+
+        <p>
+            Срок действия<br>
+            <input type="text" placeholder="12/25">
+        </p>
+
+        <p>
+            CVV<br>
+            <input type="text" placeholder="123">
+        </p>
+    </div>
+
+    <!-- ДАННЫЕ ДЛЯ СЧЁТА -->
+    <div id="invoice-fields" style="display: none;">
+        <h3>Данные организации</h3>
+
+        <p>
+            Название организации<br>
+            <input type="text" name="company_name">
+        </p>
+
+        <p>
+            ИНН<br>
+            <input type="text" name="inn">
+        </p>
+
+        <p>
+            КПП<br>
+            <input type="text" name="kpp">
+        </p>
+
+        <p>
+            Юридический адрес<br>
+            <input type="text" name="legal_address">
+        </p>
+
+        <p>
+            Email бухгалтера<br>
+            <input type="email" name="accountant_email">
+        </p>
+    </div>
+
+    <button class="btn" type="submit" id="pay-btn">
+        Оплатить
+    </button>
+
+</form>
+
+<br>
+
+<a class="btn btn-secondary"
+   href="{{ url_for('main.client_order_detail', order_id=order.id) }}">
+    ← Назад к заказу
+</a>
+
+<!-- Подключение JS -->
+<script src="{{ url_for('static', filename='js/payment.js') }}"></script>
+
+{% endblock %}

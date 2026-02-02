@@ -36,7 +36,7 @@ class Order(db.Model):
     guests_count = db.Column(db.Integer)
 
     total_price = db.Column(db.Numeric(10, 2))
-    status = db.Column(db.String(50), default="new")
+    status = db.Column(db.String(50), default="awaiting_payment")
 
     created_at = db.Column(db.DateTime, default=db.func.now())
 
@@ -86,3 +86,37 @@ class DishIngredient(db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+class Payment(db.Model):
+    __tablename__ = "payments"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    order_id = db.Column(
+        db.Integer,
+        db.ForeignKey("orders.id"),
+        nullable=False
+    )
+
+    method = db.Column(db.String(50))  
+    # card / invoice / cash
+
+    status = db.Column(
+        db.String(50),
+        default="pending"
+    )
+    # pending / success / failed
+
+    amount = db.Column(db.Numeric(10, 2))
+
+    created_at = db.Column(
+        db.DateTime,
+        default=db.func.now()
+    )
+
+    comment = db.Column(db.String(255))
+
+    order = db.relationship(
+        "Order",
+        backref=db.backref("payment", uselist=False)
+    )
