@@ -12,7 +12,12 @@
         <p><strong>Статус:</strong> {{ order.status }}</p>
         <p><strong>Сумма:</strong> {{ order.total_price }} ₽</p>
         <p><strong>Дата мероприятия:</strong> {{ order.event_date }}</p>
+        <a class="btn btn-secondary"
+        href="{{ url_for('main.admin_order_detail', order_id=order.id) }}">
+            Подробнее
+        </a>
     </div>
+
 {% else %}
     <p>Заказы отсутствуют</p>
 {% endfor %}

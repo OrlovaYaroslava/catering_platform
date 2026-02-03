@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Заказ №{{ order.id }}{% endblock %}
+
+{% block content %}
+<h2>Заказ №{{ order.id }}</h2>
+
+<div class="card">
+    <h3>Информация о заказе</h3>
+
+    <p><strong>Клиент:</strong> {{ order.user.email }}</p>
+    <p><strong>Дата мероприятия:</strong> {{ order.event_date }}</p>
+    <p><strong>Время:</strong> {{ order.event_time }}</p>
+    <p><strong>Адрес:</strong> {{ order.address }}</p>
+    <p><strong>Гостей:</strong> {{ order.guests_count }}</p>
+
+    <p><strong>Статус заказа:</strong>
+        {% if order.status == "awaiting_payment" %}
+            🕒 Ожидает оплаты
+        {% elif order.status == "paid" %}
+            ✅ Оплачен
+        {% else %}
+            {{ order.status }}
+        {% endif %}
+    </p>
+</div>
+
+<div class="card">
+    <h3>Состав заказа</h3>
+
+    {% for item in items %}
+        <p>
+            {{ item.dish.name }} —
+            {{ item.quantity }} шт.
+            ({{ item.price }} ₽)
+        </p>
+    {% endfor %}
+
+    <p><strong>Итого:</strong> {{ order.total_price }} ₽</p>
+</div>
+
+<div class="card">
+    <h3>Оплата</h3>
+
+    <p><strong>Способ оплаты:</strong> {{ payment.method }}</p>
+
+    <p><strong>Статус платежа:</strong>
+        {% if payment.status == "pending" %}
+            🕒 Ожидает оплаты
+        {% elif payment.status == "success" %}
+            ✅ Оплачено
+        {% elif payment.status == "failed" %}
+            ❌ Ошибка
+        {% endif %}
+    </p>
+
+    {% if payment.method == "invoice" and payment.status == "pending" %}
+        <form method="POST"
+              action="{{ url_for('main.admin_confirm_payment', order_id=order.id) }}">
+            <button class="btn btn-success">
+                ✅ Подтвердить оплату
+            </button>
+        </form>
+    {% endif %}
+</div>
+
+<a class="btn btn-secondary"
+   href="{{ url_for('main.admin_orders') }}">
+    ← Назад к списку заказов
+</a>
+
+{% endblock %}

@@ -261,6 +261,44 @@ def kitchen_order_detail(order_id):
         items=items
     )
 
+@main.route("/admin/order/<int:order_id>/confirm-payment", methods=["POST"])
+@login_required
+@role_required("admin")
+def admin_confirm_payment(order_id):
+    order = Order.query.get_or_404(order_id)
+    payment = order.payment
+
+    # защита: подтверждать можно только безнал
+    if payment.method != "invoice" or payment.status != "pending":
+        return redirect(
+            url_for("main.admin_order_detail", order_id=order.id)
+        )
+
+    # подтверждаем оплату
+    payment.status = "success"
+    order.status = "paid"
+
+    db.session.commit()
+
+    return redirect(
+        url_for("main.admin_order_detail", order_id=order.id)
+    )
+
+@main.route("/admin/orders/<int:order_id>")
+@login_required
+@role_required("admin")
+def admin_order_detail(order_id):
+    order = Order.query.get_or_404(order_id)
+    items = OrderItem.query.filter_by(order_id=order.id).all()
+    payment = order.payment
+
+    return render_template(
+        "admin_order_detail.html",
+        order=order,
+        items=items,
+        payment=payment
+    )
+
 @main.route("/kitchen/order/<int:order_id>/ingredients")
 @login_required
 @role_required("kitchen")
