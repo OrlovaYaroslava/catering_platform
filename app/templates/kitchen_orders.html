@@ -8,15 +8,26 @@
 {% for order in orders %}
     <div class="card">
         <p><strong>Заказ №{{ order.id }}</strong></p>
-        <p>Статус: {{ order.status }}</p>
-        <p>Количество гостей: {{ order.guests_count }}</p>
+        <p>Дата: {{ order.event_date }} {{ order.event_time }}</p>
 
-        <a class="btn" href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
+        <p>
+            Статус:
+            {% if order.status == "paid" %}
+                🟡 Новый
+            {% elif order.status == "cooking" %}
+                🔥 В работе
+            {% elif order.status == "ready" %}
+                ✅ Готов
+            {% endif %}
+        </p>
+
+        <a class="btn"
+           href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
             Подробнее
         </a>
     </div>
 {% else %}
-    <p>Активных заказов нет</p>
+    <p>Нет заказов для кухни</p>
 {% endfor %}
 
 {% endblock %}

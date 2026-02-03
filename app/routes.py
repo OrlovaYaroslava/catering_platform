@@ -145,9 +145,17 @@ def my_orders():
 @role_required("kitchen")
 def kitchen_orders():
     orders = Order.query.filter(
-        Order.status.in_(["confirmed", "cooking"])
+        Order.status.in_(["paid", "cooking", "ready"])
+    ).order_by(
+        Order.event_date,
+        Order.event_time
     ).all()
-    return render_template("kitchen_orders.html", orders=orders)
+
+    return render_template(
+        "kitchen_orders.html",
+        orders=orders
+    )
+
 
 @main.route("/order/<int:order_id>/status/<status>")
 @login_required
@@ -163,6 +171,53 @@ def update_order_status(order_id, status):
 
     db.session.commit()
     return redirect(url_for("main.kitchen_orders"))
+
+@main.route("/kitchen/orders/<int:order_id>")
+@login_required
+@role_required("kitchen")
+def kitchen_order_detail(order_id):
+    order = Order.query.get_or_404(order_id)
+
+    if order.status not in ["paid", "cooking", "ready"]:
+        abort(403)
+
+    items = OrderItem.query.filter_by(order_id=order.id).all()
+
+    return render_template(
+        "kitchen_order_detail.html",
+        order=order,
+        items=items
+    )
+
+@main.route("/kitchen/orders/<int:order_id>/start", methods=["POST"])
+@login_required
+@role_required("kitchen")
+def kitchen_start_order(order_id):
+    order = Order.query.get_or_404(order_id)
+
+    if order.status == "paid":
+        order.status = "cooking"
+        db.session.commit()
+
+    return redirect(
+        url_for("main.kitchen_order_detail", order_id=order.id)
+    )
+
+
+@main.route("/kitchen/orders/<int:order_id>/finish", methods=["POST"])
+@login_required
+@role_required("kitchen")
+def kitchen_finish_order(order_id):
+    order = Order.query.get_or_404(order_id)
+
+    if order.status == "cooking":
+        order.status = "ready"
+        db.session.commit()
+
+    return redirect(
+        url_for("main.kitchen_order_detail", order_id=order.id)
+    )
+
 
 @main.route("/admin/orders")
 @login_required
@@ -248,18 +303,6 @@ def analytics_monthly():
         stats=monthly_stats
     )
 
-@main.route("/kitchen/order/<int:order_id>")
-@login_required
-@role_required("kitchen")
-def kitchen_order_detail(order_id):
-    order = Order.query.get_or_404(order_id)
-    items = OrderItem.query.filter_by(order_id=order.id).all()
-
-    return render_template(
-        "kitchen_order_detail.html",
-        order=order,
-        items=items
-    )
 
 @main.route("/admin/order/<int:order_id>/confirm-payment", methods=["POST"])
 @login_required
