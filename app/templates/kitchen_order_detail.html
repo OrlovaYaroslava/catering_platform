@@ -5,6 +5,15 @@
 {% block content %}
 <h2>Заказ №{{ order.id }}</h2>
 
+<!-- ВАЖНЫЙ КОММЕНТАРИЙ ДЛЯ КУХНИ -->
+{% if order.kitchen_comment %}
+<div class="card" style="border-left: 5px solid #f44336;">
+    <strong>⚠️ Важно для кухни:</strong><br>
+    {{ order.kitchen_comment }}
+</div>
+{% endif %}
+
+<!-- ОСНОВНАЯ ИНФОРМАЦИЯ -->
 <div class="card">
     <p>
         <strong>Статус:</strong>
@@ -51,10 +60,24 @@
 <h3>Блюда</h3>
 
 {% for item in items %}
-    <div class="card">
+    <div class="card"
+         {% if item.dish.contains_allergens %}
+             style="border-left: 5px solid #ff9800;"
+         {% endif %}>
         <strong>{{ item.dish.name }}</strong><br>
         Количество: {{ item.quantity }}<br>
-        Категория: {{ item.dish.category }}
+        Категория: {{ item.dish.category }}<br>
+
+        <!-- ДИЕТЫ И АЛЛЕРГЕНЫ -->
+        {% if item.dish.is_vegan %}
+            🌱 Веганское<br>
+        {% endif %}
+        {% if item.dish.is_gluten_free %}
+            🚫 Без глютена<br>
+        {% endif %}
+        {% if item.dish.contains_allergens %}
+            ⚠️ Содержит аллергены<br>
+        {% endif %}
     </div>
 {% else %}
     <p>Блюд нет</p>

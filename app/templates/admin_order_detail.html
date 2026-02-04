@@ -5,6 +5,7 @@
 {% block content %}
 <h2>Заказ №{{ order.id }}</h2>
 
+<!-- ИНФОРМАЦИЯ О ЗАКАЗЕ -->
 <div class="card">
     <h3>Информация о заказе</h3>
 
@@ -12,45 +13,84 @@
     <p><strong>Дата мероприятия:</strong> {{ order.event_date }}</p>
     <p><strong>Время:</strong> {{ order.event_time }}</p>
     <p><strong>Адрес:</strong> {{ order.address }}</p>
-    <p><strong>Гостей:</strong> {{ order.guests_count }}</p>
+    <p><strong>Количество гостей:</strong> {{ order.guests_count }}</p>
 
-    <p><strong>Статус заказа:</strong>
+    <p>
+        <strong>Статус заказа:</strong>
         {% if order.status == "awaiting_payment" %}
             🕒 Ожидает оплаты
         {% elif order.status == "paid" %}
-            ✅ Оплачен
+            🟡 Оплачен (ожидает приготовления)
+        {% elif order.status == "cooking" %}
+            🔥 В работе
+        {% elif order.status == "ready" %}
+            ✅ Готов
         {% else %}
             {{ order.status }}
         {% endif %}
     </p>
 </div>
 
+<!-- КОММЕНТАРИЙ ДЛЯ КУХНИ -->
+<div class="card" style="border-left: 5px solid #f44336;">
+    <h3>Комментарий для кухни</h3>
+
+    {% if order.kitchen_comment %}
+        <p>{{ order.kitchen_comment }}</p>
+    {% else %}
+        <p><em>Комментарий для кухни не добавлен</em></p>
+    {% endif %}
+</div>
+
+<!-- СОСТАВ ЗАКАЗА -->
 <div class="card">
     <h3>Состав заказа</h3>
 
     {% for item in items %}
-        <p>
-            {{ item.dish.name }} —
-            {{ item.quantity }} шт.
-            ({{ item.price }} ₽)
-        </p>
+        <div style="margin-bottom: 10px;">
+            <strong>{{ item.dish.name }}</strong><br>
+            Количество: {{ item.quantity }} шт.<br>
+            Цена за единицу: {{ item.price }} ₽<br>
+
+            {% if item.dish.is_vegan %}
+                🌱 Веганское<br>
+            {% endif %}
+            {% if item.dish.is_gluten_free %}
+                🚫 Без глютена<br>
+            {% endif %}
+            {% if item.dish.contains_allergens %}
+                ⚠️ Содержит аллергены<br>
+            {% endif %}
+        </div>
     {% endfor %}
 
-    <p><strong>Итого:</strong> {{ order.total_price }} ₽</p>
+    <p><strong>Итого по заказу:</strong> {{ order.total_price }} ₽</p>
 </div>
 
+<!-- ОПЛАТА -->
 <div class="card">
     <h3>Оплата</h3>
 
-    <p><strong>Способ оплаты:</strong> {{ payment.method }}</p>
+    <p><strong>Способ оплаты:</strong>
+        {% if payment.method == "card" %}
+            💳 Банковская карта
+        {% elif payment.method == "invoice" %}
+            🧾 Безналичный расчёт по счёту
+        {% elif payment.method == "cash" %}
+            💵 Наличные курьеру
+        {% else %}
+            {{ payment.method }}
+        {% endif %}
+    </p>
 
-    <p><strong>Статус платежа:</strong>
+    <p>
+        <strong>Статус платежа:</strong>
         {% if payment.status == "pending" %}
             🕒 Ожидает оплаты
         {% elif payment.status == "success" %}
             ✅ Оплачено
         {% elif payment.status == "failed" %}
-            ❌ Ошибка
+            ❌ Ошибка оплаты
         {% endif %}
     </p>
 
@@ -58,7 +98,7 @@
         <form method="POST"
               action="{{ url_for('main.admin_confirm_payment', order_id=order.id) }}">
             <button class="btn btn-success">
-                ✅ Подтвердить оплату
+                ✅ Подтвердить оплату по счёту
             </button>
         </form>
     {% endif %}

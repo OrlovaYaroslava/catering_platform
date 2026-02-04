@@ -69,7 +69,7 @@
         {% if current_user.role.name == "client" %}
             <a href="{{ url_for('main.menu') }}">Меню</a>
             <a href="{{ url_for('main.cart') }}">Корзина</a>
-            <a href="{{ url_for('main.client_orders') }}">Мои заказы</a>
+            <a href="{{ url_for('main.my_orders') }}">Мои заказы</a>
 
         {% elif current_user.role.name == "kitchen" %}
             <a href="{{ url_for('main.kitchen_board') }}">🍳 Производство</a>

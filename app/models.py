@@ -39,6 +39,7 @@ class Order(db.Model):
     status = db.Column(db.String(50), default="awaiting_payment")
 
     created_at = db.Column(db.DateTime, default=db.func.now())
+    kitchen_comment = db.Column(db.Text)
 
 
 class Dish(db.Model):
@@ -49,6 +50,10 @@ class Dish(db.Model):
     price_per_unit = db.Column(db.Numeric(10, 2))
     category = db.Column(db.String(100))
     is_active = db.Column(db.Boolean, default=True)
+    is_vegan = db.Column(db.Boolean, default=False)
+    is_gluten_free = db.Column(db.Boolean, default=False)
+    contains_allergens = db.Column(db.Boolean, default=False)
+
 
 
 class OrderItem(db.Model):
