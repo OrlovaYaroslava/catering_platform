@@ -203,6 +203,29 @@ def kitchen_start_order(order_id):
         url_for("main.kitchen_order_detail", order_id=order.id)
     )
 
+@main.route("/kitchen/board")
+@login_required
+@role_required("kitchen")
+def kitchen_board():
+    orders_paid = Order.query.filter_by(status="paid").order_by(
+        Order.event_date, Order.event_time
+    ).all()
+
+    orders_cooking = Order.query.filter_by(status="cooking").order_by(
+        Order.event_date, Order.event_time
+    ).all()
+
+    orders_ready = Order.query.filter_by(status="ready").order_by(
+        Order.event_date, Order.event_time
+    ).all()
+
+    return render_template(
+        "kitchen_board.html",
+        orders_paid=orders_paid,
+        orders_cooking=orders_cooking,
+        orders_ready=orders_ready
+    )
+
 
 @main.route("/kitchen/orders/<int:order_id>/finish", methods=["POST"])
 @login_required

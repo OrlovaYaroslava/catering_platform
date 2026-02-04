@@ -20,6 +20,9 @@
             text-decoration: none;
             font-weight: bold;
         }
+        header a:hover {
+            text-decoration: underline;
+        }
         main {
             padding: 20px;
             background-color: white;
@@ -32,9 +35,21 @@
             color: white;
             text-decoration: none;
             border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #125ea8;
         }
         .btn-secondary {
             background-color: #555;
+        }
+        .btn-warning {
+            background-color: #f9a825;
+            color: #000;
+        }
+        .btn-success {
+            background-color: #2e7d32;
         }
         .card {
             border: 1px solid #ccc;
@@ -47,21 +62,25 @@
 <body>
 
 <header>
-    <a href="/">Главная</a>
+    <a href="{{ url_for('main.index') }}">Главная</a>
 
     {% if current_user.is_authenticated %}
+
         {% if current_user.role.name == "client" %}
-            <a href="/menu">Меню</a>
-            <a href="/cart">Корзина</a>
-            <a href="/my-orders">Мои заказы</a>
+            <a href="{{ url_for('main.menu') }}">Меню</a>
+            <a href="{{ url_for('main.cart') }}">Корзина</a>
+            <a href="{{ url_for('main.client_orders') }}">Мои заказы</a>
+
         {% elif current_user.role.name == "kitchen" %}
-            <a href="/kitchen/orders">Заказы кухни</a>
+            <a href="{{ url_for('main.kitchen_board') }}">🍳 Производство</a>
+
         {% elif current_user.role.name == "admin" %}
-            <a href="/admin/dashboard">Аналитика</a>
-            <a href="/admin/orders">Все заказы</a>
+            <a href="{{ url_for('main.admin_dashboard') }}">Аналитика</a>
+            <a href="{{ url_for('main.admin_orders') }}">Все заказы</a>
         {% endif %}
 
-        <a href="/logout">Выйти</a>
+        <a href="{{ url_for('auth.logout') }}">Выйти</a>
+
     {% else %}
         <a href="{{ url_for('auth.login') }}">Войти</a>
         <a href="{{ url_for('auth.register') }}">Регистрация</a>

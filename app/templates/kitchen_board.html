@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Производственная панель{% endblock %}
+
+{% block content %}
+<h2>Производственная панель кухни</h2>
+
+<div style="display: flex; gap: 20px; align-items: flex-start;">
+
+    <!-- НОВЫЕ -->
+    <div style="flex: 1;">
+        <h3>🟡 Новые</h3>
+
+        {% for order in orders_paid %}
+            <div class="card">
+                <strong>Заказ №{{ order.id }}</strong><br>
+                {{ order.event_date }} {{ order.event_time }}<br>
+                Гостей: {{ order.guests_count }}<br>
+
+                <a class="btn"
+                   href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
+                    Открыть
+                </a>
+            </div>
+        {% else %}
+            <p>Нет заказов</p>
+        {% endfor %}
+    </div>
+
+    <!-- В РАБОТЕ -->
+    <div style="flex: 1;">
+        <h3>🔥 В работе</h3>
+
+        {% for order in orders_cooking %}
+            <div class="card">
+                <strong>Заказ №{{ order.id }}</strong><br>
+                {{ order.event_date }} {{ order.event_time }}<br>
+
+                <a class="btn"
+                   href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
+                    Открыть
+                </a>
+            </div>
+        {% else %}
+            <p>Нет заказов</p>
+        {% endfor %}
+    </div>
+
+    <!-- ГОТОВО -->
+    <div style="flex: 1;">
+        <h3>✅ Готово</h3>
+
+        {% for order in orders_ready %}
+            <div class="card">
+                <strong>Заказ №{{ order.id }}</strong><br>
+                {{ order.event_date }} {{ order.event_time }}<br>
+
+                <a class="btn"
+                   href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
+                    Открыть
+                </a>
+            </div>
+        {% else %}
+            <p>Нет заказов</p>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}
