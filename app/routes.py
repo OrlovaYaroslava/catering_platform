@@ -241,6 +241,28 @@ def kitchen_finish_order(order_id):
         url_for("main.kitchen_order_detail", order_id=order.id)
     )
 
+@main.route("/kitchen/report")
+@login_required
+@role_required("kitchen")
+def kitchen_report():
+    selected_date = request.args.get("date")
+
+    if selected_date:
+        report_date = selected_date
+    else:
+        report_date = date.today().isoformat()
+
+    orders = Order.query.filter(
+        Order.event_date == report_date,
+        Order.status.in_(["paid", "cooking"])
+    ).order_by(Order.event_time).all()
+
+    return render_template(
+        "kitchen_report.html",
+        orders=orders,
+        report_date=report_date
+    )
+
 
 @main.route("/admin/orders")
 @login_required

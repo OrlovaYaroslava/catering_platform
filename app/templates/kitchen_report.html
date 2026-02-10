@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Производственный отчёт{% endblock %}
+
+{% block content %}
+<h2>Производственный отчёт</h2>
+
+<form method="get">
+    <label>
+        Дата:
+        <input type="date" name="date" value="{{ report_date }}">
+    </label>
+    <button class="btn">Показать</button>
+</form>
+
+<hr>
+
+<h3>Заказы на {{ report_date }}</h3>
+
+{% for order in orders %}
+    <div class="card">
+        <strong>Заказ №{{ order.id }}</strong><br>
+        Время: {{ order.event_time }}<br>
+        Гостей: {{ order.guests_count }}<br>
+        Статус: {{ order.status }}
+
+        <br><br>
+        <a class="btn"
+           href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
+            Открыть заказ
+        </a>
+    </div>
+{% else %}
+    <p>На выбранную дату заказов нет</p>
+{% endfor %}
+
+{% endblock %}

@@ -73,9 +73,10 @@
 
         {% elif current_user.role.name == "kitchen" %}
             <a href="{{ url_for('main.kitchen_board') }}">🍳 Производство</a>
+            <a href="{{ url_for('main.kitchen_report') }}">📊 Отчёт на день</a>
 
         {% elif current_user.role.name == "admin" %}
-            <a href="{{ url_for('main.admin_dashboard') }}">Аналитика</a>
+            <a href="{{ url_for('main.admin_dashboard') }}">📊Аналитика</a>
             <a href="{{ url_for('main.admin_orders') }}">Все заказы</a>
         {% endif %}
 
