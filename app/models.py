@@ -40,6 +40,7 @@ class Order(db.Model):
 
     created_at = db.Column(db.DateTime, default=db.func.now())
     kitchen_comment = db.Column(db.Text)
+    is_urgent = db.Column(db.Boolean, default=False)
 
 
 class Dish(db.Model):

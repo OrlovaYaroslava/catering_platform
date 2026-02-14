@@ -5,6 +5,15 @@
 {% block content %}
 <h2>Производственная панель кухни</h2>
 
+<div class="card">
+    <strong>📊 Сегодня заказов:</strong> {{ orders_today }}
+</div>
+
+<br>
+
+
+
+
 <div style="display: flex; gap: 20px; align-items: flex-start;">
 
     <!-- НОВЫЕ -->
@@ -13,17 +22,29 @@
 
         {% for order in orders_paid %}
             <div class="card"
-                 {% if order.kitchen_comment %}
+                 {% if order.is_urgent %}
+                     style="border-left: 5px solid red;"
+                 {% elif order.kitchen_comment %}
                      style="border-left: 5px solid #f44336;"
                  {% endif %}>
+
                 <strong>Заказ №{{ order.id }}</strong><br>
                 {{ order.event_date }} {{ order.event_time }}<br>
                 Гостей: {{ order.guests_count }}<br>
 
-                {% if order.kitchen_comment %}
-                    <span style="color:#f44336;">⚠️ Есть комментарий</span><br>
+                {% if order.is_urgent %}
+                    <span style="color:red; font-weight:bold;">
+                        ⚠️ Срочный заказ
+                    </span><br>
                 {% endif %}
 
+                {% if order.kitchen_comment %}
+                    <span style="color:#f44336;">
+                        📝 Есть комментарий
+                    </span><br>
+                {% endif %}
+
+                <br>
                 <a class="btn"
                    href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
                     Открыть
@@ -33,6 +54,7 @@
             <p>Нет заказов</p>
         {% endfor %}
     </div>
+
 
     <!-- В РАБОТЕ -->
     <div style="flex: 1;">
@@ -40,16 +62,28 @@
 
         {% for order in orders_cooking %}
             <div class="card"
-                 {% if order.kitchen_comment %}
+                 {% if order.is_urgent %}
+                     style="border-left: 5px solid red;"
+                 {% elif order.kitchen_comment %}
                      style="border-left: 5px solid #f44336;"
                  {% endif %}>
+
                 <strong>Заказ №{{ order.id }}</strong><br>
                 {{ order.event_date }} {{ order.event_time }}<br>
 
-                {% if order.kitchen_comment %}
-                    <span style="color:#f44336;">⚠️ Есть комментарий</span><br>
+                {% if order.is_urgent %}
+                    <span style="color:red; font-weight:bold;">
+                        ⚠️ Срочный заказ
+                    </span><br>
                 {% endif %}
 
+                {% if order.kitchen_comment %}
+                    <span style="color:#f44336;">
+                        📝 Есть комментарий
+                    </span><br>
+                {% endif %}
+
+                <br>
                 <a class="btn"
                    href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
                     Открыть
@@ -60,22 +94,35 @@
         {% endfor %}
     </div>
 
+
     <!-- ГОТОВО -->
     <div style="flex: 1;">
         <h3>✅ Готово</h3>
 
         {% for order in orders_ready %}
             <div class="card"
-                 {% if order.kitchen_comment %}
+                 {% if order.is_urgent %}
+                     style="border-left: 5px solid red;"
+                 {% elif order.kitchen_comment %}
                      style="border-left: 5px solid #f44336;"
                  {% endif %}>
+
                 <strong>Заказ №{{ order.id }}</strong><br>
                 {{ order.event_date }} {{ order.event_time }}<br>
 
-                {% if order.kitchen_comment %}
-                    <span style="color:#f44336;">⚠️ Есть комментарий</span><br>
+                {% if order.is_urgent %}
+                    <span style="color:red; font-weight:bold;">
+                        ⚠️ Срочный заказ
+                    </span><br>
                 {% endif %}
 
+                {% if order.kitchen_comment %}
+                    <span style="color:#f44336;">
+                        📝 Есть комментарий
+                    </span><br>
+                {% endif %}
+
+                <br>
                 <a class="btn"
                    href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
                     Открыть

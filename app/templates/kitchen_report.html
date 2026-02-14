@@ -15,70 +15,93 @@
 
 <hr>
 
-<h3>Заказы на {{ report_date }}</h3>
+<!-- ВКЛАДКИ -->
+<div style="margin-bottom: 15px;">
+    <button class="btn tab-btn" onclick="showTab('orders')">Заказы</button>
+    <button class="btn tab-btn" onclick="showTab('dishes')">Блюда</button>
+    <button class="btn tab-btn" onclick="showTab('ingredients')">Ингредиенты</button>
+</div>
 
-{% for order in orders %}
-    <div class="card">
-        <strong>Заказ №{{ order.id }}</strong><br>
-        Время: {{ order.event_time }}<br>
-        Гостей: {{ order.guests_count }}<br>
-        Статус: {{ order.status }}
+<!-- БЛОК ЗАКАЗОВ -->
+<div id="orders-tab" class="tab-content">
+    <h3>Заказы на {{ report_date }}</h3>
 
-        <br><br>
-        <a class="btn"
-           href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
-            Открыть заказ
-        </a>
-    </div>
-{% else %}
-    <p>На выбранную дату заказов нет</p>
-{% endfor %}
+    {% for order in orders %}
+        <div class="card">
+            <strong>Заказ №{{ order.id }}</strong><br>
+            Время: {{ order.event_time }}<br>
+            Гостей: {{ order.guests_count }}<br>
+            Статус: {{ order.status }}
 
-<hr>
+            <br><br>
+            <a class="btn"
+               href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
+                Открыть заказ
+            </a>
+        </div>
+    {% else %}
+        <p>На выбранную дату заказов нет</p>
+    {% endfor %}
+</div>
 
-<h3>Блюда на {{ report_date }}</h3>
+<!-- БЛОК БЛЮД -->
+<div id="dishes-tab" class="tab-content" style="display:none;">
+    <h3>Блюда на {{ report_date }}</h3>
 
-{% if dishes_summary %}
-    <div class="card">
-        <table>
-            <tr>
-                <th align="left">Блюдо</th>
-                <th align="left">Всего порций</th>
-            </tr>
-
-            {% for dish, quantity in dishes_summary.items() %}
+    {% if dishes_summary %}
+        <div class="card">
+            <table>
                 <tr>
-                    <td>{{ dish }}</td>
-                    <td>{{ quantity }}</td>
+                    <th align="left">Блюдо</th>
+                    <th align="left">Всего порций</th>
                 </tr>
-            {% endfor %}
-        </table>
-    </div>
-{% else %}
-    <p>Нет блюд для приготовления</p>
-{% endif %}
-<hr>
 
-<h3>Ингредиенты на {{ report_date }}</h3>
+                {% for dish, quantity in dishes_summary.items() %}
+                    <tr>
+                        <td>{{ dish }}</td>
+                        <td>{{ quantity }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% else %}
+        <p>Нет блюд для приготовления</p>
+    {% endif %}
+</div>
 
-{% if ingredients_summary %}
-    <div class="card">
-        <table>
-            <tr>
-                <th align="left">Ингредиент</th>
-                <th align="left">Количество</th>
-            </tr>
+<!-- БЛОК ИНГРЕДИЕНТОВ -->
+<div id="ingredients-tab" class="tab-content" style="display:none;">
+    <h3>Ингредиенты на {{ report_date }}</h3>
 
-            {% for ingredient, amount in ingredients_summary.items() %}
+    {% if ingredients_summary %}
+        <div class="card">
+            <table>
                 <tr>
-                    <td>{{ ingredient }}</td>
-                    <td>{{ amount }}</td>
+                    <th align="left">Ингредиент</th>
+                    <th align="left">Количество</th>
                 </tr>
-            {% endfor %}
-        </table>
-    </div>
-{% else %}
-    <p>Нет данных по ингредиентам</p>
-{% endif %}
+
+                {% for ingredient, amount in ingredients_summary.items() %}
+                    <tr>
+                        <td>{{ ingredient }}</td>
+                        <td>{{ amount }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% else %}
+        <p>Нет данных по ингредиентам</p>
+    {% endif %}
+</div>
+
+<!-- JS -->
+<script>
+function showTab(tabName) {
+    const tabs = document.querySelectorAll('.tab-content');
+    tabs.forEach(tab => tab.style.display = 'none');
+
+    document.getElementById(tabName + '-tab').style.display = 'block';
+}
+</script>
 
 {% endblock %}

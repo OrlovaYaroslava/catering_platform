@@ -32,15 +32,30 @@
 </div>
 
 <!-- КОММЕНТАРИЙ ДЛЯ КУХНИ -->
-<div class="card" style="border-left: 5px solid #f44336;">
+<div class="card">
     <h3>Комментарий для кухни</h3>
 
-    {% if order.kitchen_comment %}
-        <p>{{ order.kitchen_comment }}</p>
-    {% else %}
-        <p><em>Комментарий для кухни не добавлен</em></p>
-    {% endif %}
+    <form method="POST"
+          action="{{ url_for('main.admin_update_kitchen_comment', order_id=order.id) }}">
+
+        <textarea name="kitchen_comment" rows="4" style="width:100%;">
+{{ order.kitchen_comment or "" }}
+        </textarea>
+
+        <br><br>
+
+        <label>
+            <input type="checkbox" name="is_urgent"
+                {% if order.is_urgent %}checked{% endif %}>
+            Срочный заказ
+        </label>
+
+        <br><br>
+
+        <button class="btn">Сохранить</button>
+    </form>
 </div>
+
 
 <!-- СОСТАВ ЗАКАЗА -->
 <div class="card">

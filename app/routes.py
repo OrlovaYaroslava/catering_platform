@@ -207,23 +207,39 @@ def kitchen_start_order(order_id):
 @login_required
 @role_required("kitchen")
 def kitchen_board():
+
     orders_paid = Order.query.filter_by(status="paid").order_by(
-        Order.event_date, Order.event_time
+        Order.is_urgent.desc(),
+        Order.event_date,
+        Order.event_time
     ).all()
 
     orders_cooking = Order.query.filter_by(status="cooking").order_by(
-        Order.event_date, Order.event_time
+        Order.is_urgent.desc(),
+        Order.event_date,
+        Order.event_time
     ).all()
 
     orders_ready = Order.query.filter_by(status="ready").order_by(
-        Order.event_date, Order.event_time
+        Order.is_urgent.desc(),
+        Order.event_date,
+        Order.event_time
     ).all()
+
+    # 👇 ВОТ ЭТО НОВОЕ (KPI)
+    today = date.today()
+
+    orders_today = Order.query.filter(
+        Order.event_date == today,
+        Order.status.in_(["paid", "cooking", "ready"])
+    ).count()
 
     return render_template(
         "kitchen_board.html",
         orders_paid=orders_paid,
         orders_cooking=orders_cooking,
-        orders_ready=orders_ready
+        orders_ready=orders_ready,
+        orders_today=orders_today  # 👈 передаём в шаблон
     )
 
 
@@ -395,6 +411,23 @@ def admin_confirm_payment(order_id):
     return redirect(
         url_for("main.admin_order_detail", order_id=order.id)
     )
+
+@main.route("/admin/order/<int:order_id>/comment", methods=["POST"])
+@login_required
+@role_required("admin")
+def admin_update_kitchen_comment(order_id):
+    order = Order.query.get_or_404(order_id)
+
+    comment = request.form.get("kitchen_comment")
+    urgent = request.form.get("is_urgent")
+
+    order.kitchen_comment = comment if comment else None
+    order.is_urgent = True if urgent == "on" else False
+
+    db.session.commit()
+
+    return redirect(url_for("main.admin_order_detail", order_id=order.id))
+
 
 @main.route("/admin/orders/<int:order_id>")
 @login_required
