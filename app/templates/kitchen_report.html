@@ -57,5 +57,28 @@
 {% else %}
     <p>Нет блюд для приготовления</p>
 {% endif %}
+<hr>
+
+<h3>Ингредиенты на {{ report_date }}</h3>
+
+{% if ingredients_summary %}
+    <div class="card">
+        <table>
+            <tr>
+                <th align="left">Ингредиент</th>
+                <th align="left">Количество</th>
+            </tr>
+
+            {% for ingredient, amount in ingredients_summary.items() %}
+                <tr>
+                    <td>{{ ingredient }}</td>
+                    <td>{{ amount }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% else %}
+    <p>Нет данных по ингредиентам</p>
+{% endif %}
 
 {% endblock %}

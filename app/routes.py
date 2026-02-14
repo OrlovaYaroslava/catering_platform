@@ -260,17 +260,31 @@ def kitchen_report():
     # 🔹 АГРЕГАЦИЯ БЛЮД
     dishes_summary = defaultdict(int)
 
+    # 🔹 АГРЕГАЦИЯ ИНГРЕДИЕНТОВ
+    ingredients_summary = defaultdict(float)
+
     for order in orders:
         order_items = OrderItem.query.filter_by(order_id=order.id).all()
+
         for item in order_items:
+            # Считаем блюда
             dishes_summary[item.dish.name] += item.quantity
 
+            # Получаем технологическую карту блюда
+            dish_links = DishIngredient.query.filter_by(
+                dish_id=item.dish_id
+            ).all()
+
+            for link in dish_links:
+                total_amount = float(link.amount_per_unit) * item.quantity
+                ingredients_summary[link.ingredient.name] += round(total_amount, 2)
 
     return render_template(
         "kitchen_report.html",
         orders=orders,
         report_date=report_date,
-        dishes_summary=dishes_summary
+        dishes_summary=dishes_summary,
+        ingredients_summary=ingredients_summary
     )
 
 
