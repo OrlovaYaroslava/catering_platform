@@ -255,12 +255,22 @@ def kitchen_report():
     orders = Order.query.filter(
         Order.event_date == report_date,
         Order.status.in_(["paid", "cooking"])
-    ).order_by(Order.event_time).all()
+    ).all()
+
+    # 🔹 АГРЕГАЦИЯ БЛЮД
+    dishes_summary = defaultdict(int)
+
+    for order in orders:
+        order_items = OrderItem.query.filter_by(order_id=order.id).all()
+        for item in order_items:
+            dishes_summary[item.dish.name] += item.quantity
+
 
     return render_template(
         "kitchen_report.html",
         orders=orders,
-        report_date=report_date
+        report_date=report_date,
+        dishes_summary=dishes_summary
     )
 
 

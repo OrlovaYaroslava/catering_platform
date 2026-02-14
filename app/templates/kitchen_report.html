@@ -34,4 +34,28 @@
     <p>На выбранную дату заказов нет</p>
 {% endfor %}
 
+<hr>
+
+<h3>Блюда на {{ report_date }}</h3>
+
+{% if dishes_summary %}
+    <div class="card">
+        <table>
+            <tr>
+                <th align="left">Блюдо</th>
+                <th align="left">Всего порций</th>
+            </tr>
+
+            {% for dish, quantity in dishes_summary.items() %}
+                <tr>
+                    <td>{{ dish }}</td>
+                    <td>{{ quantity }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% else %}
+    <p>Нет блюд для приготовления</p>
+{% endif %}
+
 {% endblock %}
