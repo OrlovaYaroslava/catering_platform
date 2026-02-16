@@ -3,20 +3,36 @@
 {% block title %}Меню{% endblock %}
 
 {% block content %}
+
 <h2>Меню</h2>
 
 {% for dish in dishes %}
     <div class="card">
         <h3>{{ dish.name }}</h3>
         <p>{{ dish.description }}</p>
-        <p><strong>Категория:</strong> {{ dish.category }}</p>
-        <p><strong>Цена:</strong> {{ dish.price_per_unit }} ₽</p>
+        <p><strong>{{ dish.price_per_unit }} ₽</strong></p>
 
-        <a class="btn" href="{{ url_for('main.add_to_cart', dish_id=dish.id) }}">
-            Добавить в корзину
-        </a>
+        {% if current_user.is_authenticated %}
+            <form method="POST"
+                  action="{{ url_for('main.add_to_cart', dish_id=dish.id) }}">
+                <input type="number"
+                       name="quantity"
+                       value="1"
+                       min="1"
+                       style="width:60px;">
+                <button class="btn">
+                    Добавить в корзину
+                </button>
+            </form>
+        {% else %}
+            <a class="btn"
+               href="{{ url_for('auth.register') }}">
+                Зарегистрируйтесь, чтобы заказать
+            </a>
+        {% endif %}
     </div>
 {% else %}
-    <p>Блюда отсутствуют</p>
+    <p>Блюд пока нет</p>
 {% endfor %}
+
 {% endblock %}

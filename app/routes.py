@@ -29,20 +29,27 @@ def kitchen_dashboard():
     return render_template("kitchen_dashboard.html")
 
 @main.route("/menu")
-@login_required
 def menu():
     dishes = Dish.query.filter_by(is_active=True).all()
     return render_template("menu.html", dishes=dishes)
 
-@main.route("/add_to_cart/<int:dish_id>")
+@main.route("/add_to_cart/<int:dish_id>", methods=["POST"])
 @login_required
+@role_required("client")
 def add_to_cart(dish_id):
+    quantity = int(request.form.get("quantity", 1))
+
     cart = session.get("cart", {})
 
     dish_id_str = str(dish_id)
-    cart[dish_id_str] = cart.get(dish_id_str, 0) + 1
+
+    if dish_id_str in cart:
+        cart[dish_id_str] += quantity
+    else:
+        cart[dish_id_str] = quantity
 
     session["cart"] = cart
+
     return redirect(url_for("main.menu"))
 
 @main.route("/cart")
