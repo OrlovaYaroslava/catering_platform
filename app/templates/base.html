@@ -2,95 +2,74 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Catering Platform{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f7f7f7;
+        .navbar { margin-bottom: 20px; }
+        .card { margin-bottom: 15px; }
+        .dish-image { 
+            width: 100%; 
+            height: 200px; 
+            object-fit: cover; 
+            border-radius: 8px 8px 0 0;
         }
-        header {
-            background-color: #333;
-            color: white;
-            padding: 12px 20px;
-        }
-        header a {
-            color: white;
-            margin-right: 15px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        header a:hover {
-            text-decoration: underline;
-        }
-        main {
-            padding: 20px;
-            background-color: white;
-            margin: 20px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 6px 12px;
-            background-color: #1976d2;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-        }
-        .btn:hover {
-            background-color: #125ea8;
-        }
-        .btn-secondary {
-            background-color: #555;
-        }
-        .btn-warning {
-            background-color: #f9a825;
-            color: #000;
-        }
-        .btn-success {
-            background-color: #2e7d32;
-        }
-        .card {
-            border: 1px solid #ccc;
-            padding: 12px;
-            margin-bottom: 12px;
-            background-color: #fafafa;
-        }
+        .badge-tag { margin: 2px; }
     </style>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">🍽 Catering Platform</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.index') }}">Главная</a>
+                    </li>
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.role.name == "client" %}
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.menu') }}">Меню</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.cart') }}">Корзина</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.my_orders') }}">Мои заказы</a></li>
+                        {% elif current_user.role.name == "kitchen" %}
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.kitchen_board') }}">🍳 Производство</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.kitchen_report') }}">📊 Отчёт</a></li>
+                        {% elif current_user.role.name == "admin" %}
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.admin_dashboard') }}">📊 Аналитика</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.admin_orders') }}">Все заказы</a></li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Выйти</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Войти</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Регистрация</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-<header>
-    <a href="{{ url_for('main.index') }}">Главная</a>
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-info alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </div>
 
-    {% if current_user.is_authenticated %}
-
-        {% if current_user.role.name == "client" %}
-            <a href="{{ url_for('main.menu') }}">Меню</a>
-            <a href="{{ url_for('main.cart') }}">Корзина</a>
-            <a href="{{ url_for('main.my_orders') }}">Мои заказы</a>
-
-        {% elif current_user.role.name == "kitchen" %}
-            <a href="{{ url_for('main.kitchen_board') }}">🍳 Производство</a>
-            <a href="{{ url_for('main.kitchen_report') }}">📊 Отчёт на день</a>
-
-        {% elif current_user.role.name == "admin" %}
-            <a href="{{ url_for('main.admin_dashboard') }}">📊Аналитика</a>
-            <a href="{{ url_for('main.admin_orders') }}">Все заказы</a>
-        {% endif %}
-
-        <a href="{{ url_for('auth.logout') }}">Выйти</a>
-
-    {% else %}
-        <a href="{{ url_for('auth.login') }}">Войти</a>
-        <a href="{{ url_for('auth.register') }}">Регистрация</a>
-    {% endif %}
-</header>
-
-<main>
-    {% block content %}{% endblock %}
-</main>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

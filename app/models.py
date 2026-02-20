@@ -42,6 +42,12 @@ class Order(db.Model):
     kitchen_comment = db.Column(db.Text)
     is_urgent = db.Column(db.Boolean, default=False)
 
+# Таблица связи many-to-many между блюдами и тегами
+dish_tags = db.Table('dish_tags',
+    db.Column('dish_id', db.Integer, db.ForeignKey('dishes.id'), primary_key=True),
+    db.Column('tag_id', db.Integer, db.ForeignKey('tags.id'), primary_key=True)
+)
+
 
 class Dish(db.Model):
     __tablename__ = "dishes"
@@ -54,6 +60,9 @@ class Dish(db.Model):
     is_vegan = db.Column(db.Boolean, default=False)
     is_gluten_free = db.Column(db.Boolean, default=False)
     contains_allergens = db.Column(db.Boolean, default=False)
+    image_url = db.Column(db.String(255))  
+    tags = db.relationship('Tag', secondary=dish_tags, backref='dishes') 
+    
 
 
 
@@ -126,3 +135,13 @@ class Payment(db.Model):
         "Order",
         backref=db.backref("payment", uselist=False)
     )
+
+
+class Tag(db.Model):
+    __tablename__ = "tags"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    description = db.Column(db.String(255))
+    
+    def __repr__(self):
+        return f'<Tag {self.name}>'

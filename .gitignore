@@ -1,6 +1,27 @@
-venv/
-.env
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Виртуальное окружение
+venv/
+env/
+ENV/
+
+# Переменные окружения (НИКОГДА не пушить!)
+.env
+
+# IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Логи
+*.log

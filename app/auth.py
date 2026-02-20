@@ -10,20 +10,19 @@ auth = Blueprint("auth", __name__)
 @auth.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
-
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
 
         if user and check_password_hash(user.password_hash, form.password.data):
-            login_user(user)
+            login_user(user)  # ✅ Убран пробел
 
+            # ✅ Убраны пробелы в ролях
             if user.role.name == "admin":
                 return redirect(url_for("main.admin_dashboard"))
             elif user.role.name == "kitchen":
                 return redirect(url_for("main.kitchen_dashboard"))
             else:
                 return redirect(url_for("main.client_dashboard"))
-            
         else:
             flash("Invalid email or password")
 
@@ -32,7 +31,6 @@ def login():
 @auth.route("/register", methods=["GET", "POST"])
 def register():
     form = RegisterForm()
-
     if form.validate_on_submit():
         client_role = Role.query.filter_by(name="client").first()
 
