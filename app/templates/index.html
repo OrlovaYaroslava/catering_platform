@@ -1,57 +1,221 @@
 {% extends "base.html" %}
 
-{% block title %}Главная{% endblock %}
+{% block title %}Доставка кейтеринга в Новосибирске{% endblock %}
 
 {% block content %}
 
-<h1>Кейтеринг для любых мероприятий</h1>
+<!-- HERO БЛОК -->
+<section class="hero">
+    <div class="container">
+        <h1 class="display-4 fw-bold">Доставка еды для мероприятий</h1>
+        <p class="lead mb-4">Профессиональный кейтеринг в Новосибирске. Свежие блюда, точная доставка, безупречный сервис.</p>
+        <div>
+            <a href="{{ url_for('main.menu') }}" class="btn btn-primary btn-lg me-2">Смотреть меню</a>
+            {% if not current_user.is_authenticated %}
+                <a href="{{ url_for('auth.register') }}" class="btn btn-outline-light btn-lg">Сделать заказ</a>
+            {% else %}
+                <a href="{{ url_for('main.client_dashboard') }}" class="btn btn-outline-light btn-lg">Личный кабинет</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
 
-<p>
-Мы организуем питание для корпоративов, свадеб,
-дней рождения и бизнес-мероприятий.
-</p>
+<!-- О КОМПАНИИ -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2>О компании</h2>
+                <p class="lead">Доставляем вкусную еду для ваших мероприятий с 2015 года.</p>
+                <p>Мы специализируемся на доставке готовых блюд для корпоративов, свадеб, дней рождения и бизнес-мероприятий в Новосибирске.</p>
+                <p>Наша команда профессиональных поваров готовит каждое блюдо из свежих продуктов, а служба доставки гарантирует своевременную доставку точно к вашему мероприятию.</p>
+            </div>
+            <div class="col-md-6">
+                <img src="https://images.unsplash.com/photo-1556910103-1c02745a30bf?w=600" 
+                     class="img-fluid rounded shadow" alt="Команда кейтеринга">
+            </div>
+        </div>
+    </div>
+</section>
 
-<a class="btn" href="{{ url_for('main.menu') }}">
-    Смотреть меню
-</a>
+<!-- УСЛУГИ (ПЛИТКИ) -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Для каких мероприятий</h2>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="advantage-card">
+                    <div class="display-4">🏢</div>
+                    <h4>Корпоративы</h4>
+                    <p>Бизнес-ланчи, фуршеты, банкеты для компаний</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="advantage-card">
+                    <div class="display-4">💒</div>
+                    <h4>Свадьбы</h4>
+                    <p>Доставка блюд для свадебного банкета</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="advantage-card">
+                    <div class="display-4">☕</div>
+                    <h4>Кофе-брейки</h4>
+                    <p>Перерывы на конференциях и семинарах</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="advantage-card">
+                    <div class="display-4">🎉</div>
+                    <h4>Дни рождения</h4>
+                    <p>Праздничные столы для частных вечеринок</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-{% if not current_user.is_authenticated %}
-    <a class="btn btn-secondary" href="{{ url_for('auth.register') }}">
-        Сделать заказ
-    </a>
-{% endif %}
+<!-- ПОПУЛЯРНЫЕ БЛЮДА -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Популярные блюда</h2>
+        <div class="row">
+            {% for dish in popular_dishes %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        {% if dish.image_url %}
+                            <img src="{{ dish.image_url }}" class="dish-image card-img-top" alt="{{ dish.name }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ dish.name }}</h5>
+                            <p class="card-text">{{ dish.description[:100] }}...</p>
+                            <p class="card-text"><strong>{{ dish.price_per_unit }} ₽</strong></p>
+                            {% for tag in dish.tags %}
+                                <span class="badge bg-info">{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <p class="text-center">Загрузка блюд...</p>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('main.menu') }}" class="btn btn-primary btn-lg">Смотреть всё меню</a>
+        </div>
+    </div>
+</section>
 
-<hr>
+<!-- ПРЕИМУЩЕСТВА -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Почему выбирают нас</h2>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="advantage-card">
+                    <div class="display-4">🥗</div>
+                    <h5>Свежие продукты</h5>
+                    <p>Работаем только с проверенными поставщиками</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="advantage-card">
+                    <div class="display-4">👨‍🍳</div>
+                    <h5>Профессиональные повара</h5>
+                    <p>Опыт работы от 10 лет в лучших ресторанах</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="advantage-card">
+                    <div class="display-4">🚚</div>
+                    <h5>Точная доставка</h5>
+                    <p>Привезём всё вовремя и в нужном виде</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="advantage-card">
+                    <div class="display-4">📋</div>
+                    <h5>Индивидуальное меню</h5>
+                    <p>Подберём блюда под ваш бюджет</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-<h2>Наши преимущества</h2>
+<!-- КАК ЗАКАЗАТЬ -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Как сделать заказ</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h4>Выберите блюда</h4>
+                    <p>Просмотрите меню и выберите подходящие блюда</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h4>Оформите заказ</h4>
+                    <p>Укажите дату, время и адрес доставки</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h4>Получите доставку</h4>
+                    <p>Мы привезём готовые блюда точно к мероприятию</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-<ul>
-    <li>✔ Свежие продукты</li>
-    <li>✔ Индивидуальное меню</li>
-    <li>✔ Доставка точно в срок</li>
-    <li>✔ Профессиональная команда</li>
-</ul>
+<!-- ОТЗЫВЫ -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Отзывы клиентов</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card p-4 mb-3">
+                    <p class="fst-italic">"Заказывали кейтеринг на корпоратив на 50 человек. Всё было идеально — вкусно, красиво, вовремя!"</p>
+                    <p class="mb-0"><strong>— Анна, HR-менеджер</strong></p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-4 mb-3">
+                    <p class="fst-italic">"Свадебный фуршет прошел на ура! Гости до сих пор вспоминают канапе и десерты. Спасибо!"</p>
+                    <p class="mb-0"><strong>— Михаил и Елена</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-<hr>
-
-<h2>Типы мероприятий</h2>
-
-<ul>
-    <li>Корпоративные фуршеты</li>
-    <li>Свадебные банкеты</li>
-    <li>Кофе-брейки</li>
-    <li>Частные праздники</li>
-</ul>
-
-<hr>
-
-<h2>Как это работает</h2>
-
-<ol>
-    <li>Вы выбираете блюда</li>
-    <li>Оформляете заказ</li>
-    <li>Оплачиваете удобным способом</li>
-    <li>Мы готовим и доставляем</li>
-</ol>
+<!-- КОНТАКТЫ -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Контакты</h2>
+                <p>📞 <strong>Телефон:</strong> +7 (999) 000-00-00</p>
+                <p>✉️ <strong>Email:</strong> info@catering.ru</p>
+                <p>📍 <strong>Адрес:</strong> г. Новосибирск</p>
+                <p>🕐 <strong>Режим работы:</strong> Пн-Пт 9:00-18:00</p>
+            </div>
+            <div class="col-md-6">
+                <div class="alert alert-info">
+                    <h5>💡 Нужна помощь с выбором?</h5>
+                    <p>Позвоните нам или зарегистрируйтесь на сайте, чтобы оформить заказ. Мы поможем подобрать блюда под ваше мероприятие!</p>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary mt-2">Сделать заказ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 {% endblock %}

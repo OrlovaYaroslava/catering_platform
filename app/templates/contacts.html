@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Контакты - Catering Platform{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h1 class="mb-4">Контакты</h1>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Свяжитесь с нами</h3>
+                <p class="lead">📞 +7 (999) 000-00-00</p>
+                <p class="lead">✉️ info@catering.ru</p>
+                
+                <h5 class="mt-4">Адрес:</h5>
+                <p>г. Новосибирск</p>
+
+                <h5 class="mt-4">Режим работы:</h5>
+                <p>Пн-Пт: 9:00 - 18:00<br>
+                   Сб-Вс: по предварительной записи</p>
+
+                <div class="alert alert-info mt-4">
+                    <h5>💡 Как заказать?</h5>
+                    <ol class="mb-0">
+                        <li>Зарегистрируйтесь на сайте</li>
+                        <li>Выберите блюда в меню</li>
+                        <li>Оформите заказ с датой и адресом</li>
+                        <li>Оплатите удобным способом</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card p-4">
+                    <h4>Оставить заявку</h4>
+                    <p>Заполните форму, и мы свяжемся с вами для уточнения деталей</p>
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Имя</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Телефон</label>
+                            <input type="tel" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Сообщение</label>
+                            <textarea class="form-control" rows="4" placeholder="Расскажите о вашем мероприятии (дата, количество гостей, пожелания по меню)"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Отправить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -14,7 +14,8 @@ main = Blueprint("main", __name__)
 
 @main.route("/")
 def index():
-    return render_template("index.html")
+    popular_dishes = Dish.query.filter_by(is_active=True).limit(6).all()
+    return render_template("index.html", popular_dishes=popular_dishes)
 
 @main.route("/client")
 @login_required
@@ -608,3 +609,13 @@ def invoice_page(order_id):
         order=order,
         payment=payment
     )
+
+@main.route("/about")
+def about():
+    """Страница о компании"""
+    return render_template("about.html")
+
+@main.route("/contacts")
+def contacts():
+    """Страница контактов"""
+    return render_template("contacts.html")

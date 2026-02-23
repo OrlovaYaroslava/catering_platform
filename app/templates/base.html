@@ -5,19 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Catering Platform{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
-        .navbar { margin-bottom: 20px; }
-        .card { margin-bottom: 15px; }
+        /* Липкий футер */
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        main {
+            flex: 1 0 auto;
+        }
+        
+        footer {
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+        
+        .navbar { margin-bottom: 0; }
         .dish-image { 
             width: 100%; 
             height: 200px; 
             object-fit: cover; 
-            border-radius: 8px 8px 0 0;
+            border-radius: 8px;
         }
-        .badge-tag { margin: 2px; }
+        .advantage-card { 
+            text-align: center; 
+            padding: 30px; 
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .step-card {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: #0d6efd;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+        footer { 
+            background: #343a40; 
+            color: white; 
+            padding: 40px 0; 
+        }
+        footer a { color: #adb5bd; text-decoration: none; }
+        footer a:hover { color: white; }
     </style>
 </head>
 <body>
+    <!-- Навигация -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('main.index') }}">🍽 Catering Platform</a>
@@ -29,33 +84,71 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.index') }}">Главная</a>
                     </li>
-                    {% if current_user.is_authenticated %}
-                        {% if current_user.role.name == "client" %}
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.menu') }}">Меню</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.cart') }}">Корзина</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.my_orders') }}">Мои заказы</a></li>
-                        {% elif current_user.role.name == "kitchen" %}
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.kitchen_board') }}">🍳 Производство</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.kitchen_report') }}">📊 Отчёт</a></li>
-                        {% elif current_user.role.name == "admin" %}
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.admin_dashboard') }}">📊 Аналитика</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.admin_orders') }}">Все заказы</a></li>
-                        {% endif %}
-                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.menu') }}">Меню</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.about') }}">О нас</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.contacts') }}">Контакты</a>
+                    </li>
                 </ul>
                 <ul class="navbar-nav">
                     {% if current_user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Выйти</a></li>
+                        {% if current_user.role.name == "client" %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="clientDropdown" role="button" data-bs-toggle="dropdown">
+                                    👤 Клиент
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{{ url_for('main.client_dashboard') }}">Кабинет</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.menu') }}">Меню</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.cart') }}">Корзина</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.my_orders') }}">Мои заказы</a></li>
+                                </ul>
+                            </li>
+                        {% elif current_user.role.name == "kitchen" %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="kitchenDropdown" role="button" data-bs-toggle="dropdown">
+                                    🍳 Кухня
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{{ url_for('main.kitchen_board') }}">Канбан-доска</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.kitchen_orders') }}">Все заказы</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.kitchen_report') }}">Отчёт на день</a></li>
+                                </ul>
+                            </li>
+                        {% elif current_user.role.name == "admin" %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                                    📊 Админ
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{{ url_for('main.admin_dashboard') }}">Дашборд</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.admin_orders') }}">Все заказы</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('main.analytics_period') }}">Аналитика</a></li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.logout') }}">Выйти</a>
+                        </li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Войти</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Регистрация</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.login') }}">Войти</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-primary text-white ms-2" href="{{ url_for('auth.register') }}">Регистрация</a>
+                        </li>
                     {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container">
+    <!-- Flash сообщения -->
+    <div class="container mt-3">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}
@@ -66,10 +159,46 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        
-        {% block content %}{% endblock %}
     </div>
 
+    <!-- Основной контент -->
+    <main class="flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Футер -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>🍽 Catering Platform</h5>
+                    <p>Профессиональная доставка еды для мероприятий в Новосибирске</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Навигация</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('main.index') }}">Главная</a></li>
+                        <li><a href="{{ url_for('main.menu') }}">Меню</a></li>
+                        <li><a href="{{ url_for('main.about') }}">О нас</a></li>
+                        <li><a href="{{ url_for('main.contacts') }}">Контакты</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Контакты</h5>
+                    <p>📞 +7 (999) 000-00-00<br>
+                    ✉️ info@catering.ru<br>
+                    📍 г. Новосибирск</p>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p>&copy; 2025 Catering Platform. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/payment.js') }}"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>
