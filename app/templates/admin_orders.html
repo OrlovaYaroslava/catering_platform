@@ -2,24 +2,189 @@
 
 {% block title %}Все заказы{% endblock %}
 
-{% block content %}
-<h2>Все заказы</h2>
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
 
-{% for order in orders %}
-    <div class="card">
-        <p><strong>Заказ №{{ order.id }}</strong></p>
-        <p><strong>ID клиента:</strong> {{ order.user_id }}</p>
-        <p><strong>Статус:</strong> {{ order.status }}</p>
-        <p><strong>Сумма:</strong> {{ order.total_price }} ₽</p>
-        <p><strong>Дата мероприятия:</strong> {{ order.event_date }}</p>
-        <a class="btn btn-secondary"
-        href="{{ url_for('main.admin_order_detail', order_id=order.id) }}">
-            Подробнее
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>📋 Все заказы</h1>
+        <a href="{{ url_for('main.admin_dashboard') }}" class="btn btn-outline-secondary">
+            ← На дашборд
         </a>
     </div>
 
-{% else %}
-    <p>Заказы отсутствуют</p>
-{% endfor %}
+    <!-- СТАТИСТИКА ПО СТАТУСАМ -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body py-2">
+                    <div class="nav nav-pills" role="tablist">
+                        <a class="nav-link {% if current_status == 'all' %}active{% endif %}" 
+                           href="{{ url_for('main.admin_orders', status='all', search=search_query, date_from=date_from, date_to=date_to, sort=sort_by) }}">
+                            Все <span class="badge bg-secondary">{{ status_counts.all }}</span>
+                        </a>
+                        <a class="nav-link {% if current_status == 'new' %}active{% endif %}" 
+                           href="{{ url_for('main.admin_orders', status='new', search=search_query, date_from=date_from, date_to=date_to, sort=sort_by) }}">
+                            Новые <span class="badge bg-primary">{{ status_counts.new }}</span>
+                        </a>
+                        <a class="nav-link {% if current_status == 'awaiting_payment' %}active{% endif %}" 
+                           href="{{ url_for('main.admin_orders', status='awaiting_payment', search=search_query, date_from=date_from, date_to=date_to, sort=sort_by) }}">
+                            Ожидают оплаты <span class="badge bg-warning text-dark">{{ status_counts.awaiting_payment }}</span>
+                        </a>
+                        <a class="nav-link {% if current_status == 'paid' %}active{% endif %}" 
+                           href="{{ url_for('main.admin_orders', status='paid', search=search_query, date_from=date_from, date_to=date_to, sort=sort_by) }}">
+                            Оплачены <span class="badge bg-success">{{ status_counts.paid }}</span>
+                        </a>
+                        <a class="nav-link {% if current_status == 'cooking' %}active{% endif %}" 
+                           href="{{ url_for('main.admin_orders', status='cooking', search=search_query, date_from=date_from, date_to=date_to, sort=sort_by) }}">
+                            В работе <span class="badge bg-info">{{ status_counts.cooking }}</span>
+                        </a>
+                        <a class="nav-link {% if current_status == 'ready' %}active{% endif %}" 
+                           href="{{ url_for('main.admin_orders', status='ready', search=search_query, date_from=date_from, date_to=date_to, sort=sort_by) }}">
+                            Готовы <span class="badge bg-purple" style="background-color: #6f42c1;">{{ status_counts.ready }}</span>
+                        </a>
+                        <a class="nav-link {% if current_status == 'completed' %}active{% endif %}" 
+                           href="{{ url_for('main.admin_orders', status='completed', search=search_query, date_from=date_from, date_to=date_to, sort=sort_by) }}">
+                            Выполнены <span class="badge bg-secondary">{{ status_counts.completed }}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- ФИЛЬТРЫ И ПОИСК -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <input type="hidden" name="status" value="{{ current_status }}">
+                
+                <div class="col-md-3">
+                    <label class="form-label">🔍 Поиск</label>
+                    <input type="text" name="search" class="form-control" 
+                           placeholder="№ заказа или email" 
+                           value="{{ search_query }}">
+                </div>
+                
+                <div class="col-md-2">
+                    <label class="form-label">📅 С даты</label>
+                    <input type="date" name="date_from" class="form-control" value="{{ date_from }}">
+                </div>
+                
+                <div class="col-md-2">
+                    <label class="form-label">📅 По дату</label>
+                    <input type="date" name="date_to" class="form-control" value="{{ date_to }}">
+                </div>
+                
+                <div class="col-md-3">
+                    <label class="form-label">📊 Сортировка</label>
+                    <select name="sort" class="form-select">
+                        <option value="created_at_desc" {% if sort_by == 'created_at_desc' %}selected{% endif %}>
+                            ⬇ По дате создания (новые сверху)
+                        </option>
+                        <option value="created_at_asc" {% if sort_by == 'created_at_asc' %}selected{% endif %}>
+                            ⬆ По дате создания (старые сверху)
+                        </option>
+                        <option value="amount_desc" {% if sort_by == 'amount_desc' %}selected{% endif %}>
+                            💰 По сумме (дорогие сверху)
+                        </option>
+                        <option value="amount_asc" {% if sort_by == 'amount_asc' %}selected{% endif %}>
+                            💰 По сумме (дешёвые сверху)
+                        </option>
+                    </select>
+                </div>
+                
+                <div class="col-md-2 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary flex-fill">
+                        🔍 Применить
+                    </button>
+                    <a href="{{ url_for('main.admin_orders') }}" class="btn btn-outline-secondary">
+                        ✖
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- СПИСОК ЗАКАЗОВ -->
+    {% if orders %}
+    <div class="alert alert-info">
+        📊 Найдено заказов: <strong>{{ orders|length }}</strong>
+        {% if current_status != 'all' %}
+            (статус: <strong>{{ current_status }}</strong>)
+        {% endif %}
+    </div>
+
+    <div class="row">
+        {% for order in orders %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 {% if order.status == 'new' %}border-primary{% elif order.status == 'paid' %}border-success{% elif order.status == 'cooking' %}border-info{% elif order.status == 'ready' %}border-purple{% elif order.status == 'completed' %}border-secondary{% endif %}" 
+                 style="border-width: 3px;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">📦 Заказ №{{ order.id }}</h5>
+                    <span class="badge 
+                        {% if order.status == 'new' %}bg-primary
+                        {% elif order.status == 'awaiting_payment' %}bg-warning text-dark
+                        {% elif order.status == 'paid' %}bg-success
+                        {% elif order.status == 'cooking' %}bg-info
+                        {% elif order.status == 'ready' %}bg-purple
+                        {% elif order.status == 'completed' %}bg-secondary
+                        {% else %}bg-light text-dark{% endif %}">
+                        {{ order.status }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <small class="text-muted">👤 Клиент:</small><br>
+                        <strong>{{ order.user.email if order.user else 'Аноним' }}</strong>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">📅 Дата мероприятия:</small><br>
+                        <strong>{{ order.event_date }}</strong>
+                        {% if order.event_time %} {{ order.event_time }}{% endif %}
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">👥 Гости:</small>
+                        <strong>{{ order.guests_count or '—' }}</strong>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">💰 Сумма:</small><br>
+                        <h4 class="text-primary mb-0">{{ order.total_price }} ₽</h4>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">🕐 Создан:</small><br>
+                        {{ order.created_at.strftime('%d.%m.%Y %H:%M') }}
+                    </div>
+                    {% if order.address %}
+                    <div class="mb-2">
+                        <small class="text-muted">📍 Адрес:</small><br>
+                        {{ order.address[:50] }}{% if order.address|length > 50 %}...{% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('main.admin_order_detail', order_id=order.id) }}" 
+                       class="btn btn-primary w-100">
+                        🔍 Подробнее
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="alert alert-warning">
+        📭 Заказы не найдены. Попробуйте изменить фильтры.
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.border-purple { border-color: #6f42c1 !important; }
+.bg-purple { background-color: #6f42c1 !important; }
+.nav-pills .nav-link { margin-right: 5px; margin-bottom: 5px; }
+</style>
 {% endblock %}

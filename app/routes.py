@@ -382,8 +382,67 @@ def kitchen_report():
 @login_required
 @role_required("admin")
 def admin_orders():
-    orders = Order.query.all()
-    return render_template("admin_orders.html", orders=orders)
+    # Получаем параметры фильтрации
+    status_filter = request.args.get("status", "all")  # all, new, paid, cooking, ready, completed
+    search_query = request.args.get("search", "")  # Поиск по номеру или email
+    date_from = request.args.get("date_from", "")
+    date_to = request.args.get("date_to", "")
+    sort_by = request.args.get("sort", "created_at_desc")  # created_at_desc, created_at_asc, amount_desc, amount_asc
+    
+    # Базовый запрос
+    query = Order.query
+    
+    # Фильтр по статусу
+    if status_filter != "all":
+        query = query.filter(Order.status == status_filter)
+    
+    # Поиск
+    if search_query:
+        # Ищем по ID заказа или email клиента
+        if search_query.isdigit():
+            query = query.filter(Order.id == int(search_query))
+        else:
+            query = query.join(User).filter(User.email.ilike(f"%{search_query}%"))
+    
+    # Фильтр по дате
+    if date_from:
+        query = query.filter(Order.event_date >= datetime.strptime(date_from, "%Y-%m-%d").date())
+    if date_to:
+        query = query.filter(Order.event_date <= datetime.strptime(date_to, "%Y-%m-%d").date())
+    
+    # Сортировка
+    if sort_by == "created_at_asc":
+        query = query.order_by(Order.created_at.asc())
+    elif sort_by == "amount_desc":
+        query = query.order_by(Order.total_price.desc())
+    elif sort_by == "amount_asc":
+        query = query.order_by(Order.total_price.asc())
+    else:  # created_at_desc (по умолчанию)
+        query = query.order_by(Order.created_at.desc())
+    
+    orders = query.all()
+    
+    # Статистика по статусам (для бейджей)
+    status_counts = {
+        "all": Order.query.count(),
+        "new": Order.query.filter(Order.status == "new").count(),
+        "awaiting_payment": Order.query.filter(Order.status == "awaiting_payment").count(),
+        "paid": Order.query.filter(Order.status == "paid").count(),
+        "cooking": Order.query.filter(Order.status == "cooking").count(),
+        "ready": Order.query.filter(Order.status == "ready").count(),
+        "completed": Order.query.filter(Order.status == "completed").count(),
+    }
+    
+    return render_template(
+        "admin_orders.html",
+        orders=orders,
+        status_counts=status_counts,
+        current_status=status_filter,
+        search_query=search_query,
+        date_from=date_from,
+        date_to=date_to,
+        sort_by=sort_by
+    )
 
 @main.route("/admin/dashboard")
 @login_required
