@@ -2,39 +2,245 @@
 
 {% block title %}Аналитический дашборд{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
 {% block content %}
-<h2>Аналитический дашборд</h2>
+<div class="container-fluid py-4">
+    <h1 class="mb-4">📊 Аналитический дашборд</h1>
 
-<div class="card">
-    <strong>Всего заказов:</strong> {{ total_orders }}
+    <!-- ФИЛЬТР ПЕРИОДА -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">С даты</label>
+                    <input type="date" name="start_date" class="form-control" value="{{ start_date }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">По дату</label>
+                    <input type="date" name="end_date" class="form-control" value="{{ end_date }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Показать</button>
+                </div>
+                <div class="col-md-2">
+                    <a href="{{ url_for('main.admin_dashboard') }}" class="btn btn-outline-secondary w-100">Сбросить</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- КЛЮЧЕВЫЕ ПОКАЗАТЕЛИ (4 карточки) -->
+    <div class="row mb-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="card bg-primary text-white h-100 kpi-card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">💰 Выручка</h5>
+                    <h2 class="display-6">{{ total_revenue }} ₽</h2>
+                    <small>За выбранный период</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card bg-success text-white h-100 kpi-card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">📦 Заказы</h5>
+                    <h2 class="display-6">{{ total_orders }}</h2>
+                    <small>Всего заказов</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card bg-info text-white h-100 kpi-card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">👥 Клиенты</h5>
+                    <h2 class="display-6">{{ total_clients }}</h2>
+                    <small>Активных клиентов</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card bg-warning text-dark h-100 kpi-card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">📈 Средний чек</h5>
+                    <h2 class="display-6">{{ avg_check }} ₽</h2>
+                    <small>На один заказ</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ГРАФИКИ -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">📈 Выручка по дням</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">📊 Статусы заказов</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ТОП БЛЮД И КЛИЕНТОВ -->
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">🍽 Топ-5 блюд по выручке</h5>
+                </div>
+                <div class="card-body">
+                    {% if top_dishes %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Блюдо</th>
+                                    <th class="text-end">Заказов</th>
+                                    <th class="text-end">Выручка</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for dish in top_dishes %}
+                                <tr>
+                                    <td>{{ dish.name }}</td>
+                                    <td class="text-end">{{ dish.quantity }}</td>
+                                    <td class="text-end">{{ dish.revenue }} ₽</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center mb-0">Нет данных за выбранный период</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">🏆 Топ-5 клиентов</h5>
+                </div>
+                <div class="card-body">
+                    {% if top_clients %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Клиент</th>
+                                    <th class="text-end">Заказов</th>
+                                    <th class="text-end">Сумма</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for client in top_clients %}
+                                <tr>
+                                    <td>{{ client.email }}</td>
+                                    <td class="text-end">{{ client.orders_count }}</td>
+                                    <td class="text-end">{{ client.total_spent }} ₽</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center mb-0">Нет данных за выбранный период</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВОРОНКА ПРОДАЖ -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">📊 Воронка заказов</h5>
+        </div>
+        <div class="card-body">
+            {% if funnel.created > 0 %}
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <span>Создано</span>
+                    <span>{{ funnel.created }} (100%)</span>
+                </div>
+                <div class="progress" style="height: 30px;">
+                    <div class="progress-bar bg-primary" style="width: 100%">{{ funnel.created }}</div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <span>Оплачено</span>
+                    <span>{{ funnel.paid }} ({{ funnel.paid_percent }}%)</span>
+                </div>
+                <div class="progress" style="height: 30px;">
+                    <div class="progress-bar bg-success" style="width: {{ funnel.paid_percent }}%">{{ funnel.paid }}</div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <span>В работе</span>
+                    <span>{{ funnel.cooking }} ({{ funnel.cooking_percent }}%)</span>
+                </div>
+                <div class="progress" style="height: 30px;">
+                    <div class="progress-bar bg-warning text-dark" style="width: {{ funnel.cooking_percent }}%">{{ funnel.cooking }}</div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <span>Готово</span>
+                    <span>{{ funnel.ready }} ({{ funnel.ready_percent }}%)</span>
+                </div>
+                <div class="progress" style="height: 30px;">
+                    <div class="progress-bar bg-info" style="width: {{ funnel.ready_percent }}%">{{ funnel.ready }}</div>
+                </div>
+            </div>
+            <div>
+                <div class="d-flex justify-content-between mb-1">
+                    <span>Выполнено</span>
+                    <span>{{ funnel.completed }} ({{ funnel.completed_percent }}%)</span>
+                </div>
+                <div class="progress" style="height: 30px;">
+                    <div class="progress-bar bg-secondary" style="width: {{ funnel.completed_percent }}%">{{ funnel.completed }}</div>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-muted mb-0">Нет заказов за выбранный период</p>
+            {% endif %}
+        </div>
+    </div>
 </div>
+{% endblock %}
 
-<div class="card">
-    <strong>Общая выручка:</strong> {{ total_revenue }} ₽
-</div>
+{% block extra_scripts %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-<div class="card">
-    <strong>Количество клиентов:</strong> {{ total_clients }}
-</div>
+<!-- Передаём данные из Python в JS -->
+<script>
+    const revenueLabels = {{ revenue_labels | tojson | default('[]') }};
+    const revenueData = {{ revenue_data | tojson | default('[]') }};
+    const statusData = {{ status_data | tojson | default('[0,0,0,0,0]') }};
+</script>
 
-<div class="card">
-    <strong>Топ-5 популярных блюд:</strong>
-    <ul>
-        {% for dish, quantity in top_dishes %}
-            <li>{{ dish }} — {{ quantity }} порц.</li>
-        {% else %}
-            <li>Нет данных</li>
-        {% endfor %}
-    </ul>
-</div>
-
-<hr>
-
-<a class="btn" href="{{ url_for('main.analytics_period') }}">
-    Аналитика за текущий период
-</a>
-<a class="btn btn-secondary" href="{{ url_for('main.analytics_monthly') }}">
-    Аналитика по месяцам
-</a>
-
+<!-- Наш admin.js -->
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 {% endblock %}

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}История: {{ ingredient.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>📋 История: {{ ingredient.name }}</h2>
+        <a href="{{ url_for('main.admin_ingredients') }}" class="btn btn-outline-secondary">
+            ← Назад к складу
+        </a>
+    </div>
+
+    <!-- Текущий остаток -->
+    <div class="card mb-4 bg-light">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Текущий остаток:</strong>
+                </div>
+                <div class="col-md-4">
+                    <h3 class="mb-0">{{ ingredient.stock_quantity }} {{ ingredient.unit }}</h3>
+                </div>
+                <div class="col-md-4">
+                    <strong>Норма:</strong> {{ ingredient.min_quantity }} {{ ingredient.unit }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- История изменений -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">📊 История изменений (последние {{ logs|length }} записей)</h5>
+        </div>
+        <div class="card-body p-0">
+            {% if logs %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Дата/время</th>
+                            <th>Старый остаток</th>
+                            <th>Новый остаток</th>
+                            <th>Изменение</th>
+                            <th>Комментарий</th>
+                            <th>Пользователь</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td>{{ log.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                            <td>{{ log.old_quantity }} {{ ingredient.unit }}</td>
+                            <td>{{ log.new_quantity }} {{ ingredient.unit }}</td>
+                            <td>
+                                {% if log.quantity_diff > 0 %}
+                                    <span class="badge bg-success">+{{ log.quantity_diff }} {{ ingredient.unit }}</span>
+                                {% elif log.quantity_diff < 0 %}
+                                    <span class="badge bg-danger">{{ log.quantity_diff }} {{ ingredient.unit }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">0</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if log.comment %}
+                                    {{ log.comment }}
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if log.user %}
+                                    {{ log.user.email }}
+                                {% else %}
+                                    <span class="text-muted">Система</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info m-3">
+                📭 История изменений пуста
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

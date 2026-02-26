@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+
+{% block title %}Управление складом{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>📦 Управление складом</h1>
+        <div>
+            <a href="{{ url_for('main.admin_dashboard') }}" class="btn btn-outline-secondary">
+                ← На дашборд
+            </a>
+        </div>
+    </div>
+
+    <!-- ПОКАЗАТЕЛИ -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Заполненность</h5>
+                    <h2 class="display-6">{{ stock_fill }}%</h2>
+                    <small>От норматива</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-danger text-white h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">⚠️ Дефицит</h5>
+                    <h2 class="display-6">{{ deficit_count }}</h2>
+                    <small>Критических позиций</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-warning text-dark h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Низкий запас</h5>
+                    <h2 class="display-6">{{ low_stock_count }}</h2>
+                    <small>Требуют закупки</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔴 КРИТИЧЕСКИЙ ДЕФИЦИТ -->
+    {% set deficit_items = ingredients|selectattr('status', 'equalto', 'deficit')|list %}
+    {% if deficit_items %}
+    <div class="card mb-4 border-danger">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">🔴 Критический дефицит ({{ deficit_items|length }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Ингредиент</th>
+                            <th class="text-end">Остаток</th>
+                            <th class="text-end">Норма</th>
+                            <th>Дефицит</th>
+                            <th class="text-center">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ing in deficit_items %}
+                        <tr class="table-danger">
+                            <td><strong>{{ ing.name }}</strong></td>
+                            <td class="text-end text-danger"><strong>{{ ing.stock_quantity }} {{ ing.unit }}</strong></td>
+                            <td class="text-end">{{ ing.min_quantity }} {{ ing.unit }}</td>
+                            <td><span class="badge bg-danger">−{{ (ing.min_quantity - ing.stock_quantity)|round(1) }} {{ ing.unit }}</span></td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-danger" 
+                                        onclick="updateIngredient({{ ing.id }}, '{{ ing.name }}', {{ ing.stock_quantity }}, '{{ ing.unit }}')">
+                                    ✏️ Срочно!
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 🟡 НИЗКИЙ ЗАПАС -->
+    {% set low_items = ingredients|selectattr('status', 'equalto', 'low')|list %}
+    {% if low_items %}
+    <div class="card mb-4 border-warning">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">🟡 Низкий запас ({{ low_items|length }})</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Ингредиент</th>
+                            <th class="text-end">Остаток</th>
+                            <th class="text-end">Норма</th>
+                            <th>Не хватает</th>
+                            <th class="text-center">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ing in low_items %}
+                        <tr>
+                            <td><strong>{{ ing.name }}</strong></td>
+                            <td class="text-end text-warning">{{ ing.stock_quantity }} {{ ing.unit }}</td>
+                            <td class="text-end">{{ ing.min_quantity }} {{ ing.unit }}</td>
+                            <td><span class="badge bg-warning text-dark">−{{ (ing.min_quantity - ing.stock_quantity)|round(1) }} {{ ing.unit }}</span></td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-warning" 
+                                        onclick="updateIngredient({{ ing.id }}, '{{ ing.name }}', {{ ing.stock_quantity }}, '{{ ing.unit }}')">
+                                    ✏️ Обновить
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 🟢 НОРМА (скрыто по умолчанию) -->
+    {% set normal_items = ingredients|selectattr('status', 'equalto', 'ok')|list %}
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <button class="btn btn-link text-white text-decoration-none p-0" 
+                    type="button" 
+                    data-bs-toggle="collapse" 
+                    data-bs-target="#normalStock" 
+                    aria-expanded="false">
+                🟢 Норма ({{ normal_items|length }}) — Нажми чтобы показать/скрыть
+            </button>
+        </div>
+        <div class="collapse" id="normalStock">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Ингредиент</th>
+                                <th class="text-end">Остаток</th>
+                                <th class="text-end">Норма</th>
+                                <th>Заполненность</th>
+                                <th class="text-center">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ing in normal_items %}
+                            <tr>
+                                <td>{{ ing.name }}</td>
+                                <td class="text-end">{{ ing.stock_quantity }} {{ ing.unit }}</td>
+                                <td class="text-end">{{ ing.min_quantity }} {{ ing.unit }}</td>
+                                <td>
+                                    {% set fill_percent = (ing.stock_quantity / ing.min_quantity * 100)|round(0) %}
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar bg-success" 
+                                             style="width: {{ [fill_percent, 100]|min }}%">
+                                            {{ fill_percent }}%
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-success" 
+                                            onclick="updateIngredient({{ ing.id }}, '{{ ing.name }}', {{ ing.stock_quantity }}, '{{ ing.unit }}')">
+                                        ✏️
+                                    </button>
+                                    <a href="{{ url_for('main.ingredient_history', ingredient_id=ing.id) }}" 
+                                    class="btn btn-sm btn-outline-info" 
+                                    title="История изменений">
+                                        📋
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if ingredients|length == 0 %}
+    <div class="alert alert-info">
+        <p class="mb-0">📭 Нет ингредиентов. Добавьте ингредиенты через seed-скрипт.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Модальное окно обновления -->
+<div class="modal fade" id="updateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('main.admin_update_ingredient') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">✏️ Обновить остаток</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="ingredient_id" id="modal_ingredient_id">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ингредиент</label>
+                        <input type="text" class="form-control" id="modal_ingredient_name" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Текущий остаток</label>
+                        <input type="text" class="form-control" id="modal_current_stock" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Новый остаток <span class="text-danger">*</span></label>
+                        <input type="number" step="0.01" name="new_stock" id="modal_new_stock" 
+                               class="form-control" required placeholder="Введите новое значение">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Примечание</label>
+                        <textarea name="comment" id="modal_comment" class="form-control" rows="2" 
+                                  placeholder="Закупка, списание, инвентаризация..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">❌ Отмена</button>
+                    <button type="submit" class="btn btn-primary">💾 Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateIngredient(id, name, currentStock, unit) {
+    // Заполняем все поля модального окна
+    document.getElementById('modal_ingredient_id').value = id;
+    document.getElementById('modal_ingredient_name').value = name || 'Неизвестно';
+    document.getElementById('modal_current_stock').value = currentStock + ' ' + (unit || '');
+    document.getElementById('modal_new_stock').value = '';
+    document.getElementById('modal_comment').value = '';
+    
+    // Показываем модальное окно
+    const modal = new bootstrap.Modal(document.getElementById('updateModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

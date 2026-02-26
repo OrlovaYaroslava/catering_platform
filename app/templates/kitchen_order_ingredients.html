@@ -1,38 +1,92 @@
 {% extends "base.html" %}
 
-{% block title %}Ингредиенты{% endblock %}
+{% block title %}Ингредиенты для заказа №{{ order.id }}{% endblock %}
 
 {% block content %}
-<h2>Ингредиенты для заказа №{{ order.id }}</h2>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>📋 Ингредиенты для заказа №{{ order.id }}</h2>
+        <a href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}" 
+           class="btn btn-outline-secondary">
+            ← Назад к заказу
+        </a>
+    </div>
 
-<table>
-    <tr>
-        <th>Ингредиент</th>
-        <th>Требуется</th>
-        <th>В наличии</th>
-        <th>Дефицит</th>
-    </tr>
+    <!-- Статус заказа -->
+    <div class="alert alert-info">
+        <strong>Статус:</strong> {{ order.status }} | 
+        <strong>Дата:</strong> {{ order.event_date }} | 
+        <strong>Гости:</strong> {{ order.guests_count }}
+    </div>
 
-    {% for data in ingredients %}
-    <tr {% if data.deficit > 0 %}style="background-color:#ffe6e6"{% endif %}>
-        <td>{{ data.ingredient.name }}</td>
-        <td>{{ data.required }} {{ data.ingredient.unit }}</td>
-        <td>{{ data.in_stock }} {{ data.ingredient.unit }}</td>
-        <td>
-            {% if data.deficit > 0 %}
-                ❌ {{ data.deficit }} {{ data.ingredient.unit }}
-            {% else %}
-                ✅
-            {% endif %}
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+    {% if ingredients %}
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Ингредиент</th>
+                            <th class="text-end">Требуется</th>
+                            <th class="text-end">В наличии</th>
+                            <th class="text-end">Дефицит</th>
+                            <th class="text-center">Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in ingredients %}
+                        <tr class="{% if data.deficit > 0 %}table-danger{% endif %}">
+                            <td>
+                                {% if data.deficit > 0 %}🔴{% else %}🟢{% endif %}
+                                <strong>{{ data.ingredient.name }}</strong>
+                            </td>
+                            <td class="text-end">{{ data.required }} {{ data.ingredient.unit }}</td>
+                            <td class="text-end">{{ data.in_stock }} {{ data.ingredient.unit }}</td>
+                            <td class="text-end">
+                                {% if data.deficit > 0 %}
+                                    <span class="badge bg-danger">−{{ data.deficit }} {{ data.ingredient.unit }}</span>
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if data.deficit > 0 %}
+                                    <span class="badge bg-danger">❌ Дефицит</span>
+                                {% else %}
+                                    <span class="badge bg-success">✅ Достаточно</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-<br>
+    <!-- Итоговая сводка -->
+    {% set total_deficit = ingredients|selectattr('deficit', '>', 0)|list %}
+    {% if total_deficit %}
+    <div class="alert alert-danger mt-3">
+        <strong>⚠️ Внимание!</strong> Не хватает {{ total_deficit|length }} ингредиента(ов) для выполнения заказа.
+        <br>
+        <small>Пополните склад перед началом приготовления.</small>
+    </div>
+    {% else %}
+    <div class="alert alert-success mt-3">
+        <strong>✅ Всё готово!</strong> Всех ингредиентов достаточно для выполнения заказа.
+    </div>
+    {% endif %}
 
-<a class="btn btn-secondary" href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
-    ← Назад к заказу
-</a>
-
+    {% else %}
+    <div class="alert alert-warning">
+        <p class="mb-0">📭 Для этого заказа не найдено ингредиентов.</p>
+        <p class="mb-0 mt-2"><small>Возможные причины:</small></p>
+        <ul class="mb-0">
+            <li>У блюд нет технологических карт (DishIngredient)</li>
+            <li>Заказ не содержит позиций</li>
+        </ul>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

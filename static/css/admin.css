@@ -1,0 +1,89 @@
+/* ===== КАРТОЧКИ KPI ===== */
+.kpi-card {
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+}
+
+.kpi-card .card-body {
+    padding: 1.5rem;
+}
+
+.kpi-card h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.kpi-card h5 {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* ===== ГРАФИКИ ===== */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* ===== ВОРОНКА ===== */
+.funnel-progress {
+    height: 50px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+}
+
+/* ===== ТАБЛИЦЫ ===== */
+.table-hover tbody tr:hover {
+    background-color: rgba(0,123,255,0.05);
+    cursor: pointer;
+}
+
+/* ===== ФИЛЬТРЫ ===== */
+.filter-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+/* ===== ЦВЕТОВЫЕ АКЦЕНТЫ ===== */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.bg-gradient-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+}
+
+.bg-gradient-info {
+    background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+    color: white;
+}
+
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+/* ===== АДАПТИВНОСТЬ ===== */
+@media (max-width: 768px) {
+    .kpi-card h2 {
+        font-size: 2rem;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+}

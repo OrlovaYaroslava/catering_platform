@@ -145,3 +145,26 @@ class Tag(db.Model):
     
     def __repr__(self):
         return f'<Tag {self.name}>'
+    
+class IngredientLog(db.Model):
+    """Журнал изменений остатков ингредиентов"""
+    __tablename__ = "ingredient_logs"
+    
+    id = db.Column(db.Integer, primary_key=True)
+    ingredient_id = db.Column(db.Integer, db.ForeignKey("ingredients.id"), nullable=False)
+    
+    old_quantity = db.Column(db.Numeric(10, 2), nullable=False)
+    new_quantity = db.Column(db.Numeric(10, 2), nullable=False)
+    quantity_diff = db.Column(db.Numeric(10, 2))  # Разница (положительная или отрицательная)
+    
+    comment = db.Column(db.Text)  # Комментарий
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))  # Кто изменил
+    
+    created_at = db.Column(db.DateTime, default=db.func.now())
+    
+    # Связи
+    ingredient = db.relationship("Ingredient", backref="logs")
+    user = db.relationship("User")
+    
+    def __repr__(self):
+        return f'<IngredientLog {self.ingredient.name}: {self.old_quantity} → {self.new_quantity}>'
