@@ -1,36 +1,236 @@
 {% extends "base.html" %}
-
-{% block title %}Оформление заказа{% endblock %}
+{% block title %}Оформление заказа — Catering Platform{% endblock %}
 
 {% block content %}
-<h2>Оформление заказа</h2>
+<div class="checkout-layout">
 
-<form method="POST">
-    {{ form.hidden_tag() }}
+    <!-- Левая колонка: форма -->
+    <div class="checkout-form-col">
+        <div class="page-header mb-4">
+            <h1 class="page-h1">Оформление заказа</h1>
+            <p class="page-desc">Укажите детали мероприятия</p>
+        </div>
 
-    <p>
-        {{ form.event_date.label }}<br>
-        {{ form.event_date() }}
-    </p>
+        <form method="POST" action="{{ url_for('main.checkout') }}" novalidate>
+            {{ form.hidden_tag() }}
 
-    <p>
-        {{ form.event_time.label }}<br>
-        {{ form.event_time() }}
-    </p>
+            <!-- Дата и время -->
+            <div class="form-section mb-4">
+                <div class="form-section-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    Дата и время мероприятия
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group">
+                        {{ form.event_date.label(class="form-label") }}
+                        {{ form.event_date(class="form-control" + (" is-invalid" if form.event_date.errors else "")) }}
+                        {% for err in form.event_date.errors %}
+                            <div class="invalid-feedback">{{ err }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.event_time.label(class="form-label") }}
+                        {{ form.event_time(class="form-control" + (" is-invalid" if form.event_time.errors else "")) }}
+                        {% for err in form.event_time.errors %}
+                            <div class="invalid-feedback">{{ err }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
 
-    <p>
-        {{ form.address.label }}<br>
-        {{ form.address(size=40) }}
-    </p>
+            <!-- Адрес и гости -->
+            <div class="form-section mb-4">
+                <div class="form-section-title">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    Место и гости
+                </div>
+                <div class="form-group mb-3">
+                    {{ form.address.label(class="form-label") }}
+                    {{ form.address(class="form-control" + (" is-invalid" if form.address.errors else ""),
+                        placeholder="Например: ул. Ленина 10, банкетный зал «Парус»") }}
+                    {% for err in form.address.errors %}
+                        <div class="invalid-feedback">{{ err }}</div>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.guests_count.label(class="form-label") }}
+                    {{ form.guests_count(class="form-control" + (" is-invalid" if form.guests_count.errors else ""),
+                        placeholder="Количество гостей") }}
+                    {% for err in form.guests_count.errors %}
+                        <div class="invalid-feedback">{{ err }}</div>
+                    {% endfor %}
+                </div>
+            </div>
 
-    <p>
-        {{ form.guests_count.label }}<br>
-        {{ form.guests_count() }}
-    </p>
+            <button type="submit" class="submit-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                Подтвердить заказ
+            </button>
+        </form>
+    </div>
 
-    <button class="btn" type="submit">
-        Оформить заказ
-    </button>
-</form>
+    <!-- Правая колонка: итог -->
+    <div class="checkout-summary-col">
+        <div class="summary-card">
+            <div class="summary-title">Ваш заказ</div>
 
+            <div class="summary-items">
+                {% set cart = session.get('cart', {}) %}
+                {% set ns = namespace(total=0) %}
+                {% for item in cart_items %}
+                <div class="summary-item">
+                    <div class="summary-item-name">{{ item.dish.name }}</div>
+                    <div class="summary-item-right">
+                        <span class="summary-item-qty">× {{ item.quantity }}</span>
+                        <span class="summary-item-price">{{ item.subtotal }} ₽</span>
+                    </div>
+                </div>
+                {% set ns.total = ns.total + item.subtotal %}
+                {% endfor %}
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-total">
+                <span>Итого</span>
+                <span class="summary-total-price">{{ total }} ₽</span>
+            </div>
+
+            <div class="summary-note">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                После подтверждения вы перейдёте к оплате
+            </div>
+
+            <a href="{{ url_for('main.cart') }}" class="back-to-cart-link">
+                ← Вернуться в корзину
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<style>
+.page-header { padding: 8px 0 4px; }
+.eyebrow-label {
+    font-size: 0.78rem; font-weight: 800; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #2563eb; margin-bottom: 8px;
+}
+.page-h1 { font-size: 2rem; font-weight: 800; color: #111827; margin-bottom: 6px; }
+.page-desc { color: #6b7280; font-size: 0.97rem; }
+
+/* ── Двухколоночный layout ── */
+.checkout-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 32px;
+    align-items: start;
+}
+@media (max-width: 900px) {
+    .checkout-layout { grid-template-columns: 1fr; }
+    .checkout-summary-col { order: -1; }
+}
+
+/* ── Форма ── */
+.form-section {
+    background: #fff; border-radius: 18px;
+    padding: 24px 28px; box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+}
+.form-section-title {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 800; font-size: 1rem; color: #111827;
+    margin-bottom: 20px;
+}
+.form-section-title svg { color: #2563eb; flex-shrink: 0; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 500px) { .form-row-2 { grid-template-columns: 1fr; } }
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label {
+    font-size: 0.88rem; font-weight: 700;
+    color: #374151; letter-spacing: 0.01em;
+}
+.form-control {
+    padding: 11px 14px; border: 1.5px solid #e5e7eb;
+    border-radius: 12px; font-size: 0.95rem;
+    color: #111827; outline: none; width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fafafa;
+}
+.form-control:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    background: #fff;
+}
+.form-control.is-invalid { border-color: #ef4444; }
+.invalid-feedback { font-size: 0.82rem; color: #ef4444; font-weight: 600; }
+
+.submit-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: 15px 24px;
+    background: linear-gradient(135deg, #1e3a5f, #2563eb);
+    color: #fff; font-weight: 800; font-size: 1rem;
+    border: none; border-radius: 14px; cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    box-shadow: 0 4px 16px rgba(37,99,235,0.25);
+}
+.submit-btn:hover { opacity: 0.92; transform: translateY(-1px); }
+.submit-btn:active { transform: translateY(0); }
+
+/* ── Правая колонка: итог ── */
+.summary-card {
+    background: #fff; border-radius: 20px;
+    padding: 28px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    position: sticky; top: 80px;
+}
+.summary-title {
+    font-size: 1.1rem; font-weight: 800; color: #111827;
+    margin-bottom: 20px;
+}
+.summary-items { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+.summary-item {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 12px;
+}
+.summary-item-name { font-size: 0.92rem; color: #374151; font-weight: 600; flex: 1; }
+.summary-item-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.summary-item-qty { font-size: 0.82rem; color: #9ca3af; font-weight: 600; }
+.summary-item-price { font-size: 0.92rem; font-weight: 800; color: #111827; }
+.summary-divider { height: 1px; background: #f3f4f6; margin: 16px 0; }
+.summary-total {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px;
+    font-size: 1rem; font-weight: 700; color: #374151;
+}
+.summary-total-price { font-size: 1.5rem; font-weight: 900; color: #111827; }
+.summary-note {
+    display: flex; align-items: center; gap: 6px;
+    background: #eff6ff; border-radius: 10px; padding: 10px 14px;
+    font-size: 0.82rem; color: #1d4ed8; font-weight: 600; margin-bottom: 16px;
+}
+.back-to-cart-link {
+    display: block; text-align: center;
+    font-size: 0.85rem; color: #6b7280; font-weight: 600;
+    text-decoration: none; transition: color 0.2s;
+}
+.back-to-cart-link:hover { color: #2563eb; }
+</style>
 {% endblock %}

@@ -1,53 +1,304 @@
 {% extends "base.html" %}
-
-{% block title %}Заказ №{{ order.id }}{% endblock %}
+{% block title %}Заказ №{{ order.id }} — Catering Platform{% endblock %}
 
 {% block content %}
-<h2>Заказ №{{ order.id }}</h2>
-
-<div class="card">
-    <p><strong>Статус заказа:</strong> {{ order.status }}</p>
-    <p><strong>Дата мероприятия:</strong> {{ order.event_date }}</p>
-    <p><strong>Время:</strong> {{ order.event_time }}</p>
-    <p><strong>Адрес:</strong> {{ order.address }}</p>
-    <p><strong>Количество гостей:</strong> {{ order.guests_count }}</p>
+<div class="mb-3">
+    <a href="{{ url_for('main.my_orders') }}" class="back-link">
+        ← Все мои заказы
+    </a>
 </div>
 
-<h3>Блюда</h3>
-
-{% for item in items %}
-    <div class="card">
-        {{ item.dish.name }} — {{ item.quantity }} шт.
+<!-- Шапка заказа -->
+<div class="order-header mb-4">
+    <div>
+        <div class="eyebrow-label">Заказ</div>
+        <h1 class="page-h1">№{{ order.id }}</h1>
+        <p class="page-desc">Создан: {{ order.created_at.strftime('%d.%m.%Y в %H:%M') if order.created_at else '—' }}</p>
     </div>
-{% else %}
-    <p>Блюда отсутствуют</p>
-{% endfor %}
 
-<div class="card">
-    <strong>Итого:</strong> {{ order.total_price }} ₽
+    <div class="order-status-block">
+        {% if order.status == "awaiting_payment" %}
+            <span class="status-pill status-pill--warning">⏳ Ожидает оплаты</span>
+        {% elif order.status == "paid" %}
+            <span class="status-pill status-pill--blue">💳 Оплачен</span>
+        {% elif order.status == "cooking" %}
+            <span class="status-pill status-pill--orange">👩‍🍳 Готовится</span>
+        {% elif order.status == "ready" %}
+            <span class="status-pill status-pill--green">✅ Готов к выдаче</span>
+        {% elif order.status == "delivered" %}
+            <span class="status-pill status-pill--gray">📦 Доставлен</span>
+        {% else %}
+            <span class="status-pill status-pill--gray">{{ order.status }}</span>
+        {% endif %}
+
+        <!-- Кнопка оплаты если ещё не оплачен -->
+        {% if order.status == "awaiting_payment" %}
+            <a href="{{ url_for('main.payment_page', order_id=order.id) }}"
+               class="pay-btn">
+                💳 Оплатить заказ
+            </a>
+        {% endif %}
+    </div>
 </div>
 
-<h3>Оплата</h3>
+<!-- Трекер статуса -->
+<div class="status-tracker mb-4">
+    {% set steps = [
+        ("awaiting_payment", "Ожидает оплаты", "⏳"),
+        ("paid",             "Оплачен",         "💳"),
+        ("cooking",          "Готовится",       "👩‍🍳"),
+        ("ready",            "Готов",           "✅"),
+    ] %}
+    {% set status_order = ["awaiting_payment","paid","cooking","ready"] %}
+    {% set current_idx = status_order.index(order.status) if order.status in status_order else 0 %}
 
-<div class="card">
-    <p><strong>Статус оплаты:</strong> {{ payment.status }}</p>
-
-    {% if payment.status == "pending" %}
-        <a class="btn" href="{{ url_for('main.payment_page', order_id=order.id) }}">
-            Перейти к оплате
-        </a>
-    {% elif payment.status == "success" %}
-        <p>✅ Заказ оплачен</p>
-    {% elif payment.status == "failed" %}
-        <p>❌ Оплата отклонена</p>
-        <a class="btn" href="{{ url_for('main.payment_page', order_id=order.id) }}">
-            Попробовать снова
-        </a>
-    {% endif %}
+    {% for val, label, icon in steps %}
+        {% set idx = loop.index0 %}
+        <div class="tracker-step {% if idx < current_idx %}tracker-step--done{% elif idx == current_idx %}tracker-step--active{% endif %}">
+            <div class="tracker-dot">{{ icon if idx <= current_idx else '' }}</div>
+            <div class="tracker-label">{{ label }}</div>
+        </div>
+        {% if not loop.last %}
+            <div class="tracker-line {% if idx < current_idx %}tracker-line--done{% endif %}"></div>
+        {% endif %}
+    {% endfor %}
 </div>
 
-<a class="btn btn-secondary" href="{{ url_for('main.client_dashboard') }}">
-    ← Назад в кабинет
-</a>
+<div class="detail-grid">
+    <!-- Состав заказа -->
+    <div class="detail-card">
+        <div class="detail-card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+            Состав заказа
+        </div>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Блюдо</th>
+                    <th class="text-center">Кол-во</th>
+                    <th class="text-right">Цена</th>
+                    <th class="text-right">Сумма</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items %}
+                <tr>
+                    <td class="item-name">{{ item.dish.name }}</td>
+                    <td class="text-center item-qty">{{ item.quantity }}</td>
+                    <td class="text-right">{{ item.price }} ₽</td>
+                    <td class="text-right item-subtotal">{{ (item.price * item.quantity)|round(2) }} ₽</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="total-label">Итого</td>
+                    <td class="text-right total-value">{{ order.total_price }} ₽</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 
+    <!-- Детали мероприятия -->
+    <div class="detail-card">
+        <div class="detail-card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+            </svg>
+            Детали мероприятия
+        </div>
+        <div class="info-list">
+            <div class="info-row">
+                <span class="info-key">📅 Дата</span>
+                <span class="info-val">{{ order.event_date }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-key">🕐 Время</span>
+                <span class="info-val">{{ order.event_time }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-key">📍 Адрес</span>
+                <span class="info-val">{{ order.address }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-key">👥 Гостей</span>
+                <span class="info-val">{{ order.guests_count }} чел.</span>
+            </div>
+        </div>
+
+        {% if order.payment %}
+        <div class="detail-card-title mt-4">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2">
+                <rect x="1" y="4" width="22" height="16" rx="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+            </svg>
+            Оплата
+        </div>
+        <div class="info-list">
+            <div class="info-row">
+                <span class="info-key">Статус</span>
+                <span class="info-val">
+                    {% if order.payment.status == "paid" %}
+                        <span class="mini-badge mini-badge--green">✓ Оплачено</span>
+                    {% elif order.payment.status == "pending" %}
+                        <span class="mini-badge mini-badge--yellow">⏳ Ожидает</span>
+                    {% else %}
+                        {{ order.payment.status }}
+                    {% endif %}
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="info-key">Сумма</span>
+                <span class="info-val">{{ order.payment.amount }} ₽</span>
+            </div>
+            {% if order.payment.method %}
+            <div class="info-row">
+                <span class="info-key">Способ</span>
+                <span class="info-val">{{ order.payment.method }}</span>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.back-link {
+    font-size: 0.88rem; font-weight: 700; color: #6b7280;
+    text-decoration: none; transition: color 0.2s;
+}
+.back-link:hover { color: #2563eb; }
+.eyebrow-label {
+    font-size: 0.78rem; font-weight: 800; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #2563eb; margin-bottom: 6px;
+}
+.page-h1 { font-size: 2rem; font-weight: 800; color: #111827; margin-bottom: 4px; }
+.page-desc { color: #6b7280; font-size: 0.9rem; }
+
+.order-header {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 20px; flex-wrap: wrap;
+}
+.order-status-block {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
+}
+.status-pill {
+    display: inline-block; padding: 8px 18px; border-radius: 99px;
+    font-size: 0.9rem; font-weight: 800;
+}
+.status-pill--warning { background: #fef9c3; color: #854d0e; }
+.status-pill--blue    { background: #dbeafe; color: #1d4ed8; }
+.status-pill--orange  { background: #ffedd5; color: #9a3412; }
+.status-pill--green   { background: #dcfce7; color: #166534; }
+.status-pill--gray    { background: #f3f4f6; color: #4b5563; }
+
+.pay-btn {
+    display: inline-block; padding: 12px 24px;
+    background: linear-gradient(135deg, #1e3a5f, #2563eb);
+    color: #fff !important; font-weight: 800; font-size: 0.95rem;
+    border-radius: 14px; text-decoration: none;
+    box-shadow: 0 4px 16px rgba(37,99,235,0.25);
+    transition: opacity 0.2s, transform 0.1s;
+}
+.pay-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* ── Трекер статуса ── */
+.status-tracker {
+    display: flex; align-items: center;
+    background: #fff; border-radius: 18px;
+    padding: 20px 28px; box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    overflow-x: auto;
+}
+.tracker-step {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 8px; flex-shrink: 0;
+}
+.tracker-dot {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    background: #f3f4f6; color: #9ca3af;
+    border: 2px solid #e5e7eb;
+    transition: all 0.3s;
+}
+.tracker-step--done .tracker-dot {
+    background: #dcfce7; border-color: #22c55e; color: #166534;
+}
+.tracker-step--active .tracker-dot {
+    background: #2563eb; border-color: #2563eb; color: #fff;
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.15);
+}
+.tracker-label {
+    font-size: 0.78rem; font-weight: 700; color: #9ca3af;
+    text-align: center; white-space: nowrap;
+}
+.tracker-step--done .tracker-label,
+.tracker-step--active .tracker-label { color: #374151; }
+.tracker-line {
+    flex: 1; height: 2px; background: #e5e7eb;
+    margin: 0 8px; margin-bottom: 28px; min-width: 30px;
+}
+.tracker-line--done { background: #22c55e; }
+
+/* ── Сетка деталей ── */
+.detail-grid {
+    display: grid; grid-template-columns: 1fr 360px; gap: 24px;
+    align-items: start;
+}
+@media (max-width: 900px) { .detail-grid { grid-template-columns: 1fr; } }
+
+.detail-card {
+    background: #fff; border-radius: 20px;
+    padding: 28px; box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+}
+.detail-card-title {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 800; font-size: 1rem; color: #111827;
+    margin-bottom: 20px;
+}
+.detail-card-title svg { color: #2563eb; }
+.mt-4 { margin-top: 24px; }
+
+/* ── Таблица блюд ── */
+.items-table { width: 100%; border-collapse: collapse; }
+.items-table th {
+    font-size: 0.78rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.05em; color: #9ca3af;
+    padding: 0 12px 12px 0; border-bottom: 1.5px solid #f3f4f6;
+}
+.items-table td { padding: 12px 12px 12px 0; border-bottom: 1px solid #f9f9f9; }
+.items-table tfoot td { border-bottom: none; padding-top: 16px; }
+.item-name { font-weight: 700; color: #111827; }
+.item-qty { font-weight: 800; color: #374151; }
+.item-subtotal { font-weight: 800; color: #111827; }
+.total-label { font-weight: 800; color: #374151; }
+.total-value { font-size: 1.3rem; font-weight: 900; color: #111827; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* ── Информация ── */
+.info-list { display: flex; flex-direction: column; gap: 12px; }
+.info-row {
+    display: flex; justify-content: space-between;
+    align-items: flex-start; gap: 12px;
+    font-size: 0.92rem;
+}
+.info-key { color: #9ca3af; font-weight: 600; flex-shrink: 0; }
+.info-val { color: #111827; font-weight: 700; text-align: right; }
+
+.mini-badge {
+    display: inline-block; padding: 3px 10px;
+    border-radius: 99px; font-size: 0.8rem; font-weight: 700;
+}
+.mini-badge--green { background: #dcfce7; color: #166534; }
+.mini-badge--yellow { background: #fef9c3; color: #854d0e; }
+</style>
 {% endblock %}

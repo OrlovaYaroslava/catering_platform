@@ -1,116 +1,504 @@
 {% extends "base.html" %}
-
-{% block title %}Оплата заказа{% endblock %}
+{% block title %}Оплата заказа №{{ order.id }} — Catering Platform{% endblock %}
 
 {% block content %}
-<h2>Оплата заказа №{{ order.id }}</h2>
-
-<div class="card">
-    <p><strong>Сумма к оплате:</strong> {{ order.total_price }} ₽</p>
-    <p><strong>Статус платежа:</strong>
-        {% if payment.status == "pending" %}
-            🕒 Ожидает оплаты
-        {% elif payment.status == "success" %}
-            ✅ Оплачено
-        {% elif payment.status == "failed" %}
-            ❌ Отклонено
-        {% else %}
-            {{ payment.status }}
-        {% endif %}
-    </p>
+<div class="mb-3">
+    <a href="{{ url_for('main.client_order_detail', order_id=order.id) }}" class="back-link">
+        ← Назад к заказу
+    </a>
 </div>
 
-<form method="POST">
+<div class="payment-layout">
 
-    <h3>Способ оплаты</h3>
+    <!-- Левая колонка: форма оплаты -->
+    <div class="payment-form-col">
+        <div class="page-header mb-4">
+            <div class="eyebrow-label">Оплата</div>
+            <h1 class="page-h1">Заказ №{{ order.id }}</h1>
+            <p class="page-desc">Выберите удобный способ оплаты</p>
+        </div>
 
-    <p>
-        <label>
-            <input type="radio" name="method" value="card" required>
-            💳 Банковская карта (тест)
-        </label>
-    </p>
+        <form method="POST" id="paymentForm" novalidate>
+            {{ form.hidden_tag() if form is defined }}
 
-    <p>
-        <label>
-            <input type="radio" name="method" value="invoice">
-            🧾 Безналичный расчёт по счёту
-        </label>
-    </p>
+            <!-- Выбор способа оплаты -->
+            <div class="method-selector mb-4">
+                <label class="method-card" id="method-card-card">
+                    <input type="radio" name="method" value="card"
+                           class="method-radio" onchange="switchMethod('card')" checked>
+                    <div class="method-card-inner">
+                        <div class="method-icon">💳</div>
+                        <div class="method-info">
+                            <div class="method-name">Банковская карта</div>
+                            <div class="method-desc">Visa, Mastercard, МИР</div>
+                        </div>
+                        <div class="method-check">✓</div>
+                    </div>
+                </label>
 
-    <p>
-        <label>
-            <input type="radio" name="method" value="cash">
-            💵 Наличные курьеру
-        </label>
-    </p>
+                <label class="method-card" id="method-card-invoice">
+                    <input type="radio" name="method" value="invoice"
+                           class="method-radio" onchange="switchMethod('invoice')">
+                    <div class="method-card-inner">
+                        <div class="method-icon">🧾</div>
+                        <div class="method-info">
+                            <div class="method-name">Безналичный счёт</div>
+                            <div class="method-desc">Для юридических лиц</div>
+                        </div>
+                        <div class="method-check">✓</div>
+                    </div>
+                </label>
 
-    <hr>
+                <label class="method-card" id="method-card-cash">
+                    <input type="radio" name="method" value="cash"
+                           class="method-radio" onchange="switchMethod('cash')">
+                    <div class="method-card-inner">
+                        <div class="method-icon">💵</div>
+                        <div class="method-info">
+                            <div class="method-name">Наличные</div>
+                            <div class="method-desc">При получении заказа</div>
+                        </div>
+                        <div class="method-check">✓</div>
+                    </div>
+                </label>
+            </div>
 
-    <!-- ДАННЫЕ КАРТЫ -->
-    <div id="card-fields" style="display: none;">
-        <h3>Данные карты (тестовые)</h3>
+            <!-- === КАРТА === -->
+            <div class="payment-fields" id="fields-card">
+                <div class="fields-title">Данные карты</div>
 
-        <p>
-            Номер карты<br>
-            <input type="text" placeholder="1111 2222 3333 4444">
-        </p>
+                <div class="form-group mb-3">
+                    <label class="form-label">Номер карты</label>
+                    <div class="card-input-wrap">
+                        <input type="text" name="card_number" id="cardNumber"
+                               class="form-control"
+                               placeholder="0000 0000 0000 0000"
+                               maxlength="19"
+                               oninput="formatCardNumber(this)"
+                               autocomplete="cc-number">
+                        <div class="card-type-icons" id="cardTypeIcons">
+                            <span class="card-type-icon" id="icon-visa">VISA</span>
+                            <span class="card-type-icon" id="icon-mc">MC</span>
+                            <span class="card-type-icon" id="icon-mir">МИР</span>
+                        </div>
+                    </div>
+                </div>
 
-        <p>
-            Срок действия<br>
-            <input type="text" placeholder="12/25">
-        </p>
+                <div class="form-row-2 mb-3">
+                    <div class="form-group">
+                        <label class="form-label">Срок действия</label>
+                        <input type="text" name="card_expiry"
+                               class="form-control"
+                               placeholder="ММ/ГГ"
+                               maxlength="5"
+                               oninput="formatExpiry(this)"
+                               autocomplete="cc-exp">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">CVV / CVC</label>
+                        <div class="cvv-wrap">
+                            <input type="password" name="card_cvv"
+                                   class="form-control"
+                                   placeholder="•••"
+                                   maxlength="3"
+                                   autocomplete="cc-csc">
+                            <div class="cvv-hint">
+                                <svg width="14" height="14" viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="8" x2="12" y2="12"/>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                </svg>
+                                3 цифры на обороте
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        <p>
-            CVV<br>
-            <input type="text" placeholder="123">
-        </p>
+                <div class="form-group">
+                    <label class="form-label">Имя владельца (как на карте)</label>
+                    <input type="text" name="card_holder"
+                           class="form-control"
+                           placeholder="IVAN IVANOV"
+                           style="text-transform:uppercase;"
+                           autocomplete="cc-name">
+                </div>
+
+                <div class="security-badge mt-3">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    Данные передаются по защищённому соединению SSL
+                </div>
+            </div>
+
+            <!-- === СЧЁТ === -->
+            <div class="payment-fields d-none" id="fields-invoice">
+                <div class="fields-title">Реквизиты организации</div>
+
+                <div class="form-group mb-3">
+                    <label class="form-label">Название организации</label>
+                    <input type="text" name="company_name" class="form-control"
+                           placeholder='ООО "Название"'>
+                </div>
+                <div class="form-row-2 mb-3">
+                    <div class="form-group">
+                        <label class="form-label">ИНН</label>
+                        <input type="text" name="inn" class="form-control"
+                               placeholder="1234567890" maxlength="12">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">КПП</label>
+                        <input type="text" name="kpp" class="form-control"
+                               placeholder="123456789" maxlength="9">
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="form-label">Юридический адрес</label>
+                    <input type="text" name="legal_address" class="form-control"
+                           placeholder="г. Новосибирск, ул. Ленина 1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email бухгалтера (для счёта)</label>
+                    <input type="email" name="accountant_email" class="form-control"
+                           placeholder="buh@company.ru">
+                </div>
+
+                <div class="invoice-note mt-3">
+                    📄 Счёт на оплату будет отправлен на указанный email в течение 15 минут
+                </div>
+            </div>
+
+            <!-- === НАЛИЧНЫЕ === -->
+            <div class="payment-fields d-none" id="fields-cash">
+                <div class="cash-info">
+                    <div class="cash-info-icon">💵</div>
+                    <div class="cash-info-text">
+                        <div class="cash-info-title">Оплата наличными</div>
+                        <p>Оплата производится при получении заказа. Наш курьер будет с точной суммой сдачи.</p>
+                        <p>Убедитесь, что сумма <strong>{{ order.total_price }} ₽</strong> будет у вас в наличии.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопка оплаты -->
+            <button type="submit" class="pay-submit-btn mt-4" id="payBtn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5">
+                    <rect x="1" y="4" width="22" height="16" rx="2"/>
+                    <line x1="1" y1="10" x2="23" y2="10"/>
+                </svg>
+                <span id="payBtnText">Оплатить {{ order.total_price }} ₽</span>
+            </button>
+        </form>
     </div>
 
-    <!-- ДАННЫЕ ДЛЯ СЧЁТА -->
-    <div id="invoice-fields" style="display: none;">
-        <h3>Данные организации</h3>
+    <!-- Правая колонка: итог заказа -->
+    <div class="payment-summary-col">
+        <div class="summary-card">
+            <div class="summary-title">Сумма к оплате</div>
 
-        <p>
-            Название организации<br>
-            <input type="text" name="company_name">
-        </p>
+            <div class="summary-amount">{{ order.total_price }} ₽</div>
 
-        <p>
-            ИНН<br>
-            <input type="text" name="inn">
-        </p>
+            <div class="summary-divider"></div>
 
-        <p>
-            КПП<br>
-            <input type="text" name="kpp">
-        </p>
+            <div class="summary-details">
+                {% for item in order.items %}
+                <div class="summary-row">
+                    <span class="summary-name">{{ item.dish.name }} × {{ item.quantity }}</span>
+                    <span class="summary-price">{{ (item.price * item.quantity)|round(2) }} ₽</span>
+                </div>
+                {% endfor %}
+            </div>
 
-        <p>
-            Юридический адрес<br>
-            <input type="text" name="legal_address">
-        </p>
+            <div class="summary-divider"></div>
 
-        <p>
-            Email бухгалтера<br>
-            <input type="email" name="accountant_email">
-        </p>
+            <div class="summary-event">
+                <div class="summary-event-row">
+                    <span>📅</span>
+                    <span>{{ order.event_date }} в {{ order.event_time }}</span>
+                </div>
+                <div class="summary-event-row">
+                    <span>📍</span>
+                    <span>{{ order.address }}</span>
+                </div>
+                <div class="summary-event-row">
+                    <span>👥</span>
+                    <span>{{ order.guests_count }} гостей</span>
+                </div>
+            </div>
+
+            <!-- Статус платежа -->
+            {% if payment %}
+            <div class="payment-status-block mt-3">
+                {% if payment.status == "paid" %}
+                    <div class="pstatus pstatus--success">✅ Оплачено</div>
+                {% elif payment.status == "pending" %}
+                    <div class="pstatus pstatus--pending">⏳ Ожидает оплаты</div>
+                {% elif payment.status == "failed" %}
+                    <div class="pstatus pstatus--error">❌ Отклонено</div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
     </div>
+</div>
 
-    <button class="btn" type="submit" id="pay-btn">
-        Оплатить
-    </button>
+<style>
+.back-link {
+    font-size: 0.88rem; font-weight: 700; color: #6b7280;
+    text-decoration: none; transition: color 0.2s;
+}
+.back-link:hover { color: #2563eb; }
+.page-header { padding: 8px 0 4px; }
+.eyebrow-label {
+    font-size: 0.78rem; font-weight: 800; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #2563eb; margin-bottom: 8px;
+}
+.page-h1 { font-size: 2rem; font-weight: 800; color: #111827; margin-bottom: 6px; }
+.page-desc { color: #6b7280; font-size: 0.97rem; }
+.d-none { display: none !important; }
+.mt-3 { margin-top: 16px; }
+.mt-4 { margin-top: 24px; }
 
-</form>
+/* ── Layout ── */
+.payment-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 32px; align-items: start;
+}
+@media (max-width: 900px) {
+    .payment-layout { grid-template-columns: 1fr; }
+    .payment-summary-col { order: -1; }
+}
 
-<br>
+/* ── Выбор метода ── */
+.method-selector {
+    display: flex; flex-direction: column; gap: 12px;
+}
+.method-card { cursor: pointer; display: block; }
+.method-radio { display: none; }
+.method-card-inner {
+    display: flex; align-items: center; gap: 16px;
+    background: #fff; border-radius: 16px; padding: 18px 20px;
+    border: 2px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.method-card:hover .method-card-inner { border-color: #93c5fd; }
+.method-card.is-selected .method-card-inner {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1), 0 4px 16px rgba(37,99,235,0.1);
+    background: #eff6ff;
+}
+.method-icon { font-size: 1.6rem; flex-shrink: 0; }
+.method-info { flex: 1; }
+.method-name { font-weight: 800; font-size: 0.97rem; color: #111827; }
+.method-desc { font-size: 0.82rem; color: #9ca3af; font-weight: 600; margin-top: 2px; }
+.method-check {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: #e5e7eb; color: #e5e7eb;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 900;
+    transition: background 0.2s, color 0.2s; flex-shrink: 0;
+}
+.method-card.is-selected .method-check { background: #2563eb; color: #fff; }
 
-<a class="btn btn-secondary"
-   href="{{ url_for('main.client_order_detail', order_id=order.id) }}">
-    ← Назад к заказу
-</a>
+/* ── Поля ── */
+.payment-fields {
+    background: #fff; border-radius: 18px;
+    padding: 24px 28px; box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.fields-title {
+    font-weight: 800; font-size: 1rem; color: #111827;
+    margin-bottom: 20px;
+    padding-bottom: 12px; border-bottom: 1.5px solid #f3f4f6;
+}
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 500px) { .form-row-2 { grid-template-columns: 1fr; } }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label {
+    font-size: 0.85rem; font-weight: 700; color: #374151;
+}
+.form-control {
+    padding: 12px 14px; border: 1.5px solid #e5e7eb;
+    border-radius: 12px; font-size: 0.95rem; color: #111827;
+    outline: none; width: 100%; background: #fafafa;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+}
+.form-control:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    background: #fff;
+}
 
-<!-- Подключение JS -->
-<script src="{{ url_for('static', filename='js/payment.js') }}"></script>
+/* Номер карты */
+.card-input-wrap { position: relative; }
+.card-input-wrap .form-control { padding-right: 90px; letter-spacing: 0.05em; font-size: 1rem; }
+.card-type-icons {
+    position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    display: flex; gap: 4px;
+}
+.card-type-icon {
+    font-size: 0.62rem; font-weight: 900;
+    padding: 2px 5px; border-radius: 4px;
+    background: #f3f4f6; color: #9ca3af;
+    transition: background 0.2s, color 0.2s;
+}
+.card-type-icon.active { background: #1d4ed8; color: #fff; }
 
+/* CVV */
+.cvv-wrap { display: flex; flex-direction: column; gap: 4px; }
+.cvv-hint {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 0.78rem; color: #9ca3af; font-weight: 600;
+}
+
+/* Безопасность */
+.security-badge {
+    display: flex; align-items: center; gap: 8px;
+    background: #f0fdf4; border-radius: 10px; padding: 10px 14px;
+    font-size: 0.82rem; color: #166534; font-weight: 700;
+}
+
+/* Счёт */
+.invoice-note {
+    background: #eff6ff; border-radius: 10px; padding: 12px 16px;
+    font-size: 0.85rem; color: #1d4ed8; font-weight: 600;
+}
+
+/* Наличные */
+.cash-info {
+    display: flex; gap: 20px; align-items: flex-start;
+}
+.cash-info-icon { font-size: 2.5rem; flex-shrink: 0; }
+.cash-info-title { font-weight: 800; font-size: 1rem; color: #111827; margin-bottom: 8px; }
+.cash-info-text p { font-size: 0.92rem; color: #6b7280; margin-bottom: 8px; line-height: 1.6; }
+
+/* ── Кнопка оплаты ── */
+.pay-submit-btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: 16px 24px;
+    background: linear-gradient(135deg, #166534, #16a34a);
+    color: #fff; font-weight: 800; font-size: 1.05rem;
+    border: none; border-radius: 16px; cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    box-shadow: 0 4px 20px rgba(22,163,74,0.3);
+}
+.pay-submit-btn:hover { opacity: 0.92; transform: translateY(-1px); }
+.pay-submit-btn:active { transform: translateY(0); }
+.pay-submit-btn.loading { opacity: 0.75; cursor: wait; }
+
+/* ── Правая колонка ── */
+.summary-card {
+    background: #fff; border-radius: 20px;
+    padding: 28px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    position: sticky; top: 80px;
+}
+.summary-title {
+    font-size: 0.85rem; font-weight: 700; color: #9ca3af;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+.summary-amount {
+    font-size: 2.5rem; font-weight: 900; color: #111827;
+    margin-bottom: 16px;
+}
+.summary-divider { height: 1px; background: #f3f4f6; margin: 16px 0; }
+.summary-details { display: flex; flex-direction: column; gap: 10px; }
+.summary-row {
+    display: flex; justify-content: space-between;
+    align-items: flex-start; gap: 8px; font-size: 0.88rem;
+}
+.summary-name { color: #6b7280; font-weight: 600; flex: 1; }
+.summary-price { color: #111827; font-weight: 800; flex-shrink: 0; }
+.summary-event { display: flex; flex-direction: column; gap: 8px; }
+.summary-event-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 0.88rem; color: #374151; font-weight: 600;
+}
+.pstatus {
+    text-align: center; padding: 10px; border-radius: 12px;
+    font-weight: 800; font-size: 0.95rem;
+}
+.pstatus--success { background: #dcfce7; color: #166534; }
+.pstatus--pending { background: #fef9c3; color: #854d0e; }
+.pstatus--error   { background: #fee2e2; color: #991b1b; }
+</style>
+
+<script>
+// ── Переключение методов ──
+function switchMethod(method) {
+    // Убираем все выделения
+    document.querySelectorAll('.method-card').forEach(c => c.classList.remove('is-selected'));
+    document.querySelectorAll('.payment-fields').forEach(f => f.classList.add('d-none'));
+
+    // Выделяем выбранный
+    document.getElementById(`method-card-${method}`)?.classList.add('is-selected');
+    document.getElementById(`fields-${method}`)?.classList.remove('d-none');
+
+    // Меняем текст кнопки
+    const texts = {
+        card:    'Оплатить {{ order.total_price }} ₽',
+        invoice: 'Получить счёт на {{ order.total_price }} ₽',
+        cash:    'Подтвердить заказ (оплата при получении)'
+    };
+    document.getElementById('payBtnText').textContent = texts[method];
+
+    // Меняем цвет кнопки
+    const btn = document.getElementById('payBtn');
+    if (method === 'cash') {
+        btn.style.background = 'linear-gradient(135deg, #854d0e, #d97706)';
+        btn.style.boxShadow = '0 4px 20px rgba(217,119,6,0.3)';
+    } else if (method === 'invoice') {
+        btn.style.background = 'linear-gradient(135deg, #1e3a5f, #2563eb)';
+        btn.style.boxShadow = '0 4px 20px rgba(37,99,235,0.3)';
+    } else {
+        btn.style.background = 'linear-gradient(135deg, #166534, #16a34a)';
+        btn.style.boxShadow = '0 4px 20px rgba(22,163,74,0.3)';
+    }
+}
+
+// Инициализация — выбираем карту по умолчанию
+switchMethod('card');
+
+// ── Форматирование номера карты ──
+function formatCardNumber(input) {
+    let v = input.value.replace(/\D/g, '').substring(0, 16);
+    input.value = v.replace(/(\d{4})(?=\d)/g, '$1 ');
+
+    // Определяем тип карты
+    const icons = document.querySelectorAll('.card-type-icon');
+    icons.forEach(i => i.classList.remove('active'));
+
+    if (v.startsWith('4')) {
+        document.getElementById('icon-visa')?.classList.add('active');
+    } else if (v.startsWith('5') || v.startsWith('2')) {
+        document.getElementById('icon-mc')?.classList.add('active');
+    } else if (v.startsWith('2200') || v.startsWith('2201') || v.startsWith('2202') || v.startsWith('2203') || v.startsWith('2204')) {
+        document.getElementById('icon-mir')?.classList.add('active');
+    }
+}
+
+// ── Форматирование срока ──
+function formatExpiry(input) {
+    let v = input.value.replace(/\D/g, '').substring(0, 4);
+    if (v.length >= 2) {
+        v = v.substring(0, 2) + '/' + v.substring(2);
+    }
+    input.value = v;
+}
+
+// ── Анимация кнопки при сабмите ──
+document.getElementById('paymentForm').addEventListener('submit', function() {
+    const btn = document.getElementById('payBtn');
+    btn.classList.add('loading');
+    btn.querySelector('span').textContent = 'Обрабатываем…';
+});
+</script>
 {% endblock %}
