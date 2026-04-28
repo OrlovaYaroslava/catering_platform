@@ -1,100 +1,128 @@
 {% extends "base.html" %}
-
-{% block title %}Заказ №{{ order.id }}{% endblock %}
+{% block title %}Заказ №{{ order.id }} — Кухня{% endblock %}
 
 {% block content %}
-<h2>Заказ №{{ order.id }}</h2>
+<div class="container py-4">
 
-<!-- ВАЖНЫЙ КОММЕНТАРИЙ ДЛЯ КУХНИ -->
-{% if order.kitchen_comment %}
-<div class="card" style="border-left: 5px solid #f44336;">
-    <strong>⚠️ Важно для кухни:</strong><br>
-    {{ order.kitchen_comment }}
-</div>
-{% endif %}
-
-<!-- ОСНОВНАЯ ИНФОРМАЦИЯ -->
-<div class="card">
-    <p>
-        <strong>Статус:</strong>
+  <!-- Шапка -->
+  <div class="d-flex align-items-start justify-content-between mb-4 flex-wrap gap-3">
+    <div>
+      <a href="{{ url_for('main.kitchen_board') }}" class="text-decoration-none text-muted small">← Доска заказов</a>
+      <h2 class="fw-800 mt-1 mb-0">Заказ №{{ order.id }}</h2>
+      <div class="mt-2">
+        {% if order.is_urgent %}
+          <span class="badge bg-danger me-2 px-3 py-2 fs-6">🔥 СРОЧНЫЙ</span>
+        {% endif %}
         {% if order.status == "paid" %}
-            🟡 Новый
+          <span class="badge bg-warning text-dark px-3 py-2 fs-6">🟡 Новый</span>
         {% elif order.status == "cooking" %}
-            🔥 В работе
+          <span class="badge px-3 py-2 fs-6" style="background:#f97316;color:#fff;">🔥 В работе</span>
         {% elif order.status == "ready" %}
-            ✅ Готов
-        {% else %}
-            {{ order.status }}
+          <span class="badge bg-success px-3 py-2 fs-6">✅ Готов</span>
         {% endif %}
-    </p>
-
-    <p><strong>Дата мероприятия:</strong> {{ order.event_date }}</p>
-    <p><strong>Время:</strong> {{ order.event_time }}</p>
-    <p><strong>Гостей:</strong> {{ order.guests_count }}</p>
-    <p><strong>Адрес:</strong> {{ order.address }}</p>
-</div>
-
-<!-- КНОПКИ УПРАВЛЕНИЯ СТАТУСОМ -->
-<div class="card">
-    {% if order.status == "paid" %}
-        <form method="POST"
-              action="{{ url_for('main.kitchen_start_order', order_id=order.id) }}">
-            <button class="btn btn-warning">
-                ▶️ Начать приготовление
-            </button>
-        </form>
-    {% endif %}
-
-    {% if order.status == "cooking" %}
-        <form method="POST"
-              action="{{ url_for('main.kitchen_finish_order', order_id=order.id) }}">
-            <button class="btn btn-success">
-                ✅ Готово к отправке
-            </button>
-        </form>
-    {% endif %}
-</div>
-
-<hr>
-
-<h3>Блюда</h3>
-
-{% for item in items %}
-    <div class="card"
-         {% if item.dish.contains_allergens %}
-             style="border-left: 5px solid #ff9800;"
-         {% endif %}>
-        <strong>{{ item.dish.name }}</strong><br>
-        Количество: {{ item.quantity }}<br>
-        Категория: {{ item.dish.category }}<br>
-
-        <!-- ДИЕТЫ И АЛЛЕРГЕНЫ -->
-        {% if item.dish.is_vegan %}
-            🌱 Веганское<br>
-        {% endif %}
-        {% if item.dish.is_gluten_free %}
-            🚫 Без глютена<br>
-        {% endif %}
-        {% if item.dish.contains_allergens %}
-            ⚠️ Содержит аллергены<br>
-        {% endif %}
+      </div>
     </div>
-{% else %}
-    <p>Блюд нет</p>
-{% endfor %}
+    <div class="d-flex gap-2 flex-wrap">
+      {% if order.status == "paid" %}
+      <form method="POST" action="{{ url_for('main.kitchen_start_order', order_id=order.id) }}">
+        <button class="btn btn-warning fw-bold px-4">
+          ▶️ Начать приготовление
+        </button>
+      </form>
+      {% endif %}
+      {% if order.status == "cooking" %}
+      <form method="POST" action="{{ url_for('main.kitchen_finish_order', order_id=order.id) }}">
+        <button class="btn btn-success fw-bold px-4">
+          ✅ Готово к отправке
+        </button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
 
-<br>
+  <!-- Комментарий кухне (вверху — важно!) -->
+  {% if order.kitchen_comment %}
+  <div class="alert border-0 rounded-4 mb-4 p-4" style="background:#fff7ed;border-left:4px solid #f97316!important;border-left-style:solid!important;">
+    <div class="fw-bold mb-1" style="color:#c2410c;">⚠️ Важно для кухни:</div>
+    <div style="color:#7c2d12;white-space:pre-line;">{{ order.kitchen_comment }}</div>
+  </div>
+  {% endif %}
 
-<a class="btn"
-   href="{{ url_for('main.kitchen_order_ingredients', order_id=order.id) }}">
-    📦 Расчёт ингредиентов
-</a>
+  <div class="row g-4">
 
-<br><br>
+    <!-- Блюда -->
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-transparent border-0 pt-4 px-4 pb-2">
+          <h5 class="fw-800 mb-0">🍽 Блюда для приготовления</h5>
+        </div>
+        <div class="card-body px-4 pb-4 pt-2">
+          {% for item in items %}
+          <div class="d-flex align-items-start justify-content-between py-3
+            {% if not loop.last %}border-bottom{% endif %}
+            {% if item.dish.contains_allergens %}rounded-3 px-2{% endif %}"
+            {% if item.dish.contains_allergens %}style="background:#fffbeb;"{% endif %}>
+            <div>
+              <div class="fw-bold fs-6 mb-1">{{ item.dish.name }}</div>
+              <div class="small text-muted mb-1">Категория: {{ item.dish.category or '—' }}</div>
+              <div class="d-flex gap-2 flex-wrap">
+                {% if item.dish.is_vegan %}
+                  <span class="badge bg-success bg-opacity-10 text-success">🌱 Веган</span>
+                {% endif %}
+                {% if item.dish.is_gluten_free %}
+                  <span class="badge bg-info bg-opacity-10 text-info">🌾 Без глютена</span>
+                {% endif %}
+                {% if item.dish.contains_allergens %}
+                  <span class="badge bg-warning bg-opacity-10 text-warning">⚠️ Аллергены</span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="text-end ms-3">
+              <div class="fw-800 fs-4 text-primary">{{ item.quantity }}</div>
+              <div class="small text-muted">шт.</div>
+            </div>
+          </div>
+          {% else %}
+          <p class="text-muted">Блюд нет</p>
+          {% endfor %}
+        </div>
+      </div>
 
-<a class="btn btn-secondary"
-   href="{{ url_for('main.kitchen_orders') }}">
-    ← Назад к списку заказов
-</a>
+      <a href="{{ url_for('main.kitchen_order_ingredients', order_id=order.id) }}"
+         class="btn btn-outline-primary fw-bold px-4">
+        📦 Расчёт ингредиентов
+      </a>
+    </div>
 
+    <!-- Инфо о заказе -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-transparent border-0 pt-4 px-4 pb-2">
+          <h5 class="fw-800 mb-0">📋 Детали</h5>
+        </div>
+        <div class="card-body px-4 pb-4 pt-2">
+          <ul class="list-unstyled mb-0">
+            <li class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted">Дата</span>
+              <span class="fw-bold">{{ order.event_date.strftime('%d.%m.%Y') if order.event_date else '—' }}</span>
+            </li>
+            <li class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted">Время</span>
+              <span class="fw-bold">{{ order.event_time.strftime('%H:%M') if order.event_time else '—' }}</span>
+            </li>
+            <li class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted">Гостей</span>
+              <span class="fw-bold">{{ order.guests_count }} чел.</span>
+            </li>
+            <li class="d-flex justify-content-between py-2">
+              <span class="text-muted">Адрес</span>
+              <span class="fw-bold text-end" style="max-width:170px">{{ order.address }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
 {% endblock %}

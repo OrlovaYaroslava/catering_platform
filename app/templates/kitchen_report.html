@@ -1,107 +1,204 @@
 {% extends "base.html" %}
-
-{% block title %}Производственный отчёт{% endblock %}
+{% block title %}Производственный отчёт — {{ report_date }}{% endblock %}
 
 {% block content %}
-<h2>Производственный отчёт</h2>
+<div class="container py-4">
 
-<form method="get">
-    <label>
-        Дата:
-        <input type="date" name="date" value="{{ report_date }}">
-    </label>
-    <button class="btn">Показать</button>
-</form>
+  <!-- Шапка -->
+  <div class="mb-4">
+    <a href="{{ url_for('main.kitchen_dashboard') }}" class="text-decoration-none text-muted small">← Панель кухни</a>
+    <h2 class="fw-800 mt-1 mb-0">📊 Производственный отчёт</h2>
+  </div>
 
-<hr>
+  <!-- Форма выбора даты -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+    <form method="get" class="d-flex align-items-end gap-3 flex-wrap">
+      <div>
+        <label class="form-label fw-bold small text-muted mb-1">Выберите дату</label>
+        <input type="date" name="date" value="{{ report_date }}"
+               class="form-control rounded-3" style="min-width:180px;">
+      </div>
+      <button type="submit" class="btn btn-primary fw-bold px-4">
+        🔍 Показать
+      </button>
+    </form>
+  </div>
 
-<!-- ВКЛАДКИ -->
-<div style="margin-bottom: 15px;">
-    <button class="btn tab-btn" onclick="showTab('orders')">Заказы</button>
-    <button class="btn tab-btn" onclick="showTab('dishes')">Блюда</button>
-    <button class="btn tab-btn" onclick="showTab('ingredients')">Ингредиенты</button>
-</div>
+  <!-- KPI-карточки -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm rounded-4 p-3 text-center">
+        <div class="fs-2 fw-800 text-primary">{{ orders|length }}</div>
+        <div class="small text-muted">Заказов на день</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm rounded-4 p-3 text-center">
+        <div class="fs-2 fw-800 text-warning">
+          {{ orders | selectattr('status', 'equalto', 'paid') | list | length }}
+        </div>
+        <div class="small text-muted">Ожидают кухню</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm rounded-4 p-3 text-center">
+        <div class="fs-2 fw-800" style="color:#f97316;">
+          {{ orders | selectattr('status', 'equalto', 'cooking') | list | length }}
+        </div>
+        <div class="small text-muted">В приготовлении</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm rounded-4 p-3 text-center">
+        <div class="fs-2 fw-800 text-success">
+          {{ orders | selectattr('status', 'equalto', 'ready') | list | length }}
+        </div>
+        <div class="small text-muted">Готово</div>
+      </div>
+    </div>
+  </div>
 
-<!-- БЛОК ЗАКАЗОВ -->
-<div id="orders-tab" class="tab-content">
-    <h3>Заказы на {{ report_date }}</h3>
+  <!-- Вкладки -->
+  <ul class="nav nav-pills mb-4 gap-2" id="reportTabs">
+    <li class="nav-item">
+      <button class="nav-link active fw-bold px-4" onclick="showTab('orders', this)">
+        📦 Заказы
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link fw-bold px-4" onclick="showTab('dishes', this)">
+        🍽 Блюда
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link fw-bold px-4" onclick="showTab('ingredients', this)">
+        🧂 Ингредиенты
+      </button>
+    </li>
+  </ul>
 
-    {% for order in orders %}
-        <div class="card">
-            <strong>Заказ №{{ order.id }}</strong><br>
-            Время: {{ order.event_time }}<br>
-            Гостей: {{ order.guests_count }}<br>
-            Статус: {{ order.status }}
-
-            <br><br>
-            <a class="btn"
-               href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
-                Открыть заказ
+  <!-- Вкладка: ЗАКАЗЫ -->
+  <div id="orders-tab" class="tab-content">
+    {% if orders %}
+    <div class="row g-3">
+      {% for order in orders %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+          {% if order.is_urgent %}
+          <div class="px-3 py-1 small fw-bold" style="background:#fef2f2;color:#dc2626;border-bottom:1px solid #fecaca;">
+            🔥 СРОЧНЫЙ
+          </div>
+          {% endif %}
+          <div class="p-3">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="fw-800 fs-6">Заказ №{{ order.id }}</span>
+              {% if order.status == 'paid' %}
+                <span class="badge bg-warning text-dark">Новый</span>
+              {% elif order.status == 'cooking' %}
+                <span class="badge" style="background:#f97316;color:#fff;">В работе</span>
+              {% elif order.status == 'ready' %}
+                <span class="badge bg-success">Готов</span>
+              {% else %}
+                <span class="badge bg-secondary">{{ order.status }}</span>
+              {% endif %}
+            </div>
+            <div class="small text-muted mb-1">
+              ⏰ {{ order.event_time.strftime('%H:%M') if order.event_time else '—' }}
+            </div>
+            <div class="small text-muted mb-3">
+              👥 {{ order.guests_count }} гостей
+            </div>
+            <a href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}"
+               class="btn btn-outline-primary btn-sm w-100 fw-bold">
+              Открыть →
             </a>
+          </div>
         </div>
+      </div>
+      {% endfor %}
+    </div>
     {% else %}
-        <p>На выбранную дату заказов нет</p>
-    {% endfor %}
-</div>
+    <div class="text-center py-5 text-muted">
+      <div class="fs-1 mb-3">📭</div>
+      <p>На <strong>{{ report_date }}</strong> заказов нет</p>
+    </div>
+    {% endif %}
+  </div>
 
-<!-- БЛОК БЛЮД -->
-<div id="dishes-tab" class="tab-content" style="display:none;">
-    <h3>Блюда на {{ report_date }}</h3>
-
+  <!-- Вкладка: БЛЮДА -->
+  <div id="dishes-tab" class="tab-content" style="display:none;">
     {% if dishes_summary %}
-        <div class="card">
-            <table>
-                <tr>
-                    <th align="left">Блюдо</th>
-                    <th align="left">Всего порций</th>
-                </tr>
-
-                {% for dish, quantity in dishes_summary.items() %}
-                    <tr>
-                        <td>{{ dish }}</td>
-                        <td>{{ quantity }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
-        </div>
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+      <table class="table table-hover mb-0">
+        <thead style="background:#f8f9fa;">
+          <tr>
+            <th class="px-4 py-3 fw-bold text-muted small text-uppercase">Блюдо</th>
+            <th class="px-4 py-3 fw-bold text-muted small text-uppercase text-end">Порций</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for dish, quantity in dishes_summary.items() %}
+          <tr>
+            <td class="px-4 py-3 fw-bold">{{ dish }}</td>
+            <td class="px-4 py-3 text-end">
+              <span class="badge bg-primary bg-opacity-10 text-primary fw-bold px-3 py-2 rounded-pill">
+                {{ quantity }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
     {% else %}
-        <p>Нет блюд для приготовления</p>
+    <div class="text-center py-5 text-muted">
+      <div class="fs-1 mb-3">🍽</div>
+      <p>Нет блюд для приготовления</p>
+    </div>
     {% endif %}
-</div>
+  </div>
 
-<!-- БЛОК ИНГРЕДИЕНТОВ -->
-<div id="ingredients-tab" class="tab-content" style="display:none;">
-    <h3>Ингредиенты на {{ report_date }}</h3>
-
+  <!-- Вкладка: ИНГРЕДИЕНТЫ -->
+  <div id="ingredients-tab" class="tab-content" style="display:none;">
     {% if ingredients_summary %}
-        <div class="card">
-            <table>
-                <tr>
-                    <th align="left">Ингредиент</th>
-                    <th align="left">Количество</th>
-                </tr>
-
-                {% for ingredient, amount in ingredients_summary.items() %}
-                    <tr>
-                        <td>{{ ingredient }}</td>
-                        <td>{{ amount }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
-        </div>
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+      <table class="table table-hover mb-0">
+        <thead style="background:#f8f9fa;">
+          <tr>
+            <th class="px-4 py-3 fw-bold text-muted small text-uppercase">Ингредиент</th>
+            <th class="px-4 py-3 fw-bold text-muted small text-uppercase text-end">Кол-во</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ingredient, amount in ingredients_summary.items() %}
+          <tr>
+            <td class="px-4 py-3 fw-bold">{{ ingredient }}</td>
+            <td class="px-4 py-3 text-end">
+              <span class="badge bg-success bg-opacity-10 text-success fw-bold px-3 py-2 rounded-pill">
+                {{ amount }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
     {% else %}
-        <p>Нет данных по ингредиентам</p>
+    <div class="text-center py-5 text-muted">
+      <div class="fs-1 mb-3">🧂</div>
+      <p>Нет данных по ингредиентам</p>
+    </div>
     {% endif %}
+  </div>
+
 </div>
 
-<!-- JS -->
 <script>
-function showTab(tabName) {
-    const tabs = document.querySelectorAll('.tab-content');
-    tabs.forEach(tab => tab.style.display = 'none');
-
-    document.getElementById(tabName + '-tab').style.display = 'block';
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+  document.querySelectorAll('#reportTabs .nav-link').forEach(b => b.classList.remove('active'));
+  document.getElementById(name + '-tab').style.display = 'block';
+  btn.classList.add('active');
 }
 </script>
-
 {% endblock %}
