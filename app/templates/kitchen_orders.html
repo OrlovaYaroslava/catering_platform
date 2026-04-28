@@ -1,33 +1,77 @@
 {% extends "base.html" %}
-
-{% block title %}Заказы кухни{% endblock %}
+{% block title %}Активные заказы — Кухня{% endblock %}
 
 {% block content %}
-<h2>Заказы кухни</h2>
+<div class="container py-4">
 
-{% for order in orders %}
-    <div class="card">
-        <p><strong>Заказ №{{ order.id }}</strong></p>
-        <p>Дата: {{ order.event_date }} {{ order.event_time }}</p>
-
-        <p>
-            Статус:
-            {% if order.status == "paid" %}
-                🟡 Новый
-            {% elif order.status == "cooking" %}
-                🔥 В работе
-            {% elif order.status == "ready" %}
-                ✅ Готов
-            {% endif %}
-        </p>
-
-        <a class="btn"
-           href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}">
-            Подробнее
-        </a>
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+    <div>
+      <a href="{{ url_for('main.kitchen_dashboard') }}" class="text-decoration-none text-muted small">← Панель кухни</a>
+      <h2 class="fw-800 mt-1 mb-0">📦 Активные заказы</h2>
     </div>
-{% else %}
-    <p>Нет заказов для кухни</p>
-{% endfor %}
+    <a href="{{ url_for('main.kitchen_board') }}" class="btn btn-outline-primary btn-sm fw-bold">
+      📋 Открыть доску
+    </a>
+  </div>
 
+  {% if orders %}
+  <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <table class="table table-hover mb-0 align-middle">
+      <thead style="background:#f8f9fa;">
+        <tr>
+          <th class="px-4 py-3 fw-bold text-muted small text-uppercase">№</th>
+          <th class="px-4 py-3 fw-bold text-muted small text-uppercase">Дата / Время</th>
+          <th class="px-4 py-3 fw-bold text-muted small text-uppercase">Гостей</th>
+          <th class="px-4 py-3 fw-bold text-muted small text-uppercase">Статус</th>
+          <th class="px-4 py-3 fw-bold text-muted small text-uppercase">Флаги</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td class="px-4 py-3 fw-800">#{{ order.id }}</td>
+          <td class="px-4 py-3">
+            <div class="fw-bold">{{ order.event_date.strftime('%d.%m.%Y') if order.event_date else '—' }}</div>
+            <div class="small text-muted">⏰ {{ order.event_time.strftime('%H:%M') if order.event_time else '—' }}</div>
+          </td>
+          <td class="px-4 py-3">👥 {{ order.guests_count }}</td>
+          <td class="px-4 py-3">
+            {% if order.status == "paid" %}
+              <span class="badge bg-warning text-dark px-3 py-2">🟡 Новый</span>
+            {% elif order.status == "cooking" %}
+              <span class="badge px-3 py-2" style="background:#f97316;color:#fff;">🔥 В работе</span>
+            {% elif order.status == "ready" %}
+              <span class="badge bg-success px-3 py-2">✅ Готов</span>
+            {% endif %}
+          </td>
+          <td class="px-4 py-3">
+            {% if order.is_urgent %}
+              <span class="badge bg-danger">🔥 Срочный</span>
+            {% endif %}
+            {% if order.kitchen_comment %}
+              <span class="badge bg-secondary">📝 Комментарий</span>
+            {% endif %}
+          </td>
+          <td class="px-4 py-3 text-end">
+            <a href="{{ url_for('main.kitchen_order_detail', order_id=order.id) }}"
+               class="btn btn-outline-primary btn-sm fw-bold">
+              Открыть →
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% else %}
+  <div class="text-center py-5 text-muted">
+    <div class="fs-1 mb-3">🍳</div>
+    <p class="fw-bold">Нет активных заказов</p>
+    <p class="small">Все заказы выполнены или ещё не оплачены</p>
+  </div>
+  {% endif %}
+
+</div>
 {% endblock %}

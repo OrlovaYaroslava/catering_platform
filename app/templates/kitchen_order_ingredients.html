@@ -14,8 +14,12 @@
 
     <!-- Статус заказа -->
     <div class="alert alert-info">
-        <strong>Статус:</strong> {{ order.status }} | 
-        <strong>Дата:</strong> {{ order.event_date }} | 
+        <strong>Статус:</strong>
+        {% if order.status == "paid" %}🟡 Новый
+        {% elif order.status == "cooking" %}🔥 В работе
+        {% elif order.status == "ready" %}✅ Готов
+        {% else %}{{ order.status }}{% endif %}
+        <strong>Дата:</strong> {{ order.event_date }}
         <strong>Гости:</strong> {{ order.guests_count }}
     </div>
 
