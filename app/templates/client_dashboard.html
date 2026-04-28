@@ -3,12 +3,111 @@
 {% block title %}Кабинет клиента{% endblock %}
 
 {% block content %}
-<h2>Кабинет клиента</h2>
+<section class="dashboard-hero mb-4">
+    <div class="row g-4 align-items-center">
+        <div class="col-lg-8">
+            <div class="eyebrow">Личный кабинет</div>
+            <h1 class="page-title mb-3">Добро пожаловать, {{ current_user.email }}</h1>
+            <p class="page-subtitle mb-4">
+                Здесь ты можешь быстро перейти к меню, проверить заказы, оплатить незавершённые заявки
+                и в дальнейшем управлять своим профилем.
+            </p>
+        </div>
+    </div>
+</section>
 
-<ul>
-    <li><a href="{{ url_for('main.menu') }}">Перейти в меню</a></li>
-    <li><a href="{{ url_for('main.cart') }}">Корзина</a></li>
-    <li><a href="{{ url_for('main.my_orders') }}">Мои заказы</a></li>
-</ul>
+<section class="mb-4">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="dashboard-stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-label">Заказы</div>
+                <div class="stat-value">История заказов</div>
+                <div class="stat-text">Просмотр статусов, деталей и переход к оплате.</div>
+                <a href="{{ url_for('main.my_orders') }}" class="stat-link">Открыть →</a>
+            </div>
+        </div>
 
+        <div class="col-md-4">
+            <div class="dashboard-stat-card">
+                <div class="stat-icon">🛒</div>
+                <div class="stat-label">Корзина</div>
+                <div class="stat-value">Собранный заказ</div>
+                <div class="stat-text">Проверь блюда, количество и итоговую сумму.</div>
+                <a href="{{ url_for('main.cart') }}" class="stat-link">Перейти →</a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="dashboard-stat-card">
+                <div class="stat-icon">🍴</div>
+                <div class="stat-label">Меню</div>
+                <div class="stat-value">Выбор блюд</div>
+                <div class="stat-text">Подбери блюда для мероприятия и сформируй заказ.</div>
+                <a href="{{ url_for('main.menu') }}" class="stat-link">Выбрать →</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="row g-4">
+    <div class="col-lg-8">
+        <div class="content-card h-100">
+            <div class="section-mini-title">Быстрые действия</div>
+            <h2 class="section-title">Что можно сделать сейчас</h2>
+
+            <div class="action-grid">
+                <a href="{{ url_for('main.menu') }}" class="action-card">
+                    <div class="action-card-icon">🍽</div>
+                    <div>
+                        <div class="action-card-title">Сформировать новый заказ</div>
+                        <div class="action-card-text">Перейти в каталог и выбрать блюда.</div>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('main.cart') }}" class="action-card">
+                    <div class="action-card-icon">🧾</div>
+                    <div>
+                        <div class="action-card-title">Проверить корзину</div>
+                        <div class="action-card-text">Посмотреть состав заказа и итоговую сумму.</div>
+                    </div>
+                </a>
+
+                <a href="{{ url_for('main.my_orders') }}" class="action-card">
+                    <div class="action-card-icon">🚚</div>
+                    <div>
+                        <div class="action-card-title">Отследить заказ</div>
+                        <div class="action-card-text">Понять, на каком этапе сейчас мероприятие.</div>
+                    </div>
+                </a>
+
+                <div class="action-card action-card-muted">
+                    <div class="action-card-icon">🔒</div>
+                    <div>
+                        <div class="action-card-title">Смена пароля</div>
+                        <div class="action-card-text">Эту функцию мы добавим следующим этапом.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="content-card h-100">
+            <div class="section-mini-title">Профиль</div>
+            <h2 class="section-title">Данные аккаунта</h2>
+
+            <div class="profile-box">
+                <div class="profile-line">
+                    <span class="profile-key">Email</span>
+                    <span class="profile-value">{{ current_user.email }}</span>
+                </div>
+                <div class="profile-line">
+                    <span class="profile-key">Статус</span>
+                    <span class="profile-value success-text">Аккаунт активен</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
