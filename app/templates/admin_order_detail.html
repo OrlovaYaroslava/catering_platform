@@ -1,127 +1,221 @@
 {% extends "base.html" %}
-
-{% block title %}Заказ №{{ order.id }}{% endblock %}
+{% block title %}Заказ №{{ order.id }} — Админ{% endblock %}
 
 {% block content %}
-<h2>Заказ №{{ order.id }}</h2>
+<div class="container py-4">
 
-<!-- ИНФОРМАЦИЯ О ЗАКАЗЕ -->
-<div class="card">
-    <h3>Информация о заказе</h3>
-
-    <p><strong>Клиент:</strong> {{ order.user.email }}</p>
-    <p><strong>Дата мероприятия:</strong> {{ order.event_date }}</p>
-    <p><strong>Время:</strong> {{ order.event_time }}</p>
-    <p><strong>Адрес:</strong> {{ order.address }}</p>
-    <p><strong>Количество гостей:</strong> {{ order.guests_count }}</p>
-
-    <p>
-        <strong>Статус заказа:</strong>
+  <!-- Хлебные крошки + заголовок -->
+  <div class="d-flex align-items-start justify-content-between mb-4 flex-wrap gap-3">
+    <div>
+      <a href="{{ url_for('main.admin_orders') }}" class="text-decoration-none text-muted small">
+        ← Назад к списку заказов
+      </a>
+      <h2 class="fw-800 mt-1 mb-0">Заказ №{{ order.id }}</h2>
+      <div class="mt-2">
+        {% if order.is_urgent %}
+          <span class="badge bg-danger me-2">🔥 СРОЧНЫЙ</span>
+        {% endif %}
         {% if order.status == "awaiting_payment" %}
-            🕒 Ожидает оплаты
+          <span class="badge bg-warning text-dark fs-6 px-3 py-2">🕒 Ожидает оплаты</span>
         {% elif order.status == "paid" %}
-            🟡 Оплачен (ожидает приготовления)
+          <span class="badge bg-primary fs-6 px-3 py-2">🟡 Оплачен</span>
         {% elif order.status == "cooking" %}
-            🔥 В работе
+          <span class="badge bg-orange fs-6 px-3 py-2" style="background:#f97316!important">🔥 Готовится</span>
         {% elif order.status == "ready" %}
-            ✅ Готов
+          <span class="badge bg-success fs-6 px-3 py-2">✅ Готов</span>
+        {% elif order.status == "completed" %}
+          <span class="badge bg-secondary fs-6 px-3 py-2">📦 Завершён</span>
         {% else %}
-            {{ order.status }}
+          <span class="badge bg-secondary fs-6 px-3 py-2">{{ order.status }}</span>
         {% endif %}
-    </p>
-</div>
+      </div>
+    </div>
+    <div class="text-end">
+      <div class="text-muted small">Итого по заказу</div>
+      <div class="fw-800 fs-3 text-primary">{{ order.total_price }} ₽</div>
+    </div>
+  </div>
 
-<!-- КОММЕНТАРИЙ ДЛЯ КУХНИ -->
-<div class="card">
-    <h3>Комментарий для кухни</h3>
+  <div class="row g-4">
 
-    <form method="POST"
-          action="{{ url_for('main.admin_update_kitchen_comment', order_id=order.id) }}">
+    <!-- Левая колонка -->
+    <div class="col-lg-8">
 
-        <textarea name="kitchen_comment" rows="4" style="width:100%;">
-{{ order.kitchen_comment or "" }}
-        </textarea>
-
-        <br><br>
-
-        <label>
-            <input type="checkbox" name="is_urgent"
-                {% if order.is_urgent %}checked{% endif %}>
-            Срочный заказ
-        </label>
-
-        <br><br>
-
-        <button class="btn">Сохранить</button>
-    </form>
-</div>
-
-
-<!-- СОСТАВ ЗАКАЗА -->
-<div class="card">
-    <h3>Состав заказа</h3>
-
-    {% for item in items %}
-        <div style="margin-bottom: 10px;">
-            <strong>{{ item.dish.name }}</strong><br>
-            Количество: {{ item.quantity }} шт.<br>
-            Цена за единицу: {{ item.price }} ₽<br>
-
-            {% if item.dish.is_vegan %}
-                🌱 Веганское<br>
-            {% endif %}
-            {% if item.dish.is_gluten_free %}
-                🚫 Без глютена<br>
-            {% endif %}
-            {% if item.dish.contains_allergens %}
-                ⚠️ Содержит аллергены<br>
-            {% endif %}
+      <!-- Состав заказа -->
+      <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-transparent border-0 pt-4 px-4 pb-2">
+          <h5 class="fw-800 mb-0">🧾 Состав заказа</h5>
         </div>
-    {% endfor %}
+        <div class="card-body px-4 pb-4 pt-2">
+          <table class="table align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Блюдо</th>
+                <th class="text-center">Кол-во</th>
+                <th class="text-end">Цена</th>
+                <th class="text-end">Сумма</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in items %}
+              <tr>
+                <td>
+                  <div class="fw-bold">{{ item.dish.name }}</div>
+                  <div class="mt-1">
+                    {% if item.dish.is_vegan %}
+                      <span class="badge bg-success bg-opacity-10 text-success me-1">🌱 Веган</span>
+                    {% endif %}
+                    {% if item.dish.is_gluten_free %}
+                      <span class="badge bg-info bg-opacity-10 text-info me-1">🌾 Без глютена</span>
+                    {% endif %}
+                    {% if item.dish.contains_allergens %}
+                      <span class="badge bg-warning bg-opacity-10 text-warning">⚠️ Аллергены</span>
+                    {% endif %}
+                  </div>
+                </td>
+                <td class="text-center fw-bold">{{ item.quantity }} шт.</td>
+                <td class="text-end text-muted">{{ item.price }} ₽</td>
+                <td class="text-end fw-bold">{{ (item.price * item.quantity)|round(2) }} ₽</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr class="table-light">
+                <td colspan="3" class="text-end fw-bold">Итого:</td>
+                <td class="text-end fw-800 text-primary fs-5">{{ order.total_price }} ₽</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
 
-    <p><strong>Итого по заказу:</strong> {{ order.total_price }} ₽</p>
+      <!-- Комментарий для кухни -->
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-transparent border-0 pt-4 px-4 pb-2">
+          <h5 class="fw-800 mb-0">💬 Комментарий для кухни</h5>
+        </div>
+        <div class="card-body px-4 pb-4 pt-2">
+          <form method="POST" action="{{ url_for('main.admin_update_kitchen_comment', order_id=order.id) }}">
+            <div class="mb-3">
+              <textarea name="kitchen_comment" class="form-control" rows="3"
+                        placeholder="Особые пожелания, аллергии, доп. инструкции...">{{ order.kitchen_comment or "" }}</textarea>
+            </div>
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+              <div class="form-check form-switch mb-0">
+                <input class="form-check-input" type="checkbox" role="switch"
+                       name="is_urgent" id="is_urgent"
+                       {% if order.is_urgent %}checked{% endif %}
+                       style="width:2.5em;height:1.4em;">
+                <label class="form-check-label fw-bold ms-2" for="is_urgent">
+                  🔥 Пометить как срочный
+                </label>
+              </div>
+              <button type="submit" class="btn btn-primary px-4 fw-bold">
+                💾 Сохранить
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Правая колонка -->
+    <div class="col-lg-4">
+
+      <!-- Информация о заказе -->
+      <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-transparent border-0 pt-4 px-4 pb-2">
+          <h5 class="fw-800 mb-0">📋 Информация</h5>
+        </div>
+        <div class="card-body px-4 pb-4 pt-2">
+          <ul class="list-unstyled mb-0">
+            <li class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted">Клиент</span>
+              <span class="fw-bold text-end" style="max-width:180px;word-break:break-all">{{ order.user.email }}</span>
+            </li>
+            <li class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted">Дата</span>
+              <span class="fw-bold">{{ order.event_date.strftime('%d.%m.%Y') if order.event_date else '—' }}</span>
+            </li>
+            <li class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted">Время</span>
+              <span class="fw-bold">{{ order.event_time.strftime('%H:%M') if order.event_time else '—' }}</span>
+            </li>
+            <li class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted">Адрес</span>
+              <span class="fw-bold text-end" style="max-width:180px">{{ order.address }}</span>
+            </li>
+            <li class="d-flex justify-content-between py-2">
+              <span class="text-muted">Гостей</span>
+              <span class="fw-bold">{{ order.guests_count }} чел.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Оплата -->
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-transparent border-0 pt-4 px-4 pb-2">
+          <h5 class="fw-800 mb-0">💳 Оплата</h5>
+        </div>
+        <div class="card-body px-4 pb-4 pt-2">
+          <ul class="list-unstyled mb-0">
+            <li class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted">Способ</span>
+              <span class="fw-bold">
+                {% if payment.method == "card" %}💳 Карта
+                {% elif payment.method == "invoice" %}🧾 Счёт
+                {% elif payment.method == "cash" %}💵 Наличные
+                {% else %}{{ payment.method or '—' }}
+                {% endif %}
+              </span>
+            </li>
+            <li class="d-flex justify-content-between py-2 border-bottom">
+              <span class="text-muted">Статус</span>
+              <span class="fw-bold">
+                {% if payment.status == "pending" %}
+                  <span class="badge bg-warning text-dark">🕒 Ожидает</span>
+                {% elif payment.status == "success" %}
+                  <span class="badge bg-success">✅ Оплачено</span>
+                {% elif payment.status == "failed" %}
+                  <span class="badge bg-danger">❌ Ошибка</span>
+                {% endif %}
+              </span>
+            </li>
+            <li class="d-flex justify-content-between py-2">
+              <span class="text-muted">Сумма</span>
+              <span class="fw-800 text-primary">{{ payment.amount }} ₽</span>
+            </li>
+          </ul>
+
+          {% if payment.method == "invoice" and payment.status == "pending" %}
+          <div class="mt-3 p-3 rounded-3 bg-warning bg-opacity-10 border border-warning border-opacity-25">
+            <div class="small text-warning fw-bold mb-2">⏳ Ожидает подтверждения оплаты по счёту</div>
+            {% if payment.comment %}
+              <div class="small text-muted mb-3" style="white-space:pre-line">{{ payment.comment }}</div>
+            {% endif %}
+            <form method="POST" action="{{ url_for('main.admin_confirm_payment', order_id=order.id) }}">
+              <button type="submit" class="btn btn-success w-100 fw-bold">
+                ✅ Подтвердить оплату
+              </button>
+            </form>
+          </div>
+          {% endif %}
+
+          {% if payment.method == "invoice" and payment.status == "success" %}
+            <div class="mt-3">
+              <a href="{{ url_for('main.invoice_page', order_id=order.id) }}"
+                 class="btn btn-outline-secondary w-100" target="_blank">
+                🧾 Открыть счёт
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
 </div>
-
-<!-- ОПЛАТА -->
-<div class="card">
-    <h3>Оплата</h3>
-
-    <p><strong>Способ оплаты:</strong>
-        {% if payment.method == "card" %}
-            💳 Банковская карта
-        {% elif payment.method == "invoice" %}
-            🧾 Безналичный расчёт по счёту
-        {% elif payment.method == "cash" %}
-            💵 Наличные курьеру
-        {% else %}
-            {{ payment.method }}
-        {% endif %}
-    </p>
-
-    <p>
-        <strong>Статус платежа:</strong>
-        {% if payment.status == "pending" %}
-            🕒 Ожидает оплаты
-        {% elif payment.status == "success" %}
-            ✅ Оплачено
-        {% elif payment.status == "failed" %}
-            ❌ Ошибка оплаты
-        {% endif %}
-    </p>
-
-    {% if payment.method == "invoice" and payment.status == "pending" %}
-        <form method="POST"
-              action="{{ url_for('main.admin_confirm_payment', order_id=order.id) }}">
-            <button class="btn btn-success">
-                ✅ Подтвердить оплату по счёту
-            </button>
-        </form>
-    {% endif %}
-</div>
-
-<a class="btn btn-secondary"
-   href="{{ url_for('main.admin_orders') }}">
-    ← Назад к списку заказов
-</a>
-
 {% endblock %}
