@@ -1,26 +1,186 @@
 {% extends "base.html" %}
 
-{% block title %}Вход{% endblock %}
+{% block title %}Вход — Catering Platform{% endblock %}
 
 {% block content %}
-<h2>Вход</h2>
+<div class="auth-page">
+    <div class="auth-card">
 
-<form method="POST">
-    {{ form.hidden_tag() }}
+        <!-- Лого -->
+        <div class="auth-logo">🍽</div>
+        <h1 class="auth-title">Добро пожаловать</h1>
+        <p class="auth-subtitle">Войдите в свой аккаунт чтобы продолжить</p>
 
-    <p>
-        {{ form.email.label }}<br>
-        {{ form.email(size=32) }}
-    </p>
+        <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
 
-    <p>
-        {{ form.password.label }}<br>
-        {{ form.password(size=32) }}
-    </p>
+            <div class="auth-field">
+                {{ form.email.label(class="auth-label") }}
+                {{ form.email(class="auth-input", placeholder="example@mail.com") }}
+                {% if form.email.errors %}
+                    {% for e in form.email.errors %}
+                        <div class="auth-error">{{ e }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
 
-    <button class="btn" type="submit">
-        Войти
-    </button>
-</form>
+            <div class="auth-field">
+                {{ form.password.label(class="auth-label") }}
+                <div class="auth-input-wrap">
+                    {{ form.password(class="auth-input", placeholder="Введите пароль", id="passwordInput") }}
+                    <button type="button" class="auth-eye" onclick="togglePassword('passwordInput', this)" tabindex="-1">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+                {% if form.password.errors %}
+                    {% for e in form.password.errors %}
+                        <div class="auth-error">{{ e }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
 
+            <button type="submit" class="auth-btn">Войти</button>
+        </form>
+
+        <p class="auth-switch">
+            Нет аккаунта? <a href="{{ url_for('auth.register') }}">Зарегистрироваться</a>
+        </p>
+    </div>
+</div>
+
+<style>
+.auth-page {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+}
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    background: #fff;
+    border-radius: 24px;
+    padding: 48px 40px 40px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+    text-align: center;
+}
+.auth-logo {
+    width: 60px; height: 60px;
+    background: linear-gradient(135deg, #1e3a5f, #2563eb);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    margin: 0 auto 20px;
+}
+.auth-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 8px;
+}
+.auth-subtitle {
+    color: #6b7280;
+    font-size: 0.95rem;
+    margin-bottom: 32px;
+}
+.auth-field {
+    text-align: left;
+    margin-bottom: 20px;
+}
+.auth-label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 7px;
+    letter-spacing: 0.01em;
+}
+.auth-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 0.97rem;
+    color: #111827;
+    background: #f9fafb;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+.auth-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+    background: #fff;
+}
+.auth-input-wrap {
+    position: relative;
+}
+.auth-input-wrap .auth-input {
+    padding-right: 48px;
+}
+.auth-eye {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9ca3af;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+}
+.auth-eye:hover { color: #2563eb; }
+.auth-error {
+    color: #dc2626;
+    font-size: 0.82rem;
+    margin-top: 5px;
+    font-weight: 600;
+}
+.auth-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #1e3a5f, #2563eb);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s, transform 0.1s;
+    letter-spacing: 0.01em;
+}
+.auth-btn:hover { opacity: 0.92; transform: translateY(-1px); }
+.auth-btn:active { transform: translateY(0); }
+.auth-switch {
+    margin-top: 24px;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+.auth-switch a {
+    color: #2563eb;
+    font-weight: 700;
+    text-decoration: none;
+}
+.auth-switch a:hover { text-decoration: underline; }
+</style>
+
+<script>
+function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    const isText = input.type === 'text';
+    input.type = isText ? 'password' : 'text';
+    btn.innerHTML = isText
+        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+}
+</script>
 {% endblock %}
