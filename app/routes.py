@@ -31,8 +31,29 @@ def kitchen_dashboard():
 
 @main.route("/menu")
 def menu():
-    dishes = Dish.query.filter_by(is_active=True).all()
-    return render_template("menu.html", dishes=dishes)
+    # Фильтрация по тегу и поиску
+    tag_filter = request.args.get("tag", "")
+    search_q   = request.args.get("q", "")
+
+    query = Dish.query.filter_by(is_active=True)
+
+    if tag_filter:
+        from app.models import Tag
+        query = query.filter(Dish.tags.any(Tag.name == tag_filter))
+
+    if search_q:
+        query = query.filter(Dish.name.ilike(f"%{search_q}%"))
+
+    dishes = query.all()
+
+    # Все теги для фильтров
+    from app.models import Tag
+    all_tags = Tag.query.all()
+
+    return render_template("menu.html", dishes=dishes,
+                           all_tags=all_tags,
+                           tag_filter=tag_filter,
+                           search_q=search_q)
 
 @main.route("/add_to_cart/<int:dish_id>", methods=["POST"])
 @login_required
@@ -145,8 +166,39 @@ def checkout():
 @login_required
 @role_required("client")
 def my_orders():
-    orders = Order.query.filter_by(user_id=current_user.id).all()
-    return render_template("my_orders.html", orders=orders)
+    status_filter = request.args.get("status", "all")
+    sort_by       = request.args.get("sort", "newest")
+
+    query = Order.query.filter_by(user_id=current_user.id)
+
+    if status_filter != "all":
+        query = query.filter(Order.status == status_filter)
+
+    if sort_by == "oldest":
+        query = query.order_by(Order.id.asc())
+    elif sort_by == "price_desc":
+        query = query.order_by(Order.total_price.desc())
+    elif sort_by == "price_asc":
+        query = query.order_by(Order.total_price.asc())
+    else:  # newest
+        query = query.order_by(Order.id.desc())
+
+    orders = query.all()
+
+    # Счётчики для бейджей
+    all_orders  = Order.query.filter_by(user_id=current_user.id)
+    status_counts = {
+        "all":             all_orders.count(),
+        "awaiting_payment": all_orders.filter(Order.status == "awaiting_payment").count(),
+        "paid":            Order.query.filter_by(user_id=current_user.id, status="paid").count(),
+        "cooking":         Order.query.filter_by(user_id=current_user.id, status="cooking").count(),
+        "ready":           Order.query.filter_by(user_id=current_user.id, status="ready").count(),
+    }
+
+    return render_template("my_orders.html", orders=orders,
+                           status_filter=status_filter,
+                           sort_by=sort_by,
+                           status_counts=status_counts)
 
 @main.route("/kitchen/orders")
 @login_required

@@ -1,32 +1,372 @@
 {% extends "base.html" %}
-{% block title %}Меню{% endblock %}
+{% block title %}Меню — Catering Platform{% endblock %}
+
 {% block content %}
-<h1>Меню</h1>
-<div class="row">
+<div class="page-header mb-4">
+    <div class="eyebrow-label">Каталог</div>
+    <h1 class="page-h1">Меню</h1>
+    <p class="page-desc">Выберите блюда для вашего мероприятия и оформите заказ</p>
+</div>
+
+<!-- Панель фильтров -->
+<div class="filter-panel mb-4">
+    <form method="GET" action="{{ url_for('main.menu') }}" class="filter-form">
+        <div class="filter-search-wrap">
+            <svg class="filter-search-icon" width="16" height="16" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="text" name="q" value="{{ search_q }}"
+                   class="filter-search" placeholder="Поиск по названию…">
+        </div>
+
+        <div class="filter-tags">
+            <a href="{{ url_for('main.menu', q=search_q) }}"
+               class="filter-tag {% if not tag_filter %}filter-tag--active{% endif %}">Все</a>
+            {% for tag in all_tags %}
+            <a href="{{ url_for('main.menu', tag=tag.name, q=search_q) }}"
+               class="filter-tag {% if tag_filter == tag.name %}filter-tag--active{% endif %}">
+                {{ tag.name }}
+            </a>
+            {% endfor %}
+        </div>
+
+        {% if tag_filter or search_q %}
+        <a href="{{ url_for('main.menu') }}" class="filter-reset">✕ Сбросить</a>
+        {% endif %}
+    </form>
+</div>
+
+{% if dishes %}
+<div class="filter-results-label mb-3">
+    Найдено блюд: <strong>{{ dishes|length }}</strong>
+    {% if tag_filter %} в категории «{{ tag_filter }}»{% endif %}
+    {% if search_q %} по запросу «{{ search_q }}»{% endif %}
+</div>
+
+<div class="row g-4" id="dishGrid">
     {% for dish in dishes %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                {% if dish.image_url %}
-                    <img src="{{ dish.image_url }}" class="dish-image" alt="{{ dish.name }}">
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ dish.name }}</h5>
-                    <p class="card-text">{{ dish.description }}</p>
-                    <p class="card-text"><strong>{{ dish.price_per_unit }} ₽</strong></p>
+    <div class="col-md-6 col-lg-4">
+        <div class="dish-card" id="dish-card-{{ dish.id }}">
+            {% if dish.image_url %}
+                <img src="{{ dish.image_url }}" class="dish-card-img"
+                     alt="{{ dish.name }}" loading="lazy">
+            {% else %}
+                <div class="dish-card-img-placeholder">🍽</div>
+            {% endif %}
+
+            <div class="dish-card-body">
+                <div class="dish-tags mb-2">
                     {% for tag in dish.tags %}
-                        <span class="badge bg-info badge-tag">{{ tag.name }}</span>
+                        <a href="{{ url_for('main.menu', tag=tag.name) }}"
+                           class="dish-tag">{{ tag.name }}</a>
                     {% endfor %}
+                </div>
+
+                <h5 class="dish-name">{{ dish.name }}</h5>
+                <p class="dish-desc">{{ dish.description }}</p>
+
+                <div class="dish-footer">
+                    <div class="dish-price">{{ dish.price_per_unit }} ₽</div>
+
                     {% if current_user.is_authenticated %}
-                        <form method="POST" action="{{ url_for('main.add_to_cart', dish_id=dish.id) }}">
-                            <input type="number" name="quantity" value="1" min="1" class="form-control mb-2">
-                            <button type="submit" class="btn btn-primary w-100">В корзину</button>
-                        </form>
+                    <div class="dish-add-controls" id="controls-{{ dish.id }}">
+                        <!-- Кнопка добавить -->
+                        <button class="dish-add-btn"
+                                onclick="addToCart({{ dish.id }}, '{{ dish.name }}', {{ dish.price_per_unit }})"
+                                id="btn-{{ dish.id }}">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2.5">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            В корзину
+                        </button>
+                    </div>
+                    <!-- Счётчик (скрыт пока не добавлено) -->
+                    <div class="dish-qty-control d-none" id="qty-control-{{ dish.id }}">
+                        <button class="qty-btn" onclick="changeQty({{ dish.id }}, -1)">−</button>
+                        <span class="qty-val" id="qty-val-{{ dish.id }}">1</span>
+                        <button class="qty-btn" onclick="changeQty({{ dish.id }}, +1)">+</button>
+                    </div>
                     {% else %}
-                        <a href="{{ url_for('auth.register') }}" class="btn btn-secondary w-100">Зарегистрируйтесь</a>
+                        <a href="{{ url_for('auth.register') }}"
+                           class="dish-add-btn dish-add-btn--ghost">
+                            Войти чтобы добавить
+                        </a>
                     {% endif %}
                 </div>
             </div>
+
+            <!-- Зелёная метка "добавлено" -->
+            <div class="dish-added-badge d-none" id="added-badge-{{ dish.id }}">
+                ✓ Добавлено
+            </div>
         </div>
+    </div>
     {% endfor %}
 </div>
+
+{% else %}
+<div class="empty-state-block">
+    <div class="empty-icon">🔍</div>
+    <h3>Ничего не найдено</h3>
+    <p>Попробуйте изменить запрос или сбросить фильтры</p>
+    <a href="{{ url_for('main.menu') }}" class="btn-primary-inline">Сбросить фильтры</a>
+</div>
+{% endif %}
+
+<!-- Плавающая кнопка корзины -->
+<div class="cart-float d-none" id="cartFloat">
+    <div class="cart-float-info">
+        <span class="cart-float-icon">🛒</span>
+        <div>
+            <div class="cart-float-title">Корзина</div>
+            <div class="cart-float-summary" id="cartSummary">0 блюд · 0 ₽</div>
+        </div>
+    </div>
+    <a href="{{ url_for('main.cart') }}" class="cart-float-btn">
+        Перейти к оформлению →
+    </a>
+</div>
+
+<style>
+.page-header { padding: 8px 0 4px; }
+.eyebrow-label {
+    font-size: 0.78rem; font-weight: 800; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #2563eb; margin-bottom: 8px;
+}
+.page-h1 { font-size: 2rem; font-weight: 800; color: #111827; margin-bottom: 6px; }
+.page-desc { color: #6b7280; font-size: 0.97rem; }
+
+/* ── Фильтры ── */
+.filter-panel {
+    background: #fff; border-radius: 18px;
+    padding: 18px 22px; box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+}
+.filter-form { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.filter-search-wrap { position: relative; flex-shrink: 0; }
+.filter-search-icon {
+    position: absolute; left: 12px; top: 50%;
+    transform: translateY(-50%); color: #9ca3af; pointer-events: none;
+}
+.filter-search {
+    padding: 10px 14px 10px 36px; border: 1.5px solid #e5e7eb;
+    border-radius: 12px; font-size: 0.9rem; outline: none; width: 220px;
+    transition: border-color 0.2s;
+}
+.filter-search:focus { border-color: #2563eb; }
+.filter-tags { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+.filter-tag {
+    padding: 8px 16px; border-radius: 99px; background: #f3f4f6;
+    color: #374151; font-size: 0.85rem; font-weight: 700;
+    text-decoration: none; transition: background 0.2s, color 0.2s;
+}
+.filter-tag:hover { background: #dbeafe; color: #2563eb; }
+.filter-tag--active { background: #2563eb; color: #fff; }
+.filter-reset {
+    font-size: 0.85rem; font-weight: 700; color: #ef4444;
+    text-decoration: none; padding: 8px 12px; border-radius: 10px;
+    transition: background 0.2s;
+}
+.filter-reset:hover { background: #fef2f2; }
+.filter-results-label { font-size: 0.9rem; color: #6b7280; }
+.filter-results-label strong { color: #111827; }
+
+/* ── Карточки ── */
+.dish-card {
+    background: #fff; border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    overflow: hidden; height: 100%;
+    display: flex; flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+.dish-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,0,0,0.11); }
+.dish-card.is-added {
+    box-shadow: 0 0 0 2.5px #22c55e, 0 8px 28px rgba(34,197,94,0.15);
+}
+.dish-card-img { width: 100%; height: 200px; object-fit: cover; display: block; }
+.dish-card-img-placeholder {
+    width: 100%; height: 160px;
+    background: linear-gradient(135deg, #f0f4ff, #e0e7ff);
+    display: flex; align-items: center; justify-content: center; font-size: 3rem;
+}
+.dish-card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+.dish-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.dish-tag {
+    background: #eff6ff; color: #2563eb; font-size: 0.75rem; font-weight: 700;
+    padding: 3px 10px; border-radius: 99px; text-decoration: none;
+}
+.dish-tag:hover { background: #dbeafe; }
+.dish-name { font-size: 1.1rem; font-weight: 800; color: #111827; margin: 10px 0 6px; }
+.dish-desc { font-size: 0.88rem; color: #6b7280; line-height: 1.6; flex: 1; margin-bottom: 16px; }
+.dish-footer {
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 12px; margin-top: auto;
+}
+.dish-price { font-size: 1.3rem; font-weight: 900; color: #111827; }
+
+.dish-add-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, #1e3a5f, #2563eb);
+    color: #fff !important; font-weight: 700; font-size: 0.88rem;
+    padding: 9px 16px; border-radius: 12px; border: none;
+    cursor: pointer; text-decoration: none; white-space: nowrap;
+    transition: opacity 0.2s, transform 0.1s;
+}
+.dish-add-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.dish-add-btn--ghost { background: #f3f4f6 !important; color: #374151 !important; }
+
+/* Счётчик +/- */
+.dish-qty-control {
+    display: flex; align-items: center; gap: 0;
+    background: #f3f4f6; border-radius: 12px; overflow: hidden;
+}
+.qty-btn {
+    background: none; border: none; cursor: pointer;
+    padding: 8px 14px; font-size: 1.2rem; font-weight: 700;
+    color: #374151; transition: background 0.15s;
+    line-height: 1;
+}
+.qty-btn:hover { background: #e5e7eb; }
+.qty-val {
+    min-width: 30px; text-align: center;
+    font-weight: 800; font-size: 0.97rem; color: #111827;
+}
+
+/* Бейдж "добавлено" */
+.dish-added-badge {
+    position: absolute; top: 12px; right: 12px;
+    background: #22c55e; color: #fff;
+    font-size: 0.78rem; font-weight: 800;
+    padding: 4px 12px; border-radius: 99px;
+    box-shadow: 0 2px 8px rgba(34,197,94,0.3);
+}
+
+/* ── Плавающая кнопка ── */
+.cart-float {
+    position: fixed; bottom: 28px; left: 50%;
+    transform: translateX(-50%);
+    background: #111827;
+    border-radius: 20px;
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 20px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.25);
+    z-index: 1000;
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+}
+@keyframes slideUp {
+    from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+    to   { transform: translateX(-50%) translateY(0);    opacity: 1; }
+}
+.cart-float-info {
+    display: flex; align-items: center; gap: 12px;
+}
+.cart-float-icon { font-size: 1.5rem; }
+.cart-float-title { color: #fff; font-weight: 800; font-size: 0.95rem; }
+.cart-float-summary { color: rgba(255,255,255,0.65); font-size: 0.82rem; font-weight: 600; }
+.cart-float-btn {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff !important; font-weight: 800; font-size: 0.92rem;
+    padding: 11px 22px; border-radius: 14px;
+    text-decoration: none; transition: opacity 0.2s;
+}
+.cart-float-btn:hover { opacity: 0.9; }
+
+.empty-state-block { text-align: center; padding: 80px 20px; }
+.empty-icon { font-size: 3.5rem; margin-bottom: 16px; }
+.empty-state-block h3 { font-weight: 800; font-size: 1.4rem; color: #111827; margin-bottom: 8px; }
+.empty-state-block p { color: #6b7280; margin-bottom: 24px; }
+.btn-primary-inline {
+    display: inline-block; padding: 13px 32px;
+    background: linear-gradient(135deg, #1e3a5f, #2563eb);
+    color: #fff !important; font-weight: 700; font-size: 0.97rem;
+    border-radius: 14px; text-decoration: none;
+}
+.btn-primary-inline:hover { opacity: 0.9; }
+</style>
+
+<script>
+// Локальное состояние корзины (в памяти страницы)
+const cartState = {};   // { dish_id: { qty, price, name } }
+
+function updateFloatBar() {
+    const ids = Object.keys(cartState);
+    const total = ids.reduce((s, id) => s + cartState[id].qty * cartState[id].price, 0);
+    const count = ids.reduce((s, id) => s + cartState[id].qty, 0);
+
+    const bar = document.getElementById('cartFloat');
+    const summary = document.getElementById('cartSummary');
+
+    if (count > 0) {
+        summary.textContent = `${count} блюд · ${total.toLocaleString('ru')} ₽`;
+        bar.classList.remove('d-none');
+    } else {
+        bar.classList.add('d-none');
+    }
+}
+
+function addToCart(dishId, name, price) {
+    const url = `/add_to_cart/${dishId}`;
+
+    // Отправляем на сервер
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'quantity=1'
+    });
+
+    // Обновляем локальное состояние
+    if (cartState[dishId]) {
+        cartState[dishId].qty += 1;
+    } else {
+        cartState[dishId] = { qty: 1, price: price, name: name };
+    }
+
+    // Прячем кнопку, показываем счётчик
+    document.getElementById(`btn-${dishId}`)?.closest('.dish-add-controls')?.classList.add('d-none');
+    const qtyCtrl = document.getElementById(`qty-control-${dishId}`);
+    qtyCtrl?.classList.remove('d-none');
+    document.getElementById(`qty-val-${dishId}`).textContent = cartState[dishId].qty;
+
+    // Зелёная рамка + бейдж
+    const card = document.getElementById(`dish-card-${dishId}`);
+    card?.classList.add('is-added');
+    document.getElementById(`added-badge-${dishId}`)?.classList.remove('d-none');
+
+    updateFloatBar();
+}
+
+function changeQty(dishId, delta) {
+    if (!cartState[dishId]) return;
+    const newQty = cartState[dishId].qty + delta;
+
+    if (newQty <= 0) {
+        // Убираем из корзины (на сервере сессия не обновится без перезагрузки,
+        // но это нормально — пользователь уберёт в корзине)
+        delete cartState[dishId];
+
+        document.getElementById(`qty-control-${dishId}`)?.classList.add('d-none');
+        document.getElementById(`btn-${dishId}`)?.closest('.dish-add-controls')?.classList.remove('d-none');
+        document.getElementById(`dish-card-${dishId}`)?.classList.remove('is-added');
+        document.getElementById(`added-badge-${dishId}`)?.classList.add('d-none');
+    } else {
+        // Отправляем разницу на сервер
+        const diff = delta > 0 ? 1 : -1;
+        if (diff > 0) {
+            fetch(`/add_to_cart/${dishId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'quantity=1'
+            });
+        }
+        cartState[dishId].qty = newQty;
+        document.getElementById(`qty-val-${dishId}`).textContent = newQty;
+    }
+
+    updateFloatBar();
+}
+</script>
 {% endblock %}

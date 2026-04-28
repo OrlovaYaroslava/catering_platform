@@ -1,26 +1,148 @@
 {% extends "base.html" %}
-
-{% block title %}Корзина{% endblock %}
+{% block title %}Корзина — Catering Platform{% endblock %}
 
 {% block content %}
-<h2>Корзина</h2>
+<div class="page-header mb-4">
+    <h1 class="page-h1">Корзина</h1>
+    <p class="page-desc">Проверьте состав заказа перед оформлением</p>
+</div>
 
 {% if items %}
-    {% for item in items %}
-        <div class="card">
-            <strong>{{ item.dish.name }}</strong><br>
-            Количество: {{ item.quantity }}<br>
-            Сумма: {{ item.subtotal }} ₽
+<div class="row g-4">
+    <!-- Список блюд -->
+    <div class="col-lg-8">
+        <div class="cp-card">
+            <div class="cp-card-header">
+                <span>Блюда в корзине</span>
+                <span class="item-count-badge">{{ items|length }} позиц.</span>
+            </div>
+
+            <div class="cart-list">
+                {% for item in items %}
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">{{ item.dish.name }}</div>
+                        <div class="cart-item-qty">{{ item.quantity }} шт. × {{ item.dish.price_per_unit }} ₽</div>
+                    </div>
+                    <div class="cart-item-sum">{{ item.subtotal }} ₽</div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
-    {% endfor %}
+    </div>
 
-    <h3>Итого: {{ total }} ₽</h3>
+    <!-- Итог -->
+    <div class="col-lg-4">
+        <div class="cp-card cp-card-total">
+            <div class="total-label">Итого к оплате</div>
+            <div class="total-amount">{{ total }} ₽</div>
 
-    <a class="btn" href="{{ url_for('main.checkout') }}">
-        Оформить заказ
-    </a>
+            <div class="total-divider"></div>
+
+            <div class="total-row">
+                <span>Блюд</span>
+                <span>{{ items|length }} позиц.</span>
+            </div>
+            <div class="total-row">
+                <span>Оплата</span>
+                <span>При оформлении</span>
+            </div>
+
+            <a href="{{ url_for('main.checkout') }}" class="btn-primary-full mt-4">
+                Оформить заказ →
+            </a>
+            <a href="{{ url_for('main.menu') }}" class="btn-ghost-full mt-2">
+                ← Продолжить выбор
+            </a>
+        </div>
+    </div>
+</div>
+
 {% else %}
-    <p>Корзина пуста</p>
+<div class="empty-state-block">
+    <div class="empty-icon">🛒</div>
+    <h3>Корзина пуста</h3>
+    <p>Добавьте блюда из меню чтобы сформировать заказ</p>
+    <a href="{{ url_for('main.menu') }}" class="btn-primary-full" style="max-width:220px;margin:0 auto;">Перейти в меню</a>
+</div>
 {% endif %}
 
+<style>
+.page-header { padding: 8px 0 4px; }
+.eyebrow-label {
+    font-size: 0.78rem; font-weight: 800; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #2563eb; margin-bottom: 8px;
+}
+.page-h1 { font-size: 2rem; font-weight: 800; color: #111827; margin-bottom: 6px; }
+.page-desc { color: #6b7280; font-size: 0.97rem; }
+
+.cp-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    overflow: hidden;
+}
+.cp-card-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 24px 16px;
+    font-weight: 800; font-size: 1rem; color: #111827;
+    border-bottom: 1px solid #f3f4f6;
+}
+.item-count-badge {
+    background: #eff6ff; color: #2563eb;
+    font-size: 0.8rem; font-weight: 700;
+    padding: 4px 12px; border-radius: 99px;
+}
+.cart-list { padding: 8px 0; }
+.cart-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #f9fafb;
+    transition: background 0.15s;
+}
+.cart-item:last-child { border-bottom: none; }
+.cart-item:hover { background: #fafafa; }
+.cart-item-name { font-weight: 700; color: #111827; font-size: 0.97rem; margin-bottom: 3px; }
+.cart-item-qty { font-size: 0.85rem; color: #9ca3af; }
+.cart-item-sum { font-weight: 800; font-size: 1.05rem; color: #111827; white-space: nowrap; }
+
+.cp-card-total {
+    padding: 28px 24px;
+    background: linear-gradient(160deg, #f0f7ff, #fff);
+    border: 1.5px solid #dbeafe;
+}
+.total-label { font-size: 0.82rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.07em; color: #6b7280; margin-bottom: 8px; }
+.total-amount { font-size: 2.4rem; font-weight: 900; color: #111827; margin-bottom: 4px; }
+.total-divider { height: 1px; background: #e5e7eb; margin: 18px 0; }
+.total-row {
+    display: flex; justify-content: space-between;
+    font-size: 0.9rem; color: #6b7280; margin-bottom: 10px; font-weight: 600;
+}
+.total-row span:last-child { color: #374151; font-weight: 700; }
+
+.btn-primary-full {
+    display: block; width: 100%; padding: 14px;
+    background: linear-gradient(135deg, #1e3a5f, #2563eb);
+    color: #fff !important; font-weight: 800; font-size: 1rem;
+    border-radius: 14px; text-align: center; text-decoration: none;
+    transition: opacity 0.2s, transform 0.1s;
+}
+.btn-primary-full:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-ghost-full {
+    display: block; width: 100%; padding: 12px;
+    border: 1.5px solid #e5e7eb; background: #fff;
+    color: #374151 !important; font-weight: 700; font-size: 0.95rem;
+    border-radius: 14px; text-align: center; text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+}
+.btn-ghost-full:hover { border-color: #2563eb; color: #2563eb !important; background: #eff6ff; }
+
+.empty-state-block {
+    text-align: center; padding: 80px 20px;
+}
+.empty-icon { font-size: 3.5rem; margin-bottom: 16px; }
+.empty-state-block h3 { font-weight: 800; font-size: 1.4rem; color: #111827; margin-bottom: 8px; }
+.empty-state-block p { color: #6b7280; margin-bottom: 24px; }
+</style>
 {% endblock %}

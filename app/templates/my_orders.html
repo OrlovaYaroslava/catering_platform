@@ -1,39 +1,176 @@
 {% extends "base.html" %}
-
-{% block title %}Мои заказы{% endblock %}
+{% block title %}Мои заказы — Catering Platform{% endblock %}
 
 {% block content %}
-<h2>Мои заказы</h2>
+<div class="page-header mb-4">
+    <h1 class="page-h1">Мои заказы</h1>
+    <p class="page-desc">История всех ваших заказов и их текущие статусы</p>
+</div>
 
-{% for order in orders %}
-    <div class="card">
-        <p><strong>Заказ №{{ order.id }}</strong></p>
-
-        <p>
-            <strong>Статус заказа:</strong>
-            {% if order.status == "awaiting_payment" %}
-                🕒 Ожидает оплаты
-            {% elif order.status == "paid" %}
-                ✅ Оплачен
-            {% elif order.status == "cooking" %}
-                👩‍🍳 В работе
-            {% elif order.status == "ready" %}
-                🎉 Готов
-            {% else %}
-                {{ order.status }}
-            {% endif %}
-        </p>
-
-        <p><strong>Дата мероприятия:</strong> {{ order.event_date }}</p>
-        <p><strong>Сумма:</strong> {{ order.total_price }} ₽</p>
-
-        <a class="btn"
-           href="{{ url_for('main.client_order_detail', order_id=order.id) }}">
-            Подробнее
+<!-- Фильтры статусов -->
+<div class="orders-filter-bar mb-4">
+    <div class="orders-filter-tabs">
+        {% set tabs = [
+            ("all",              "Все",              ""),
+            ("awaiting_payment", "Ожидают оплаты",   "⏳"),
+            ("paid",             "Оплачены",         "💳"),
+            ("cooking",          "Готовятся",        "👩‍🍳"),
+            ("ready",            "Готовы",           "✅"),
+        ] %}
+        {% for val, label, icon in tabs %}
+        <a href="{{ url_for('main.my_orders', status=val, sort=sort_by) }}"
+           class="orders-tab {% if status_filter == val %}orders-tab--active{% endif %}">
+            {% if icon %}<span>{{ icon }}</span>{% endif %}
+            {{ label }}
+            <span class="tab-count">{{ status_counts.get(val, 0) }}</span>
         </a>
+        {% endfor %}
     </div>
+
+    <!-- Сортировка -->
+    <form method="GET" action="{{ url_for('main.my_orders') }}" class="sort-form">
+        <input type="hidden" name="status" value="{{ status_filter }}">
+        <select name="sort" class="sort-select" onchange="this.form.submit()">
+            <option value="newest"    {% if sort_by == 'newest'    %}selected{% endif %}>Сначала новые</option>
+            <option value="oldest"    {% if sort_by == 'oldest'    %}selected{% endif %}>Сначала старые</option>
+            <option value="price_desc"{% if sort_by == 'price_desc'%}selected{% endif %}>По сумме ↓</option>
+            <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>По сумме ↑</option>
+        </select>
+    </form>
+</div>
+
+<!-- Список заказов -->
+{% for order in orders %}
+<div class="order-card mb-3">
+    <div class="order-card-left">
+        <div class="order-num">Заказ №{{ order.id }}</div>
+        <div class="order-date">📅 Дата мероприятия: <strong>{{ order.event_date }}</strong></div>
+    </div>
+
+    <div class="order-card-center">
+        {% if order.status == "awaiting_payment" %}
+            <span class="order-badge order-badge--warning">⏳ Ожидает оплаты</span>
+        {% elif order.status == "paid" %}
+            <span class="order-badge order-badge--blue">💳 Оплачен</span>
+        {% elif order.status == "cooking" %}
+            <span class="order-badge order-badge--orange">👩‍🍳 Готовится</span>
+        {% elif order.status == "ready" %}
+            <span class="order-badge order-badge--green">✅ Готов</span>
+        {% elif order.status == "delivered" %}
+            <span class="order-badge order-badge--gray">📦 Доставлен</span>
+        {% else %}
+            <span class="order-badge order-badge--gray">{{ order.status }}</span>
+        {% endif %}
+    </div>
+
+    <div class="order-card-right">
+        <div class="order-price">{{ order.total_price }} ₽</div>
+        <a href="{{ url_for('main.client_order_detail', order_id=order.id) }}"
+           class="order-detail-btn">Подробнее →</a>
+    </div>
+</div>
+
 {% else %}
-    <p>У вас пока нет заказов</p>
+<div class="empty-state-block">
+    <div class="empty-icon">📦</div>
+    {% if status_filter != "all" %}
+        <h3>Нет заказов в этом статусе</h3>
+        <p>Попробуйте выбрать другой фильтр</p>
+        <a href="{{ url_for('main.my_orders') }}" class="btn-primary-inline">Показать все</a>
+    {% else %}
+        <h3>Заказов пока нет</h3>
+        <p>Перейдите в меню чтобы сформировать первый заказ</p>
+        <a href="{{ url_for('main.menu') }}" class="btn-primary-inline">Перейти в меню</a>
+    {% endif %}
+</div>
 {% endfor %}
 
+<style>
+.page-header { padding: 8px 0 4px; }
+.eyebrow-label {
+    font-size: 0.78rem; font-weight: 800; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #2563eb; margin-bottom: 8px;
+}
+.page-h1 { font-size: 2rem; font-weight: 800; color: #111827; margin-bottom: 6px; }
+.page-desc { color: #6b7280; font-size: 0.97rem; }
+
+/* ── Фильтры ── */
+.orders-filter-bar {
+    display: flex; flex-wrap: wrap;
+    align-items: center; justify-content: space-between; gap: 12px;
+}
+.orders-filter-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.orders-tab {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 16px; border-radius: 12px;
+    background: #f3f4f6; color: #374151;
+    font-size: 0.88rem; font-weight: 700;
+    text-decoration: none; transition: background 0.2s, color 0.2s;
+}
+.orders-tab:hover { background: #dbeafe; color: #2563eb; }
+.orders-tab--active { background: #2563eb; color: #fff !important; }
+.tab-count {
+    background: rgba(255,255,255,0.25);
+    border-radius: 99px; padding: 1px 8px;
+    font-size: 0.78rem; font-weight: 800;
+}
+.orders-tab:not(.orders-tab--active) .tab-count {
+    background: #e5e7eb; color: #6b7280;
+}
+
+.sort-select {
+    padding: 9px 14px; border: 1.5px solid #e5e7eb;
+    border-radius: 12px; font-size: 0.88rem; font-weight: 700;
+    color: #374151; outline: none; cursor: pointer;
+    transition: border-color 0.2s;
+}
+.sort-select:focus { border-color: #2563eb; }
+
+/* ── Карточки заказов ── */
+.order-card {
+    background: #fff; border-radius: 18px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    padding: 22px 28px;
+    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+    transition: box-shadow 0.2s, transform 0.15s;
+}
+.order-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.1); transform: translateY(-2px); }
+.order-card-left { flex: 1; min-width: 180px; }
+.order-num { font-size: 1rem; font-weight: 800; color: #111827; margin-bottom: 5px; }
+.order-date { font-size: 0.88rem; color: #6b7280; }
+.order-date strong { color: #374151; }
+.order-badge {
+    display: inline-block; padding: 7px 16px;
+    border-radius: 99px; font-size: 0.85rem; font-weight: 700;
+}
+.order-badge--warning { background: #fef9c3; color: #854d0e; }
+.order-badge--blue    { background: #dbeafe; color: #1d4ed8; }
+.order-badge--orange  { background: #ffedd5; color: #9a3412; }
+.order-badge--green   { background: #dcfce7; color: #166534; }
+.order-badge--gray    { background: #f3f4f6; color: #4b5563; }
+.order-card-right {
+    display: flex; flex-direction: column;
+    align-items: flex-end; gap: 10px; min-width: 130px;
+}
+.order-price { font-size: 1.4rem; font-weight: 900; color: #111827; }
+.order-detail-btn {
+    display: inline-block; padding: 9px 18px;
+    background: linear-gradient(135deg, #1e3a5f, #2563eb);
+    color: #fff !important; font-weight: 700; font-size: 0.88rem;
+    border-radius: 12px; text-decoration: none;
+    transition: opacity 0.2s, transform 0.1s; white-space: nowrap;
+}
+.order-detail-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.empty-state-block { text-align: center; padding: 80px 20px; }
+.empty-icon { font-size: 3.5rem; margin-bottom: 16px; }
+.empty-state-block h3 { font-weight: 800; font-size: 1.4rem; color: #111827; margin-bottom: 8px; }
+.empty-state-block p { color: #6b7280; margin-bottom: 24px; }
+.btn-primary-inline {
+    display: inline-block; padding: 13px 32px;
+    background: linear-gradient(135deg, #1e3a5f, #2563eb);
+    color: #fff !important; font-weight: 700; font-size: 0.97rem;
+    border-radius: 14px; text-decoration: none; transition: opacity 0.2s;
+}
+.btn-primary-inline:hover { opacity: 0.9; }
+</style>
 {% endblock %}
