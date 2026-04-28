@@ -7,8 +7,11 @@ from app.forms import OrderForm
 from app import db
 from collections import defaultdict
 from sqlalchemy import func,extract
-from datetime import date
+from datetime import date,datetime
 from random import choice
+import csv
+import io
+from flask import Response
 
 main = Blueprint("main", __name__)
 
@@ -1009,4 +1012,177 @@ def ingredient_history(ingredient_id):
         "ingredient_history.html",
         ingredient=ingredient,
         logs=logs
+    )
+
+@main.route("/admin/dishes")
+@login_required
+@role_required("admin")
+def admin_dishes():
+    search_q = request.args.get("q", "")
+    category = request.args.get("category", "")
+    show_inactive = request.args.get("inactive", "0") == "1"
+
+    query = Dish.query
+    if not show_inactive:
+        query = query.filter_by(is_active=True)
+    if search_q:
+        query = query.filter(Dish.name.ilike(f"%{search_q}%"))
+    if category:
+        query = query.filter_by(category=category)
+
+    dishes = query.order_by(Dish.name).all()
+    categories = db.session.query(Dish.category).distinct().all()
+    categories = [c[0] for c in categories if c[0]]
+
+    return render_template(
+        "admin_dishes.html",
+        dishes=dishes,
+        search_q=search_q,
+        category=category,
+        show_inactive=show_inactive,
+        categories=categories
+    )
+
+
+@main.route("/admin/dishes/create", methods=["GET", "POST"])
+@login_required
+@role_required("admin")
+def admin_dish_create():
+    if request.method == "POST":
+        dish = Dish(
+            name=request.form.get("name"),
+            description=request.form.get("description"),
+            price_per_unit=float(request.form.get("price_per_unit", 0)),
+            category=request.form.get("category"),
+            is_active=request.form.get("is_active") == "on",
+            is_vegan=request.form.get("is_vegan") == "on",
+            is_gluten_free=request.form.get("is_gluten_free") == "on",
+            contains_allergens=request.form.get("contains_allergens") == "on",
+            image_url=request.form.get("image_url") or None,
+        )
+        db.session.add(dish)
+        db.session.commit()
+        flash(f"✅ Блюдо «{dish.name}» добавлено", "success")
+        return redirect(url_for("main.admin_dishes"))
+
+    return render_template("admin_dish_form.html", dish=None, action="create")
+
+
+@main.route("/admin/dishes/<int:dish_id>/edit", methods=["GET", "POST"])
+@login_required
+@role_required("admin")
+def admin_dish_edit(dish_id):
+    dish = Dish.query.get_or_404(dish_id)
+
+    if request.method == "POST":
+        dish.name = request.form.get("name")
+        dish.description = request.form.get("description")
+        dish.price_per_unit = float(request.form.get("price_per_unit", 0))
+        dish.category = request.form.get("category")
+        dish.is_active = request.form.get("is_active") == "on"
+        dish.is_vegan = request.form.get("is_vegan") == "on"
+        dish.is_gluten_free = request.form.get("is_gluten_free") == "on"
+        dish.contains_allergens = request.form.get("contains_allergens") == "on"
+        dish.image_url = request.form.get("image_url") or None
+
+        db.session.commit()
+        flash(f"✅ Блюдо «{dish.name}» обновлено", "success")
+        return redirect(url_for("main.admin_dishes"))
+
+    return render_template("admin_dish_form.html", dish=dish, action="edit")
+
+
+@main.route("/admin/dishes/<int:dish_id>/toggle", methods=["POST"])
+@login_required
+@role_required("admin")
+def admin_dish_toggle(dish_id):
+    dish = Dish.query.get_or_404(dish_id)
+    dish.is_active = not dish.is_active
+    db.session.commit()
+    state = "активировано" if dish.is_active else "скрыто"
+    flash(f"Блюдо «{dish.name}» {state}", "success")
+    return redirect(url_for("main.admin_dishes"))
+
+@main.route("/admin/users")
+@login_required
+@role_required("admin")
+def admin_users():
+    search_q = request.args.get("q", "")
+    role_filter = request.args.get("role", "")
+
+    query = User.query.join(Role)
+    if search_q:
+        query = query.filter(User.email.ilike(f"%{search_q}%"))
+    if role_filter:
+        query = query.filter(Role.name == role_filter)
+
+    users = query.order_by(User.created_at.desc()).all()
+    roles = Role.query.all()
+
+    return render_template(
+        "admin_users.html",
+        users=users,
+        roles=roles,
+        search_q=search_q,
+        role_filter=role_filter
+    )
+
+
+@main.route("/admin/users/<int:user_id>/role", methods=["POST"])
+@login_required
+@role_required("admin")
+def admin_user_change_role(user_id):
+    user = User.query.get_or_404(user_id)
+    new_role_id = request.form.get("role_id")
+    role = Role.query.get_or_404(new_role_id)
+
+    # Нельзя изменить свою роль
+    if user.id == current_user.id:
+        flash("⚠️ Нельзя изменить свою собственную роль", "warning")
+        return redirect(url_for("main.admin_users"))
+
+    user.role_id = role.id
+    db.session.commit()
+    flash(f"✅ Роль пользователя {user.email} изменена на «{role.name}»", "success")
+    return redirect(url_for("main.admin_users"))
+
+# =====================
+# ADMIN: Экспорт заказов
+# =====================
+
+@main.route("/admin/export/orders")
+@login_required
+@role_required("admin")
+def admin_export_orders():
+    orders = Order.query.order_by(Order.created_at.desc()).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Заголовки
+    writer.writerow([
+        "ID", "Клиент", "Дата события", "Время", "Адрес",
+        "Гостей", "Сумма", "Статус", "Дата создания"
+    ])
+
+    for order in orders:
+        writer.writerow([
+            order.id,
+            order.user.email if order.user else "—",
+            order.event_date,
+            order.event_time,
+            order.address,
+            order.guests_count,
+            float(order.total_price),
+            order.status,
+            order.created_at.strftime("%Y-%m-%d %H:%M") if order.created_at else "—"
+        ])
+
+    output.seek(0)
+    return Response(
+        "\ufeff" + output.getvalue(),  # BOM для корректного открытия в Excel
+        mimetype="text/csv; charset=utf-8",
+        headers={
+            "Content-Disposition": "attachment; filename=orders_export.csv"
+        }
     )

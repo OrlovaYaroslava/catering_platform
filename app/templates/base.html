@@ -251,7 +251,7 @@
                                 <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">Выйти</a></li>
                             </ul>
                         </li>
-
+                        
                     {% elif current_user.role.name == "admin" %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
@@ -263,14 +263,18 @@
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" href="{{ url_for('main.admin_dashboard') }}">📊 Дашборд</a></li>
                                 <li><a class="dropdown-item" href="{{ url_for('main.admin_orders') }}">📦 Все заказы</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('main.admin_ingredients') }}">🏭 Управление складом</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.admin_dishes') }}">🍽 Блюда меню</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.admin_ingredients') }}">🏭 Склад</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.admin_users') }}">👥 Пользователи</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.admin_export_orders') }}">⬇️ Экспорт CSV</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">Выйти</a></li>
                             </ul>
                         </li>
                     {% endif %}
 
-                    <!-- Кнопка Выйти отдельно (вне dropdown) для удобства -->
+                    
                     <li class="nav-item">
                         <a class="nav-link btn-nav-exit" href="{{ url_for('auth.logout') }}">Выйти</a>
                     </li>
