@@ -1,0 +1,2146 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "example@mail.com",
+      "password_hash": "scrypt:32768:8:1$3Awyz58qvyYOaOCV$5ca0888d0613ae920818025fcefb23f955863e02b80335877856f7a0e9f78b52cd05ad3df51db7699ff23408c17369940c3c7113af67ee6fd98822c4aab03d43",
+      "role": "<Role 2>"
+    },
+    {
+      "id": 3,
+      "email": "admin@test.com",
+      "password_hash": "scrypt:32768:8:1$GdGCtLZL60fYA50H$889f7ea9f944ad954fc56e9a907e7e0141dba889d916a69cd8ae4f6f17a17d686eb7cc914587b2c5dc33b841dd719268e558e413d89cc0af44f183c07a937405",
+      "role": "<Role 1>"
+    },
+    {
+      "id": 4,
+      "email": "kitchen@test.com",
+      "password_hash": "scrypt:32768:8:1$9feTq0AKdKIzRZwH$f3b429f195a401f07fd3270caf6833d76abb161dbef4c6fa9e31e68c4be9a983b8e37f342a1c339b0f11841766b27e77274e869c23b00f0b3d7b36d7c8fff70c",
+      "role": "<Role 3>"
+    },
+    {
+      "id": 5,
+      "email": "test@mail.com",
+      "password_hash": "scrypt:32768:8:1$8JzvVgbFVhYCv6DE$5c2b7f32bb2de3ab7ac11d001de8e635d1dfac5d65ad464d2ac4fe5cee938f56886a29a368b5e59e7a77222f36d5bc737899b0661be99ea3546f57bd104ec425",
+      "role": "<Role 2>"
+    },
+    {
+      "id": 6,
+      "email": "admin@catering.ru",
+      "password_hash": "scrypt:32768:8:1$AMzk84U78q15ZCiB$19ba02cd28cbaeef0e565b6218612d4242d07ce51390c95b46ba974bc7d4d91aab47f3d7ca0ccc984cb223dbbd84eb17ec14cff67cd9622f984974c7a1a8112f",
+      "role": "<Role 1>"
+    },
+    {
+      "id": 7,
+      "email": "kitchen@catering.ru",
+      "password_hash": "scrypt:32768:8:1$jwUSMvZvLzkLFp2F$18f8d1b5efa0c804483df6f1d940ed49be6a50c4be3cf01035af5174f48165486f0b7f11fa76cd0dd3159baff5bf23aedf7a44e383d5deb3baaa7ca52613fdbf",
+      "role": "<Role 3>"
+    },
+    {
+      "id": 8,
+      "email": "client1@catering.ru",
+      "password_hash": "scrypt:32768:8:1$iWLXUyrxWVm007ze$bdd2d441319c38920fc0c87a1f0505974548e54c8e4e24d0f2d66c2b3a2bf0c25d95e16b74b82248f29d26025877821e2a056a7dada427698109dd9592b8b02a",
+      "role": "<Role 2>"
+    },
+    {
+      "id": 9,
+      "email": "client2@catering.ru",
+      "password_hash": "scrypt:32768:8:1$nRZwJkYoBnpKB3yq$62f1ed02de9d9b4a75244a3bbec9193f48c5544ac596bc756d1a8ad7e9ed9059989679072e9cc1bae7dfd5f9c05179a789df24ed7758730bc0a4bc9cf50f2322",
+      "role": "<Role 2>"
+    }
+  ],
+  "ingredients": [
+    {
+      "id": 46,
+      "name": "Свинина",
+      "unit": "кг",
+      "stock_quantity": 25.0,
+      "min_quantity": 5.0
+    },
+    {
+      "id": 47,
+      "name": "Лосось",
+      "unit": "кг",
+      "stock_quantity": 20.0,
+      "min_quantity": 3.0
+    },
+    {
+      "id": 48,
+      "name": "Креветки",
+      "unit": "кг",
+      "stock_quantity": 10.0,
+      "min_quantity": 2.0
+    },
+    {
+      "id": 49,
+      "name": "Салат Айсберг",
+      "unit": "кг",
+      "stock_quantity": 15.0,
+      "min_quantity": 2.0
+    },
+    {
+      "id": 50,
+      "name": "Помидоры",
+      "unit": "кг",
+      "stock_quantity": 25.0,
+      "min_quantity": 3.0
+    },
+    {
+      "id": 51,
+      "name": "Огурцы",
+      "unit": "кг",
+      "stock_quantity": 20.0,
+      "min_quantity": 3.0
+    },
+    {
+      "id": 52,
+      "name": "Перец болгарский",
+      "unit": "кг",
+      "stock_quantity": 15.0,
+      "min_quantity": 2.0
+    },
+    {
+      "id": 54,
+      "name": "Чеснок",
+      "unit": "кг",
+      "stock_quantity": 5.0,
+      "min_quantity": 1.0
+    },
+    {
+      "id": 56,
+      "name": "Картофель",
+      "unit": "кг",
+      "stock_quantity": 50.0,
+      "min_quantity": 10.0
+    },
+    {
+      "id": 58,
+      "name": "Гречка",
+      "unit": "кг",
+      "stock_quantity": 20.0,
+      "min_quantity": 3.0
+    },
+    {
+      "id": 59,
+      "name": "Паста",
+      "unit": "кг",
+      "stock_quantity": 25.0,
+      "min_quantity": 5.0
+    },
+    {
+      "id": 64,
+      "name": "Масло сливочное",
+      "unit": "кг",
+      "stock_quantity": 20.0,
+      "min_quantity": 3.0
+    },
+    {
+      "id": 66,
+      "name": "Молоко",
+      "unit": "л",
+      "stock_quantity": 30.0,
+      "min_quantity": 5.0
+    },
+    {
+      "id": 68,
+      "name": "Сыр моцарелла",
+      "unit": "кг",
+      "stock_quantity": 10.0,
+      "min_quantity": 2.0
+    },
+    {
+      "id": 69,
+      "name": "Сыр чеддер",
+      "unit": "кг",
+      "stock_quantity": 8.0,
+      "min_quantity": 1.0
+    },
+    {
+      "id": 74,
+      "name": "Бекон",
+      "unit": "кг",
+      "stock_quantity": 10.0,
+      "min_quantity": 2.0
+    },
+    {
+      "id": 76,
+      "name": "Тунец",
+      "unit": "кг",
+      "stock_quantity": 8.0,
+      "min_quantity": 1.0
+    },
+    {
+      "id": 77,
+      "name": "Авокадо",
+      "unit": "кг",
+      "stock_quantity": 10.0,
+      "min_quantity": 2.0
+    },
+    {
+      "id": 78,
+      "name": "Лимон",
+      "unit": "кг",
+      "stock_quantity": 10.0,
+      "min_quantity": 2.0
+    },
+    {
+      "id": 79,
+      "name": "Зелень",
+      "unit": "кг",
+      "stock_quantity": 10.0,
+      "min_quantity": 2.0
+    },
+    {
+      "id": 80,
+      "name": "Базилик",
+      "unit": "кг",
+      "stock_quantity": 5.0,
+      "min_quantity": 1.0
+    },
+    {
+      "id": 81,
+      "name": "Соус соевый",
+      "unit": "л",
+      "stock_quantity": 8.0,
+      "min_quantity": 1.0
+    },
+    {
+      "id": 82,
+      "name": "Уксус бальзамический",
+      "unit": "л",
+      "stock_quantity": 5.0,
+      "min_quantity": 1.0
+    },
+    {
+      "id": 83,
+      "name": "Горчица",
+      "unit": "кг",
+      "stock_quantity": 5.0,
+      "min_quantity": 1.0
+    },
+    {
+      "id": 61,
+      "name": "Сахар",
+      "unit": "кг",
+      "stock_quantity": 29.44,
+      "min_quantity": 5.0
+    },
+    {
+      "id": 62,
+      "name": "Соль",
+      "unit": "кг",
+      "stock_quantity": 19.96,
+      "min_quantity": 5.0
+    },
+    {
+      "id": 63,
+      "name": "Масло оливковое",
+      "unit": "л",
+      "stock_quantity": 14.92,
+      "min_quantity": 2.0
+    },
+    {
+      "id": 57,
+      "name": "Рис",
+      "unit": "кг",
+      "stock_quantity": 28.0,
+      "min_quantity": 5.0
+    },
+    {
+      "id": 55,
+      "name": "Морковь",
+      "unit": "кг",
+      "stock_quantity": 19.0,
+      "min_quantity": 3.0
+    },
+    {
+      "id": 44,
+      "name": "Куриное филе",
+      "unit": "кг",
+      "stock_quantity": 17.0,
+      "min_quantity": 5.0
+    },
+    {
+      "id": 72,
+      "name": "Мёд",
+      "unit": "кг",
+      "stock_quantity": 7.6,
+      "min_quantity": 1.0
+    },
+    {
+      "id": 75,
+      "name": "Ветчина",
+      "unit": "кг",
+      "stock_quantity": 5.0,
+      "min_quantity": 2.0
+    },
+    {
+      "id": 67,
+      "name": "Сыр пармезан",
+      "unit": "кг",
+      "stock_quantity": 7.0,
+      "min_quantity": 1.0
+    },
+    {
+      "id": 1,
+      "name": "Chicken",
+      "unit": "kg",
+      "stock_quantity": 49.25,
+      "min_quantity": 10.0
+    },
+    {
+      "id": 2,
+      "name": "Lettuce",
+      "unit": "kg",
+      "stock_quantity": 19.75,
+      "min_quantity": 5.0
+    },
+    {
+      "id": 3,
+      "name": "Caesar sauce",
+      "unit": "l",
+      "stock_quantity": 14.85,
+      "min_quantity": 3.0
+    },
+    {
+      "id": 45,
+      "name": "Говядина",
+      "unit": "кг",
+      "stock_quantity": 27.8,
+      "min_quantity": 5.0
+    },
+    {
+      "id": 73,
+      "name": "Грибы шампиньоны",
+      "unit": "кг",
+      "stock_quantity": 14.4,
+      "min_quantity": 3.0
+    },
+    {
+      "id": 53,
+      "name": "Лук репчатый",
+      "unit": "кг",
+      "stock_quantity": 19.1,
+      "min_quantity": 3.0
+    },
+    {
+      "id": 65,
+      "name": "Сливки 20%",
+      "unit": "л",
+      "stock_quantity": 14.4,
+      "min_quantity": 2.0
+    },
+    {
+      "id": 71,
+      "name": "Шоколад тёмный",
+      "unit": "кг",
+      "stock_quantity": 9.3,
+      "min_quantity": 2.0
+    },
+    {
+      "id": 60,
+      "name": "Мука",
+      "unit": "кг",
+      "stock_quantity": 38.95,
+      "min_quantity": 10.0
+    },
+    {
+      "id": 70,
+      "name": "Яйца",
+      "unit": "шт",
+      "stock_quantity": 86.0,
+      "min_quantity": 50.0
+    }
+  ],
+  "dishes": [
+    {
+      "id": 1,
+      "name": "Chicken Caesar",
+      "price_per_unit": 350.0,
+      "is_active": false,
+      "description": "Classic Caesar salad with chicken",
+      "category": "Salads",
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "contains_allergens": false,
+      "image_url": "/static/images/caesar_chicken.jpg"
+    },
+    {
+      "id": 6,
+      "name": "Греческий салат",
+      "price_per_unit": 320.0,
+      "is_active": true,
+      "description": "Свежие овощи, фета, оливки и оливковое масло",
+      "category": "Салаты",
+      "is_vegan": false,
+      "is_gluten_free": true,
+      "contains_allergens": false,
+      "image_url": "/static/images/greek_salad.jpg"
+    },
+    {
+      "id": 7,
+      "name": "Капрезе",
+      "price_per_unit": 380.0,
+      "is_active": true,
+      "description": "Томаты, моцарелла, базилик и бальзамический соус",
+      "category": "Салаты",
+      "is_vegan": false,
+      "is_gluten_free": true,
+      "contains_allergens": false,
+      "image_url": "/static/images/caprese.png"
+    },
+    {
+      "id": 8,
+      "name": "Оливье",
+      "price_per_unit": 280.0,
+      "is_active": true,
+      "description": "Классический новогодний салат",
+      "category": "Салаты",
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "contains_allergens": true,
+      "image_url": "/static/images/olivier.png"
+    },
+    {
+      "id": 9,
+      "name": "Бефстроганов",
+      "price_per_unit": 550.0,
+      "is_active": true,
+      "description": "Говядина в сливочном соусе с грибами",
+      "category": "Горячее",
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "contains_allergens": true,
+      "image_url": "/static/images/beef_stroganoff.png"
+    },
+    {
+      "id": 10,
+      "name": "Лосось на гриле",
+      "price_per_unit": 750.0,
+      "is_active": true,
+      "description": "Филе лосося с овощами гриль",
+      "category": "Горячее",
+      "is_vegan": false,
+      "is_gluten_free": true,
+      "contains_allergens": false,
+      "image_url": "/static/images/salmon_grilled.png"
+    },
+    {
+      "id": 2,
+      "name": "Beef Stroganoff",
+      "price_per_unit": 550.0,
+      "is_active": false,
+      "description": "Beef with creamy sauce",
+      "category": "Hot dishes",
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "contains_allergens": false,
+      "image_url": "/static/images/caesar_chicken.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Chocolate Cake",
+      "price_per_unit": 250.0,
+      "is_active": false,
+      "description": "Dessert with dark chocolate",
+      "category": "Desserts",
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "contains_allergens": false,
+      "image_url": "/static/images/caesar_chicken.jpg"
+    },
+    {
+      "id": 5,
+      "name": "Цезарь с креветками",
+      "price_per_unit": 550.0,
+      "is_active": true,
+      "description": "Салат с тигровыми креветками и соусом Цезарь",
+      "category": "Салаты",
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "contains_allergens": true,
+      "image_url": "https://ketino.ru/wp-content/uploads/2025/01/salat-tsezar-1536x1024.webp"
+    },
+    {
+      "id": 4,
+      "name": "Цезарь с курицей",
+      "price_per_unit": 350.0,
+      "is_active": true,
+      "description": "Классический салат с курицей, пармезаном и соусом Цезарь",
+      "category": "Салаты",
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "contains_allergens": true,
+      "image_url": "https://www.koolinar.ru/all_image/article/3/3676/article-fd64c3a1-c1a3-4981-8875-21db8118b22e_large.jpg"
+    },
+    {
+      "id": 11,
+      "name": "Куриная грудка с овощами",
+      "price_per_unit": 420.0,
+      "is_active": true,
+      "description": "Запечённая курица с сезонными овощами",
+      "category": "Горячее",
+      "is_vegan": false,
+      "is_gluten_free": true,
+      "contains_allergens": false,
+      "image_url": "/static/images/chicken_breast_vegetables.png"
+    },
+    {
+      "id": 12,
+      "name": "Паста Карбонара",
+      "price_per_unit": 450.0,
+      "is_active": true,
+      "description": "Итальянская паста с беконом и сливочным соусом",
+      "category": "Горячее",
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "contains_allergens": true,
+      "image_url": "/static/images/pasta_carbonara.png"
+    },
+    {
+      "id": 13,
+      "name": "Ризотто с грибами",
+      "price_per_unit": 480.0,
+      "is_active": true,
+      "description": "Кремовое ризотто с шампиньонами",
+      "category": "Горячее",
+      "is_vegan": false,
+      "is_gluten_free": true,
+      "contains_allergens": false,
+      "image_url": "/static/images/risotto_mushroom.png"
+    },
+    {
+      "id": 14,
+      "name": "Стейк Рибай",
+      "price_per_unit": 950.0,
+      "is_active": true,
+      "description": "Мраморная говядина средней прожарки",
+      "category": "Горячее",
+      "is_vegan": false,
+      "is_gluten_free": true,
+      "contains_allergens": false,
+      "image_url": "/static/images/steak_ribeye.png"
+    },
+    {
+      "id": 15,
+      "name": "Плов с курицей",
+      "price_per_unit": 380.0,
+      "is_active": true,
+      "description": "Классический узбекский плов",
+      "category": "Горячее",
+      "is_vegan": false,
+      "is_gluten_free": true,
+      "contains_allergens": false,
+      "image_url": "/static/images/pilaf_chicken.png"
+    },
+    {
+      "id": 16,
+      "name": "Брускетта с томатами",
+      "price_per_unit": 280.0,
+      "is_active": true,
+      "description": "Поджаренный багет с томатами и базиликом",
+      "category": "Закуски",
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "contains_allergens": false,
+      "image_url": "/static/images/bruschetta_tomato.png"
+    },
+    {
+      "id": 17,
+      "name": "Тарталетки с икрой",
+      "price_per_unit": 450.0,
+      "is_active": true,
+      "description": "Хрустящие тарталетки с красной икрой",
+      "category": "Закуски",
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "contains_allergens": true,
+      "image_url": "/static/images/tartlets_caviar.png"
+    },
+    {
+      "id": 18,
+      "name": "Куриные крылышки BBQ",
+      "price_per_unit": 380.0,
+      "is_active": true,
+      "description": "Острые крылышки в соусе барбекю",
+      "category": "Закуски",
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "contains_allergens": true,
+      "image_url": "/static/images/chicken_wings_bbq.png"
+    },
+    {
+      "id": 19,
+      "name": "Канапе ассорти",
+      "price_per_unit": 350.0,
+      "is_active": true,
+      "description": "Ассорти из мини-бутербродов",
+      "category": "Закуски",
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "contains_allergens": true,
+      "image_url": "/static/images/canapes_assorted.png"
+    },
+    {
+      "id": 20,
+      "name": "Грибной суп-пюре",
+      "price_per_unit": 280.0,
+      "is_active": true,
+      "description": "Крем-суп из шампиньонов со сливками",
+      "category": "Супы",
+      "is_vegan": false,
+      "is_gluten_free": true,
+      "contains_allergens": false,
+      "image_url": "/static/images/mushroom_soup.png"
+    },
+    {
+      "id": 21,
+      "name": "Куриный бульон",
+      "price_per_unit": 220.0,
+      "is_active": true,
+      "description": "Лёгкий бульон с лапшой и зеленью",
+      "category": "Супы",
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "contains_allergens": false,
+      "image_url": "/static/images/chicken_broth.png"
+    },
+    {
+      "id": 22,
+      "name": "Солянка сборная",
+      "price_per_unit": 320.0,
+      "is_active": true,
+      "description": "Насыщенный мясной суп с оливками",
+      "category": "Супы",
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "contains_allergens": true,
+      "image_url": "/static/images/solyanka.png"
+    },
+    {
+      "id": 23,
+      "name": "Тирамису",
+      "price_per_unit": 300.0,
+      "is_active": true,
+      "description": "Классический итальянский десерт",
+      "category": "Десерты",
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "contains_allergens": true,
+      "image_url": "/static/images/tiramisu.png"
+    },
+    {
+      "id": 24,
+      "name": "Шоколадный торт",
+      "price_per_unit": 250.0,
+      "is_active": true,
+      "description": "Насыщенный торт из тёмного шоколада",
+      "category": "Десерты",
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "contains_allergens": true,
+      "image_url": "/static/images/chocolate_cake.png"
+    },
+    {
+      "id": 25,
+      "name": "Чизкейк Нью-Йорк",
+      "price_per_unit": 320.0,
+      "is_active": true,
+      "description": "Классический чизкейк",
+      "category": "Десерты",
+      "is_vegan": false,
+      "is_gluten_free": false,
+      "contains_allergens": true,
+      "image_url": "/static/images/cheesecake.png"
+    },
+    {
+      "id": 26,
+      "name": "Фруктовая тарелка",
+      "price_per_unit": 350.0,
+      "is_active": true,
+      "description": "Сезонные свежие фрукты",
+      "category": "Десерты",
+      "is_vegan": true,
+      "is_gluten_free": true,
+      "contains_allergens": false,
+      "image_url": "/static/images/fruit_platter.png"
+    },
+    {
+      "id": 28,
+      "name": "Лимонад домашний",
+      "price_per_unit": 150.0,
+      "is_active": true,
+      "description": "Свежий лимонад с мятой",
+      "category": "Напитки",
+      "is_vegan": true,
+      "is_gluten_free": true,
+      "contains_allergens": false,
+      "image_url": "/static/images/lemonade_homemade.jpg.png"
+    },
+    {
+      "id": 29,
+      "name": "Морс клюквенный",
+      "price_per_unit": 120.0,
+      "is_active": true,
+      "description": "Домашний клюквенный морс",
+      "category": "Напитки",
+      "is_vegan": true,
+      "is_gluten_free": true,
+      "contains_allergens": false,
+      "image_url": "/static/images/cranberry_mors.png"
+    },
+    {
+      "id": 27,
+      "name": "Панна-котта",
+      "price_per_unit": 280.0,
+      "is_active": true,
+      "description": "Итальянский десерт из сливок",
+      "category": "Десерты",
+      "is_vegan": true,
+      "is_gluten_free": true,
+      "contains_allergens": false,
+      "image_url": "https://images.gastronom.ru/mvr7LxVUtVL4JVUV7_tAEKgpozb4OAEeSQBVZyw1urI/pr:recipe-cover-image/g:ce/rs:auto:0:0:0/L2Ntcy9hbGwtaW1hZ2VzLzg4NjY3OTgzLWU1ZjMtNDNjMC1hOTFmLWJlMTg1ZWE1NzQ4ZC5wbmc.webp"
+    }
+  ],
+  "dish_ingredients": [
+    {
+      "dish_id": 1,
+      "ingredient_id": 1,
+      "amount_per_unit": 0.15
+    },
+    {
+      "dish_id": 1,
+      "ingredient_id": 2,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 1,
+      "ingredient_id": 3,
+      "amount_per_unit": 0.03
+    },
+    {
+      "dish_id": 4,
+      "ingredient_id": 44,
+      "amount_per_unit": 0.15
+    },
+    {
+      "dish_id": 4,
+      "ingredient_id": 49,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 4,
+      "ingredient_id": 50,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 4,
+      "ingredient_id": 67,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 4,
+      "ingredient_id": 70,
+      "amount_per_unit": 1.0
+    },
+    {
+      "dish_id": 4,
+      "ingredient_id": 63,
+      "amount_per_unit": 0.02
+    },
+    {
+      "dish_id": 6,
+      "ingredient_id": 50,
+      "amount_per_unit": 0.15
+    },
+    {
+      "dish_id": 6,
+      "ingredient_id": 51,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 6,
+      "ingredient_id": 52,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 6,
+      "ingredient_id": 53,
+      "amount_per_unit": 0.03
+    },
+    {
+      "dish_id": 6,
+      "ingredient_id": 68,
+      "amount_per_unit": 0.08
+    },
+    {
+      "dish_id": 6,
+      "ingredient_id": 63,
+      "amount_per_unit": 0.02
+    },
+    {
+      "dish_id": 9,
+      "ingredient_id": 45,
+      "amount_per_unit": 0.2
+    },
+    {
+      "dish_id": 9,
+      "ingredient_id": 73,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 9,
+      "ingredient_id": 53,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 9,
+      "ingredient_id": 65,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 9,
+      "ingredient_id": 60,
+      "amount_per_unit": 0.02
+    },
+    {
+      "dish_id": 10,
+      "ingredient_id": 47,
+      "amount_per_unit": 0.2
+    },
+    {
+      "dish_id": 10,
+      "ingredient_id": 50,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 10,
+      "ingredient_id": 52,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 10,
+      "ingredient_id": 78,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 10,
+      "ingredient_id": 63,
+      "amount_per_unit": 0.02
+    },
+    {
+      "dish_id": 12,
+      "ingredient_id": 59,
+      "amount_per_unit": 0.15
+    },
+    {
+      "dish_id": 12,
+      "ingredient_id": 74,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 12,
+      "ingredient_id": 70,
+      "amount_per_unit": 2.0
+    },
+    {
+      "dish_id": 12,
+      "ingredient_id": 67,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 12,
+      "ingredient_id": 65,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 23,
+      "ingredient_id": 70,
+      "amount_per_unit": 3.0
+    },
+    {
+      "dish_id": 23,
+      "ingredient_id": 61,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 23,
+      "ingredient_id": 71,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 23,
+      "ingredient_id": 68,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 23,
+      "ingredient_id": 66,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 24,
+      "ingredient_id": 71,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 24,
+      "ingredient_id": 60,
+      "amount_per_unit": 0.15
+    },
+    {
+      "dish_id": 24,
+      "ingredient_id": 70,
+      "amount_per_unit": 2.0
+    },
+    {
+      "dish_id": 24,
+      "ingredient_id": 61,
+      "amount_per_unit": 0.08
+    },
+    {
+      "dish_id": 24,
+      "ingredient_id": 64,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 20,
+      "ingredient_id": 73,
+      "amount_per_unit": 0.2
+    },
+    {
+      "dish_id": 20,
+      "ingredient_id": 53,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 20,
+      "ingredient_id": 65,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 20,
+      "ingredient_id": 64,
+      "amount_per_unit": 0.03
+    },
+    {
+      "dish_id": 11,
+      "ingredient_id": 44,
+      "amount_per_unit": 0.2
+    },
+    {
+      "dish_id": 11,
+      "ingredient_id": 52,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 11,
+      "ingredient_id": 55,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 11,
+      "ingredient_id": 63,
+      "amount_per_unit": 0.02
+    },
+    {
+      "dish_id": 5,
+      "ingredient_id": 48,
+      "amount_per_unit": 0.15
+    },
+    {
+      "dish_id": 5,
+      "ingredient_id": 49,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 5,
+      "ingredient_id": 67,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 5,
+      "ingredient_id": 3,
+      "amount_per_unit": 0.03
+    },
+    {
+      "dish_id": 7,
+      "ingredient_id": 50,
+      "amount_per_unit": 0.15
+    },
+    {
+      "dish_id": 7,
+      "ingredient_id": 68,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 7,
+      "ingredient_id": 63,
+      "amount_per_unit": 0.02
+    },
+    {
+      "dish_id": 7,
+      "ingredient_id": 80,
+      "amount_per_unit": 0.01
+    },
+    {
+      "dish_id": 8,
+      "ingredient_id": 56,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 8,
+      "ingredient_id": 55,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 8,
+      "ingredient_id": 70,
+      "amount_per_unit": 2.0
+    },
+    {
+      "dish_id": 8,
+      "ingredient_id": 51,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 2,
+      "ingredient_id": 45,
+      "amount_per_unit": 0.2
+    },
+    {
+      "dish_id": 2,
+      "ingredient_id": 73,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 2,
+      "ingredient_id": 53,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 2,
+      "ingredient_id": 65,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 3,
+      "ingredient_id": 71,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 3,
+      "ingredient_id": 60,
+      "amount_per_unit": 0.15
+    },
+    {
+      "dish_id": 3,
+      "ingredient_id": 70,
+      "amount_per_unit": 2.0
+    },
+    {
+      "dish_id": 3,
+      "ingredient_id": 61,
+      "amount_per_unit": 0.08
+    },
+    {
+      "dish_id": 13,
+      "ingredient_id": 57,
+      "amount_per_unit": 0.15
+    },
+    {
+      "dish_id": 13,
+      "ingredient_id": 73,
+      "amount_per_unit": 0.15
+    },
+    {
+      "dish_id": 13,
+      "ingredient_id": 53,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 13,
+      "ingredient_id": 67,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 13,
+      "ingredient_id": 64,
+      "amount_per_unit": 0.03
+    },
+    {
+      "dish_id": 14,
+      "ingredient_id": 45,
+      "amount_per_unit": 0.25
+    },
+    {
+      "dish_id": 14,
+      "ingredient_id": 62,
+      "amount_per_unit": 0.01
+    },
+    {
+      "dish_id": 14,
+      "ingredient_id": 52,
+      "amount_per_unit": 0.0
+    },
+    {
+      "dish_id": 14,
+      "ingredient_id": 63,
+      "amount_per_unit": 0.02
+    },
+    {
+      "dish_id": 15,
+      "ingredient_id": 44,
+      "amount_per_unit": 0.15
+    },
+    {
+      "dish_id": 15,
+      "ingredient_id": 57,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 15,
+      "ingredient_id": 55,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 15,
+      "ingredient_id": 53,
+      "amount_per_unit": 0.03
+    },
+    {
+      "dish_id": 16,
+      "ingredient_id": 50,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 16,
+      "ingredient_id": 54,
+      "amount_per_unit": 0.01
+    },
+    {
+      "dish_id": 16,
+      "ingredient_id": 63,
+      "amount_per_unit": 0.02
+    },
+    {
+      "dish_id": 18,
+      "ingredient_id": 44,
+      "amount_per_unit": 0.2
+    },
+    {
+      "dish_id": 18,
+      "ingredient_id": 72,
+      "amount_per_unit": 0.02
+    },
+    {
+      "dish_id": 19,
+      "ingredient_id": 67,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 19,
+      "ingredient_id": 75,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 19,
+      "ingredient_id": 51,
+      "amount_per_unit": 0.03
+    },
+    {
+      "dish_id": 21,
+      "ingredient_id": 44,
+      "amount_per_unit": 0.2
+    },
+    {
+      "dish_id": 21,
+      "ingredient_id": 55,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 21,
+      "ingredient_id": 53,
+      "amount_per_unit": 0.03
+    },
+    {
+      "dish_id": 21,
+      "ingredient_id": 62,
+      "amount_per_unit": 0.01
+    },
+    {
+      "dish_id": 22,
+      "ingredient_id": 45,
+      "amount_per_unit": 0.1
+    },
+    {
+      "dish_id": 22,
+      "ingredient_id": 51,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 22,
+      "ingredient_id": 53,
+      "amount_per_unit": 0.03
+    },
+    {
+      "dish_id": 25,
+      "ingredient_id": 68,
+      "amount_per_unit": 0.2
+    },
+    {
+      "dish_id": 25,
+      "ingredient_id": 64,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 25,
+      "ingredient_id": 61,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 25,
+      "ingredient_id": 70,
+      "amount_per_unit": 2.0
+    },
+    {
+      "dish_id": 27,
+      "ingredient_id": 65,
+      "amount_per_unit": 0.15
+    },
+    {
+      "dish_id": 27,
+      "ingredient_id": 61,
+      "amount_per_unit": 0.03
+    },
+    {
+      "dish_id": 28,
+      "ingredient_id": 78,
+      "amount_per_unit": 0.05
+    },
+    {
+      "dish_id": 28,
+      "ingredient_id": 61,
+      "amount_per_unit": 0.03
+    },
+    {
+      "dish_id": 29,
+      "ingredient_id": 61,
+      "amount_per_unit": 0.03
+    }
+  ],
+  "orders": [
+    {
+      "id": 2,
+      "user_id": 1,
+      "status": "new",
+      "total_price": 3750.0,
+      "address": "Кирова 81,123",
+      "guests_count": 20,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-01-31",
+      "event_time": "18:02:00",
+      "created_at": "2026-01-29 15:57:55.181518"
+    },
+    {
+      "id": 28,
+      "user_id": 1,
+      "status": "paid",
+      "total_price": 7580.0,
+      "address": "Кирова 81,123",
+      "guests_count": 10,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-04-29",
+      "event_time": "19:00:00",
+      "created_at": "2026-04-28 18:34:09.467220"
+    },
+    {
+      "id": 18,
+      "user_id": 1,
+      "status": "paid",
+      "total_price": 3500.0,
+      "address": "Кирова 81,123",
+      "guests_count": 10,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-02-17",
+      "event_time": "18:00:00",
+      "created_at": "2026-02-16 17:54:23.905115"
+    },
+    {
+      "id": 4,
+      "user_id": 1,
+      "status": "ready",
+      "total_price": 3200.0,
+      "address": "Кирова 81,123",
+      "guests_count": 5,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-02-07",
+      "event_time": "18:00:00",
+      "created_at": "2026-01-29 16:48:36.546780"
+    },
+    {
+      "id": 17,
+      "user_id": 1,
+      "status": "ready",
+      "total_price": 6800.0,
+      "address": "Кирова 81,123",
+      "guests_count": 5,
+      "is_urgent": true,
+      "kitchen_comment": "\r\n        fsdfasd\r\n        ",
+      "event_date": "2026-02-17",
+      "event_time": "18:00:00",
+      "created_at": "2026-02-16 17:52:23.223459"
+    },
+    {
+      "id": 6,
+      "user_id": 1,
+      "status": "ready",
+      "total_price": 5750.0,
+      "address": "Кирова 81,123",
+      "guests_count": 5,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-02-12",
+      "event_time": "19:00:00",
+      "created_at": "2026-02-02 16:04:17.040925"
+    },
+    {
+      "id": 20,
+      "user_id": 1,
+      "status": "awaiting_payment",
+      "total_price": 0.0,
+      "address": "Уточняется",
+      "guests_count": 15,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-02-18",
+      "event_time": "12:00:00",
+      "created_at": "2026-02-16 22:07:34.184198"
+    },
+    {
+      "id": 5,
+      "user_id": 1,
+      "status": "ready",
+      "total_price": 3400.0,
+      "address": "Кирова 81,123",
+      "guests_count": 10,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-03-21",
+      "event_time": "17:05:00",
+      "created_at": "2026-01-29 22:14:19.754132"
+    },
+    {
+      "id": 19,
+      "user_id": 1,
+      "status": "paid",
+      "total_price": 2650.0,
+      "address": "Кирова 81,123",
+      "guests_count": 5,
+      "is_urgent": true,
+      "kitchen_comment": "\r\n        sdfghgfd",
+      "event_date": "2026-02-17",
+      "event_time": "18:00:00",
+      "created_at": "2026-02-16 17:55:44.446112"
+    },
+    {
+      "id": 11,
+      "user_id": 1,
+      "status": "paid",
+      "total_price": 2450.0,
+      "address": "Кирова 81,123",
+      "guests_count": 3,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-02-12",
+      "event_time": "23:26:00",
+      "created_at": "2026-02-03 20:23:09.127908"
+    },
+    {
+      "id": 21,
+      "user_id": 1,
+      "status": "ready",
+      "total_price": 6900.0,
+      "address": "Кирова 81,123",
+      "guests_count": 6,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-02-17",
+      "event_time": "09:32:00",
+      "created_at": "2026-02-16 23:32:51.800179"
+    },
+    {
+      "id": 13,
+      "user_id": 5,
+      "status": "paid",
+      "total_price": 14400.0,
+      "address": "Кирова 81,123",
+      "guests_count": 15,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-02-28",
+      "event_time": "18:00:00",
+      "created_at": "2026-02-03 22:53:20.247736"
+    },
+    {
+      "id": 22,
+      "user_id": 1,
+      "status": "paid",
+      "total_price": 5300.0,
+      "address": "Кирова 81,123",
+      "guests_count": 6,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-02-21",
+      "event_time": "19:00:00",
+      "created_at": "2026-02-20 18:16:49.823089"
+    },
+    {
+      "id": 7,
+      "user_id": 1,
+      "status": "ready",
+      "total_price": 5750.0,
+      "address": "Кирова 81,123",
+      "guests_count": 5,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-02-12",
+      "event_time": "19:00:00",
+      "created_at": "2026-02-02 16:10:02.662308"
+    },
+    {
+      "id": 14,
+      "user_id": 1,
+      "status": "paid",
+      "total_price": 4200.0,
+      "address": "Кирова 81,123",
+      "guests_count": 5,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-02-26",
+      "event_time": "11:00:00",
+      "created_at": "2026-02-10 20:02:22.310414"
+    },
+    {
+      "id": 8,
+      "user_id": 1,
+      "status": "paid",
+      "total_price": 4050.0,
+      "address": "Кирова 81,123",
+      "guests_count": 23,
+      "is_urgent": false,
+      "kitchen_comment": "sdfsfds\r\n        ",
+      "event_date": "2026-02-12",
+      "event_time": "19:32:00",
+      "created_at": "2026-02-02 19:29:17.108330"
+    },
+    {
+      "id": 23,
+      "user_id": 1,
+      "status": "paid",
+      "total_price": 5750.0,
+      "address": "Кирова 81,123",
+      "guests_count": 5,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-02-20",
+      "event_time": "20:41:00",
+      "created_at": "2026-02-20 18:42:28.058401"
+    },
+    {
+      "id": 10,
+      "user_id": 1,
+      "status": "cooking",
+      "total_price": 3200.0,
+      "address": "Кирова 81,123",
+      "guests_count": 3,
+      "is_urgent": true,
+      "kitchen_comment": "\r\n        ",
+      "event_date": "2026-02-19",
+      "event_time": "13:02:00",
+      "created_at": "2026-02-02 20:01:32.242077"
+    },
+    {
+      "id": 15,
+      "user_id": 1,
+      "status": "ready",
+      "total_price": 6800.0,
+      "address": "Кирова 81,123",
+      "guests_count": 5,
+      "is_urgent": true,
+      "kitchen_comment": "\r\n        Клиент попросил не класть лук\r\n        \r\n        \r\n        ",
+      "event_date": "2026-02-14",
+      "event_time": "23:00:00",
+      "created_at": "2026-02-14 20:03:06.383747"
+    },
+    {
+      "id": 9,
+      "user_id": 1,
+      "status": "cooking",
+      "total_price": 4050.0,
+      "address": "Кирова 81,123",
+      "guests_count": 23,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-02-12",
+      "event_time": "19:32:00",
+      "created_at": "2026-02-02 19:29:17.363484"
+    },
+    {
+      "id": 12,
+      "user_id": 1,
+      "status": "cooking",
+      "total_price": 6450.0,
+      "address": "Кирова 81,123",
+      "guests_count": 8,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-02-19",
+      "event_time": "12:00:00",
+      "created_at": "2026-02-03 22:51:03.155993"
+    },
+    {
+      "id": 1,
+      "user_id": 1,
+      "status": "new",
+      "total_price": 5950.0,
+      "address": "Кирова 81,123",
+      "guests_count": 20,
+      "is_urgent": true,
+      "kitchen_comment": "\r\n        ",
+      "event_date": "2026-02-19",
+      "event_time": "18:00:00",
+      "created_at": "2026-01-29 15:56:28.520689"
+    },
+    {
+      "id": 16,
+      "user_id": 1,
+      "status": "cooking",
+      "total_price": 23650.0,
+      "address": "Кирова 81,123",
+      "guests_count": 20,
+      "is_urgent": true,
+      "kitchen_comment": "\r\n        ghbdtn",
+      "event_date": "2026-02-15",
+      "event_time": "08:10:00",
+      "created_at": "2026-02-14 21:10:44.338456"
+    },
+    {
+      "id": 24,
+      "user_id": 1,
+      "status": "paid",
+      "total_price": 8400.0,
+      "address": "Кирова 81,123",
+      "guests_count": 30,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-02-21",
+      "event_time": "19:18:00",
+      "created_at": "2026-02-20 19:16:50.771858"
+    },
+    {
+      "id": 25,
+      "user_id": 1,
+      "status": "paid",
+      "total_price": 11690.0,
+      "address": "Кирова 81,123",
+      "guests_count": 7,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-02-21",
+      "event_time": "16:00:00",
+      "created_at": "2026-02-20 21:03:01.656419"
+    },
+    {
+      "id": 3,
+      "user_id": 1,
+      "status": "ready",
+      "total_price": 2300.0,
+      "address": "Кирова 81,123",
+      "guests_count": 20,
+      "is_urgent": true,
+      "kitchen_comment": "\r\n        ggffhfhf",
+      "event_date": "2026-02-07",
+      "event_time": "19:24:00",
+      "created_at": "2026-01-29 16:18:23.611113"
+    },
+    {
+      "id": 26,
+      "user_id": 1,
+      "status": "ready",
+      "total_price": 19000.0,
+      "address": "Кирова 81,123",
+      "guests_count": 35,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-02-27",
+      "event_time": "17:00:00",
+      "created_at": "2026-02-26 22:58:14.765173"
+    },
+    {
+      "id": 27,
+      "user_id": 1,
+      "status": "paid",
+      "total_price": 3810.0,
+      "address": "Кирова 81,123",
+      "guests_count": 4,
+      "is_urgent": false,
+      "kitchen_comment": "",
+      "event_date": "2026-04-29",
+      "event_time": "17:03:00",
+      "created_at": "2026-04-28 17:01:45.627824"
+    }
+  ],
+  "order_items": [
+    {
+      "id": 1,
+      "order_id": 1,
+      "dish_id": 1,
+      "quantity": 7,
+      "price": 350.0
+    },
+    {
+      "id": 2,
+      "order_id": 1,
+      "dish_id": 2,
+      "quantity": 5,
+      "price": 550.0
+    },
+    {
+      "id": 3,
+      "order_id": 1,
+      "dish_id": 3,
+      "quantity": 3,
+      "price": 250.0
+    },
+    {
+      "id": 4,
+      "order_id": 2,
+      "dish_id": 1,
+      "quantity": 3,
+      "price": 350.0
+    },
+    {
+      "id": 5,
+      "order_id": 2,
+      "dish_id": 2,
+      "quantity": 4,
+      "price": 550.0
+    },
+    {
+      "id": 6,
+      "order_id": 2,
+      "dish_id": 3,
+      "quantity": 2,
+      "price": 250.0
+    },
+    {
+      "id": 7,
+      "order_id": 3,
+      "dish_id": 1,
+      "quantity": 2,
+      "price": 350.0
+    },
+    {
+      "id": 8,
+      "order_id": 3,
+      "dish_id": 2,
+      "quantity": 2,
+      "price": 550.0
+    },
+    {
+      "id": 9,
+      "order_id": 3,
+      "dish_id": 3,
+      "quantity": 2,
+      "price": 250.0
+    },
+    {
+      "id": 10,
+      "order_id": 4,
+      "dish_id": 1,
+      "quantity": 3,
+      "price": 350.0
+    },
+    {
+      "id": 11,
+      "order_id": 4,
+      "dish_id": 2,
+      "quantity": 3,
+      "price": 550.0
+    },
+    {
+      "id": 12,
+      "order_id": 4,
+      "dish_id": 3,
+      "quantity": 2,
+      "price": 250.0
+    },
+    {
+      "id": 13,
+      "order_id": 5,
+      "dish_id": 1,
+      "quantity": 3,
+      "price": 350.0
+    },
+    {
+      "id": 14,
+      "order_id": 5,
+      "dish_id": 2,
+      "quantity": 2,
+      "price": 550.0
+    },
+    {
+      "id": 15,
+      "order_id": 5,
+      "dish_id": 3,
+      "quantity": 5,
+      "price": 250.0
+    },
+    {
+      "id": 16,
+      "order_id": 6,
+      "dish_id": 1,
+      "quantity": 5,
+      "price": 350.0
+    },
+    {
+      "id": 17,
+      "order_id": 6,
+      "dish_id": 2,
+      "quantity": 5,
+      "price": 550.0
+    },
+    {
+      "id": 18,
+      "order_id": 6,
+      "dish_id": 3,
+      "quantity": 5,
+      "price": 250.0
+    },
+    {
+      "id": 19,
+      "order_id": 7,
+      "dish_id": 1,
+      "quantity": 5,
+      "price": 350.0
+    },
+    {
+      "id": 20,
+      "order_id": 7,
+      "dish_id": 2,
+      "quantity": 5,
+      "price": 550.0
+    },
+    {
+      "id": 21,
+      "order_id": 7,
+      "dish_id": 3,
+      "quantity": 5,
+      "price": 250.0
+    },
+    {
+      "id": 22,
+      "order_id": 8,
+      "dish_id": 1,
+      "quantity": 4,
+      "price": 350.0
+    },
+    {
+      "id": 23,
+      "order_id": 8,
+      "dish_id": 2,
+      "quantity": 3,
+      "price": 550.0
+    },
+    {
+      "id": 24,
+      "order_id": 8,
+      "dish_id": 3,
+      "quantity": 4,
+      "price": 250.0
+    },
+    {
+      "id": 25,
+      "order_id": 9,
+      "dish_id": 1,
+      "quantity": 4,
+      "price": 350.0
+    },
+    {
+      "id": 26,
+      "order_id": 9,
+      "dish_id": 2,
+      "quantity": 3,
+      "price": 550.0
+    },
+    {
+      "id": 27,
+      "order_id": 9,
+      "dish_id": 3,
+      "quantity": 4,
+      "price": 250.0
+    },
+    {
+      "id": 28,
+      "order_id": 10,
+      "dish_id": 1,
+      "quantity": 3,
+      "price": 350.0
+    },
+    {
+      "id": 29,
+      "order_id": 10,
+      "dish_id": 2,
+      "quantity": 3,
+      "price": 550.0
+    },
+    {
+      "id": 30,
+      "order_id": 10,
+      "dish_id": 3,
+      "quantity": 2,
+      "price": 250.0
+    },
+    {
+      "id": 31,
+      "order_id": 11,
+      "dish_id": 1,
+      "quantity": 7,
+      "price": 350.0
+    },
+    {
+      "id": 32,
+      "order_id": 12,
+      "dish_id": 1,
+      "quantity": 8,
+      "price": 350.0
+    },
+    {
+      "id": 33,
+      "order_id": 12,
+      "dish_id": 2,
+      "quantity": 3,
+      "price": 550.0
+    },
+    {
+      "id": 34,
+      "order_id": 12,
+      "dish_id": 3,
+      "quantity": 8,
+      "price": 250.0
+    },
+    {
+      "id": 35,
+      "order_id": 13,
+      "dish_id": 1,
+      "quantity": 13,
+      "price": 350.0
+    },
+    {
+      "id": 36,
+      "order_id": 13,
+      "dish_id": 2,
+      "quantity": 12,
+      "price": 550.0
+    },
+    {
+      "id": 37,
+      "order_id": 13,
+      "dish_id": 3,
+      "quantity": 13,
+      "price": 250.0
+    },
+    {
+      "id": 38,
+      "order_id": 14,
+      "dish_id": 1,
+      "quantity": 5,
+      "price": 350.0
+    },
+    {
+      "id": 39,
+      "order_id": 14,
+      "dish_id": 2,
+      "quantity": 4,
+      "price": 550.0
+    },
+    {
+      "id": 40,
+      "order_id": 14,
+      "dish_id": 3,
+      "quantity": 1,
+      "price": 250.0
+    },
+    {
+      "id": 41,
+      "order_id": 15,
+      "dish_id": 1,
+      "quantity": 8,
+      "price": 350.0
+    },
+    {
+      "id": 42,
+      "order_id": 15,
+      "dish_id": 2,
+      "quantity": 5,
+      "price": 550.0
+    },
+    {
+      "id": 43,
+      "order_id": 15,
+      "dish_id": 3,
+      "quantity": 5,
+      "price": 250.0
+    },
+    {
+      "id": 44,
+      "order_id": 16,
+      "dish_id": 1,
+      "quantity": 25,
+      "price": 350.0
+    },
+    {
+      "id": 45,
+      "order_id": 16,
+      "dish_id": 2,
+      "quantity": 23,
+      "price": 550.0
+    },
+    {
+      "id": 46,
+      "order_id": 16,
+      "dish_id": 3,
+      "quantity": 9,
+      "price": 250.0
+    },
+    {
+      "id": 47,
+      "order_id": 17,
+      "dish_id": 1,
+      "quantity": 5,
+      "price": 350.0
+    },
+    {
+      "id": 48,
+      "order_id": 17,
+      "dish_id": 2,
+      "quantity": 6,
+      "price": 550.0
+    },
+    {
+      "id": 49,
+      "order_id": 17,
+      "dish_id": 3,
+      "quantity": 7,
+      "price": 250.0
+    },
+    {
+      "id": 50,
+      "order_id": 18,
+      "dish_id": 1,
+      "quantity": 10,
+      "price": 350.0
+    },
+    {
+      "id": 51,
+      "order_id": 19,
+      "dish_id": 1,
+      "quantity": 3,
+      "price": 350.0
+    },
+    {
+      "id": 52,
+      "order_id": 19,
+      "dish_id": 2,
+      "quantity": 2,
+      "price": 550.0
+    },
+    {
+      "id": 53,
+      "order_id": 19,
+      "dish_id": 3,
+      "quantity": 2,
+      "price": 250.0
+    },
+    {
+      "id": 54,
+      "order_id": 21,
+      "dish_id": 1,
+      "quantity": 6,
+      "price": 350.0
+    },
+    {
+      "id": 55,
+      "order_id": 21,
+      "dish_id": 2,
+      "quantity": 6,
+      "price": 550.0
+    },
+    {
+      "id": 56,
+      "order_id": 21,
+      "dish_id": 3,
+      "quantity": 6,
+      "price": 250.0
+    },
+    {
+      "id": 57,
+      "order_id": 22,
+      "dish_id": 1,
+      "quantity": 3,
+      "price": 350.0
+    },
+    {
+      "id": 58,
+      "order_id": 22,
+      "dish_id": 2,
+      "quantity": 5,
+      "price": 550.0
+    },
+    {
+      "id": 59,
+      "order_id": 22,
+      "dish_id": 3,
+      "quantity": 6,
+      "price": 250.0
+    },
+    {
+      "id": 60,
+      "order_id": 23,
+      "dish_id": 1,
+      "quantity": 5,
+      "price": 350.0
+    },
+    {
+      "id": 61,
+      "order_id": 23,
+      "dish_id": 2,
+      "quantity": 5,
+      "price": 550.0
+    },
+    {
+      "id": 62,
+      "order_id": 23,
+      "dish_id": 3,
+      "quantity": 5,
+      "price": 250.0
+    },
+    {
+      "id": 63,
+      "order_id": 24,
+      "dish_id": 20,
+      "quantity": 30,
+      "price": 280.0
+    },
+    {
+      "id": 64,
+      "order_id": 25,
+      "dish_id": 10,
+      "quantity": 7,
+      "price": 750.0
+    },
+    {
+      "id": 65,
+      "order_id": 25,
+      "dish_id": 12,
+      "quantity": 7,
+      "price": 450.0
+    },
+    {
+      "id": 66,
+      "order_id": 25,
+      "dish_id": 26,
+      "quantity": 7,
+      "price": 350.0
+    },
+    {
+      "id": 67,
+      "order_id": 25,
+      "dish_id": 29,
+      "quantity": 7,
+      "price": 120.0
+    },
+    {
+      "id": 68,
+      "order_id": 26,
+      "dish_id": 14,
+      "quantity": 4,
+      "price": 950.0
+    },
+    {
+      "id": 69,
+      "order_id": 26,
+      "dish_id": 15,
+      "quantity": 20,
+      "price": 380.0
+    },
+    {
+      "id": 70,
+      "order_id": 26,
+      "dish_id": 18,
+      "quantity": 20,
+      "price": 380.0
+    },
+    {
+      "id": 71,
+      "order_id": 27,
+      "dish_id": 5,
+      "quantity": 3,
+      "price": 550.0
+    },
+    {
+      "id": 72,
+      "order_id": 27,
+      "dish_id": 11,
+      "quantity": 3,
+      "price": 420.0
+    },
+    {
+      "id": 73,
+      "order_id": 27,
+      "dish_id": 23,
+      "quantity": 3,
+      "price": 300.0
+    },
+    {
+      "id": 74,
+      "order_id": 28,
+      "dish_id": 4,
+      "quantity": 8,
+      "price": 350.0
+    },
+    {
+      "id": 75,
+      "order_id": 28,
+      "dish_id": 6,
+      "quantity": 3,
+      "price": 320.0
+    },
+    {
+      "id": 76,
+      "order_id": 28,
+      "dish_id": 12,
+      "quantity": 2,
+      "price": 450.0
+    },
+    {
+      "id": 77,
+      "order_id": 28,
+      "dish_id": 17,
+      "quantity": 4,
+      "price": 450.0
+    },
+    {
+      "id": 78,
+      "order_id": 28,
+      "dish_id": 20,
+      "quantity": 4,
+      "price": 280.0
+    }
+  ]
+}
