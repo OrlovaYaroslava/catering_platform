@@ -25,13 +25,16 @@
             <span class="status-pill status-pill--orange">👩‍🍳 Готовится</span>
         {% elif order.status == "ready" %}
             <span class="status-pill status-pill--green">✅ Готов к выдаче</span>
+        {% elif order.status == "completed" %}
+            <span class="status-pill status-pill--green">🎉 Выполнен</span>
+        {% elif order.status == "cancelled" %}
+            <span class="status-pill status-pill--gray">❌ Отменён</span>
         {% elif order.status == "delivered" %}
             <span class="status-pill status-pill--gray">📦 Доставлен</span>
         {% else %}
             <span class="status-pill status-pill--gray">{{ order.status }}</span>
         {% endif %}
 
-        <!-- Кнопка оплаты если ещё не оплачен -->
         {% if order.status == "awaiting_payment" %}
             <a href="{{ url_for('main.payment_page', order_id=order.id) }}"
                class="pay-btn">
@@ -42,6 +45,25 @@
 </div>
 
 <!-- Трекер статуса -->
+{% if order.status == "cancelled" %}
+<div class="order-cancelled-banner mb-4">
+    <span style="font-size:2rem">❌</span>
+    <div>
+        <strong>Заказ отменён</strong>
+        <p class="text-muted mb-0">Этот заказ был отменён</p>
+    </div>
+</div>
+
+{% elif order.status == "completed" %}
+<div class="order-completed-banner mb-4">
+    <span style="font-size:2rem">🎉</span>
+    <div>
+        <strong>Заказ выполнен</strong>
+        <p class="text-muted mb-0">Спасибо, что выбрали нас!</p>
+    </div>
+</div>
+
+{% else %}
 <div class="status-tracker mb-4">
     {% set steps = [
         ("awaiting_payment", "Ожидает оплаты", "⏳"),
@@ -63,6 +85,7 @@
         {% endif %}
     {% endfor %}
 </div>
+{% endif %}
 
 <div class="detail-grid">
     <!-- Состав заказа -->
@@ -170,6 +193,14 @@
     </div>
 </div>
 
+{% if order.status == "awaiting_payment" %}
+<form method="POST" action="{{ url_for('main.client_cancel_order', order_id=order.id) }}"
+      onsubmit="return confirm('Вы уверены, что хотите отменить заказ?')">
+  <button class="btn btn-outline-danger w-100 mt-3">
+    ❌ Отменить заказ
+  </button>
+</form>
+{% endif %}
 <style>
 .back-link {
     font-size: 0.88rem; font-weight: 700; color: #6b7280;
@@ -194,6 +225,21 @@
     display: inline-block; padding: 8px 18px; border-radius: 99px;
     font-size: 0.9rem; font-weight: 800;
 }
+/* Новые пиллюли */
+.status-pill--teal { background: #d1fae5; color: #065f46; }
+.status-pill--red  { background: #fee2e2; color: #991b1b; }
+
+/* Баннеры для отменённых/выполненных */
+.status-banner {
+    display: flex; align-items: center; gap: 16px;
+    padding: 20px 28px; border-radius: 18px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+}
+.status-banner--teal { background: #d1fae5; color: #065f46; }
+.status-banner--red  { background: #fee2e2; color: #991b1b; }
+.status-banner strong { font-size: 1rem; font-weight: 800; display: block; }
+.status-banner p { margin: 4px 0 0; font-size: 0.88rem; opacity: 0.8; }
+.banner-icon { font-size: 2rem; flex-shrink: 0; }
 .status-pill--warning { background: #fef9c3; color: #854d0e; }
 .status-pill--blue    { background: #dbeafe; color: #1d4ed8; }
 .status-pill--orange  { background: #ffedd5; color: #9a3412; }

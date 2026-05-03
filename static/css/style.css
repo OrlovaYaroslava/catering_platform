@@ -422,3 +422,34 @@ body.site-body {
         flex-direction: column;
     }
 }
+/* ✅ ДОБАВИТЬ к существующим стилям статусов */
+
+/* Для client_order_detail и my_orders */
+.status-pill--green-dark,
+.status-pill.completed {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+
+.status-pill--red,
+.status-pill.cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+/* Для карточек в admin_orders — бейджи без класса status-pill */
+.order-status-badge.completed,
+[class*="status"].completed,
+.badge.completed {
+    background: #d1fae5 !important;
+    color: #065f46 !important;
+}
+
+.order-status-badge.cancelled,
+[class*="status"].cancelled,
+.badge.cancelled {
+    background: #fee2e2 !important;
+    color: #991b1b !important;
+}

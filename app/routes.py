@@ -196,6 +196,8 @@ def my_orders():
         "paid":            Order.query.filter_by(user_id=current_user.id, status="paid").count(),
         "cooking":         Order.query.filter_by(user_id=current_user.id, status="cooking").count(),
         "ready":           Order.query.filter_by(user_id=current_user.id, status="ready").count(),
+        "cancelled": Order.query.filter_by(user_id=current_user.id, status="cancelled").count(),
+        "completed": Order.query.filter_by(user_id=current_user.id, status="completed").count(),
     }
 
     return render_template("my_orders.html", orders=orders,
@@ -486,6 +488,7 @@ def admin_orders():
         "cooking": Order.query.filter(Order.status == "cooking").count(),
         "ready": Order.query.filter(Order.status == "ready").count(),
         "completed": Order.query.filter(Order.status == "completed").count(),
+        'cancelled': Order.query.filter(Order.status == 'cancelled').count(),
     }
     
     return render_template(
@@ -1186,3 +1189,44 @@ def admin_export_orders():
             "Content-Disposition": "attachment; filename=orders_export.csv"
         }
     )
+
+# ✅ ДОБАВИТЬ после admin_confirm_payment (около строки 370)
+
+@main.route("/admin/order/<int:order_id>/complete", methods=["POST"])
+@login_required
+@role_required("admin")
+def admin_complete_order(order_id):
+    order = Order.query.get_or_404(order_id)
+    if order.status == "ready":
+        order.status = "completed"
+        db.session.commit()
+        flash("✅ Заказ закрыт и выполнен", "success")
+    return redirect(url_for("main.admin_order_detail", order_id=order.id))
+
+
+@main.route("/admin/order/<int:order_id>/cancel", methods=["POST"])
+@login_required
+@role_required("admin")
+def admin_cancel_order(order_id):
+    order = Order.query.get_or_404(order_id)
+    if order.status not in ["completed", "cancelled"]:
+        order.status = "cancelled"
+        db.session.commit()
+        flash("❌ Заказ отменён", "warning")
+    return redirect(url_for("main.admin_order_detail", order_id=order.id))
+
+# ✅ ДОБАВИТЬ после client_order_detail
+
+@main.route("/client/order/<int:order_id>/cancel", methods=["POST"])
+@login_required
+@role_required("client")
+def client_cancel_order(order_id):
+    order = Order.query.filter_by(
+        id=order_id,
+        user_id=current_user.id
+    ).first_or_404()
+    if order.status == "awaiting_payment":
+        order.status = "cancelled"
+        db.session.commit()
+        flash("❌ Заказ отменён", "warning")
+    return redirect(url_for("main.client_order_detail", order_id=order.id))

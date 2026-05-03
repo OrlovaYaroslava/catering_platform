@@ -202,6 +202,23 @@
             </form>
           </div>
           {% endif %}
+          
+          {% if order.status == "ready" %}
+          <form method="POST" action="{{ url_for('main.admin_complete_order', order_id=order.id) }}" class="d-inline">
+            <button class="btn btn-success fw-bold px-4">
+              ✅ Закрыть заказ (выполнен)
+            </button>
+          </form>
+          {% endif %}
+
+          {% if order.status not in ["completed", "cancelled"] %}
+          <form method="POST" action="{{ url_for('main.admin_cancel_order', order_id=order.id) }}" class="d-inline"
+                onsubmit="return confirm('Отменить заказ №{{ order.id }}?')">
+            <button class="btn btn-outline-danger fw-bold px-4">
+              ❌ Отменить заказ
+            </button>
+          </form>
+          {% endif %}
 
           {% if payment.method == "invoice" and payment.status == "success" %}
             <div class="mt-3">
