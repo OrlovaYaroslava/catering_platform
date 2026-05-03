@@ -118,7 +118,9 @@ def checkout():
             address=form.address.data,
             guests_count=form.guests_count.data,
             total_price=0,
-            status="awaiting_payment"
+            status="awaiting_payment",
+            phone=form.phone.data,
+            client_comment=form.client_comment.data,
         )
 
         db.session.add(order)

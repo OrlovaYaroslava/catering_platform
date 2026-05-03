@@ -47,6 +47,15 @@
     <div style="color:#7c2d12;white-space:pre-line;">{{ order.kitchen_comment }}</div>
   </div>
   {% endif %}
+  {% if order.client_comment %}
+  <div class="alert border-0 rounded-4 mb-4 p-4"
+       style="background:#f0fdf4; border-left: 4px solid #22c55e !important;">
+    <div class="fw-bold mb-1" style="color:#15803d;">
+      💬 Пожелания клиента:
+    </div>
+    <div style="color:#14532d; white-space:pre-line;">{{ order.client_comment }}</div>
+  </div>
+  {% endif %}
 
   <div class="row g-4">
 
@@ -117,6 +126,10 @@
             <li class="d-flex justify-content-between py-2">
               <span class="text-muted">Адрес</span>
               <span class="fw-bold text-end" style="max-width:170px">{{ order.address }}</span>
+            </li>
+             <li class="d-flex justify-content-between py-2">
+              <span class="text-muted">📞 Телефон</span>
+              <span class="fw-bold">{{ order.phone }}</span>
             </li>
           </ul>
         </div>

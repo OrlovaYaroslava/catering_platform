@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container py-4">
 
-  <!-- Хлебные крошки + заголовок -->
+  
   <div class="d-flex align-items-start justify-content-between mb-4 flex-wrap gap-3">
     <div>
       <a href="{{ url_for('main.admin_orders') }}" class="text-decoration-none text-muted small">
@@ -89,6 +89,21 @@
         </div>
       </div>
 
+      <!-- Комментарий клиента — только для чтения -->
+      {% if order.client_comment %}
+      <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-transparent border-0 pt-4 px-4 pb-2">
+          <h5 class="fw-800 mb-0">💬 Пожелания клиента</h5>
+        </div>
+        <div class="card-body px-4 pb-4 pt-2">
+          <div class="p-3 rounded-3"
+               style="background:#f0fdf4; border-left: 4px solid #22c55e;">
+            <div style="white-space:pre-line; color:#14532d;">{{ order.client_comment }}</div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
       <!-- Комментарий для кухни -->
       <div class="card border-0 shadow-sm rounded-4">
         <div class="card-header bg-transparent border-0 pt-4 px-4 pb-2">
@@ -150,6 +165,12 @@
               <span class="text-muted">Гостей</span>
               <span class="fw-bold">{{ order.guests_count }} чел.</span>
             </li>
+            {% if order.phone %}
+            <li class="d-flex justify-content-between py-2 border-top">
+              <span class="text-muted">📞 Телефон</span>
+              <span class="fw-bold">{{ order.phone }}</span>
+            </li>
+            {% endif %}
           </ul>
         </div>
       </div>

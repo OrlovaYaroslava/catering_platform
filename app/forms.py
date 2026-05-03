@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField,DateField, TimeField, IntegerField, TextAreaField
-from wtforms.validators import DataRequired, Email, Length, EqualTo
+from wtforms.validators import DataRequired, Email, Length, EqualTo, Optional
 
 class RegisterForm(FlaskForm):
     email = StringField(
@@ -54,5 +54,7 @@ class OrderForm(FlaskForm):
         "Guests count",
         validators=[DataRequired()]
     )
-
+    
+    phone = StringField("Телефон", validators=[DataRequired(), Length(max=20)])
+    client_comment = TextAreaField("Комментарий к заказу", validators=[Optional(), Length(max=1000)])
     submit = SubmitField("Place order")

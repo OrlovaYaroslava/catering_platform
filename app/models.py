@@ -35,9 +35,11 @@ class Order(db.Model):
     address = db.Column(db.String(255))
     guests_count = db.Column(db.Integer)
 
+    phone = db.Column(db.String(20), nullable=True)
+    client_comment = db.Column(db.Text, nullable=True)
+
     total_price = db.Column(db.Numeric(10, 2))
     status = db.Column(db.String(50), default="awaiting_payment")
-
     created_at = db.Column(db.DateTime, default=db.func.now())
     kitchen_comment = db.Column(db.Text)
     is_urgent = db.Column(db.Boolean, default=False)
